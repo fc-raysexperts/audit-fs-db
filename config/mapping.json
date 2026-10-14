@@ -1,0 +1,863 @@
+{
+ "version": 1,
+ "note": "Rules are matched by specificity: accountId > exact code > family (code or code-prefix + '-'). Two different buckets claiming the same account at the same specificity raises an alert. Any account with a non-zero closing balance that no rule claims also raises an alert.",
+ "buckets": {
+  "ppe_net": {
+   "label": "Property, plant & equipment (net of depreciation)",
+   "nature": "asset"
+  },
+  "intangibles_net": {
+   "label": "Intangible assets (net of amortisation)",
+   "nature": "asset"
+  },
+  "cwip": {
+   "label": "Capital work-in-progress",
+   "nature": "asset"
+  },
+  "iaud": {
+   "label": "Intangible assets under development",
+   "nature": "asset"
+  },
+  "deferred_tax_net": {
+   "label": "Deferred tax asset/(liability), net (debit = asset)",
+   "nature": "asset"
+  },
+  "investments_nc": {
+   "label": "Non-current investments",
+   "nature": "asset"
+  },
+  "inventory": {
+   "label": "Inventories",
+   "nature": "asset"
+  },
+  "ar_control": {
+   "label": "Customer receivable control accounts (gross, before customer advances)",
+   "nature": "asset"
+  },
+  "cash_bank": {
+   "label": "Cash in hand and bank balances",
+   "nature": "asset"
+  },
+  "od_accounts": {
+   "label": "Bank overdraft accounts (debit balance = cash, credit balance = borrowing)",
+   "nature": "asset"
+  },
+  "fixed_deposits": {
+   "label": "Fixed deposits (principal)",
+   "nature": "asset"
+  },
+  "accrued_interest_fdr": {
+   "label": "Accrued interest on FDs",
+   "nature": "asset"
+  },
+  "loans_advances_given": {
+   "label": "Loans and advances given to parties",
+   "nature": "asset"
+  },
+  "staff_advances": {
+   "label": "Advances to staff",
+   "nature": "asset"
+  },
+  "prepaid": {
+   "label": "Prepaid expenses",
+   "nature": "asset"
+  },
+  "gst_balances": {
+   "label": "GST input credit and balances with revenue authorities",
+   "nature": "asset"
+  },
+  "advance_tax": {
+   "label": "Advance tax paid",
+   "nature": "asset"
+  },
+  "tds_tcs_receivable": {
+   "label": "TDS / TCS receivable",
+   "nature": "asset"
+  },
+  "unbilled_revenue": {
+   "label": "Unbilled revenue",
+   "nature": "asset"
+  },
+  "security_deposits_given": {
+   "label": "Security deposits given",
+   "nature": "asset"
+  },
+  "other_receivables": {
+   "label": "Other receivables (e.g. subsidy)",
+   "nature": "asset"
+  },
+  "vendor_advances": {
+   "label": "Supplier advance accounts (debit-side, uncoded legacy)",
+   "nature": "asset"
+  },
+  "share_capital": {
+   "label": "Equity share capital",
+   "nature": "equity"
+  },
+  "securities_premium": {
+   "label": "Securities premium",
+   "nature": "equity"
+  },
+  "retained_earnings": {
+   "label": "Retained earnings brought forward",
+   "nature": "equity"
+  },
+  "car_loans": {
+   "label": "Car loans (total outstanding, current + non-current)",
+   "nature": "liability"
+  },
+  "cash_credit": {
+   "label": "Cash credit / working-capital limits",
+   "nature": "liability"
+  },
+  "other_borrowings": {
+   "label": "Term and unsecured loans",
+   "nature": "liability"
+  },
+  "employee_provisions": {
+   "label": "Provision for gratuity and leave encashment",
+   "nature": "liability"
+  },
+  "vendor_payables": {
+   "label": "Supplier / creditor control accounts",
+   "nature": "liability"
+  },
+  "statutory_dues": {
+   "label": "Statutory liabilities (TDS, PF, ESI, GST payable)",
+   "nature": "liability"
+  },
+  "retention_payable": {
+   "label": "Retention money payable",
+   "nature": "liability"
+  },
+  "security_deposits_taken": {
+   "label": "Security deposits taken",
+   "nature": "liability"
+  },
+  "outstanding_expenses": {
+   "label": "Outstanding / accrued expenses and payables to employees",
+   "nature": "liability"
+  },
+  "unearned_revenue": {
+   "label": "Unearned (advance-billed) revenue",
+   "nature": "liability"
+  },
+  "income_tax_provision": {
+   "label": "Provision for income tax (gross)",
+   "nature": "liability"
+  },
+  "advance_from_customers": {
+   "label": "Advance from debtors (customer control account)",
+   "nature": "liability"
+  },
+  "rounding_suspense": {
+   "label": "Opening-balance adjustment / rounding differences",
+   "nature": "liability"
+  },
+  "revenue": {
+   "label": "Revenue from operations",
+   "nature": "income"
+  },
+  "other_income": {
+   "label": "Other income (interest, rounding)",
+   "nature": "income"
+  },
+  "materials_cost": {
+   "label": "Cost of materials consumed (incl. legacy purchase accounts)",
+   "nature": "expense"
+  },
+  "stores_consumption": {
+   "label": "Consumption of stores and consumables",
+   "nature": "expense"
+  },
+  "freight_inward": {
+   "label": "Freight inward (shown under purchases)",
+   "nature": "expense"
+  },
+  "project_expenses": {
+   "label": "Operating / project expenses",
+   "nature": "expense"
+  },
+  "employee_cost": {
+   "label": "Employee benefit expenses",
+   "nature": "expense"
+  },
+  "finance_cost": {
+   "label": "Finance costs",
+   "nature": "expense"
+  },
+  "dep_amort": {
+   "label": "Depreciation and amortisation",
+   "nature": "expense"
+  },
+  "other_expenses": {
+   "label": "Administrative and other expenses",
+   "nature": "expense"
+  },
+  "cha_logistics": {
+   "label": "CHA and logistics (shown under purchases)",
+   "nature": "expense"
+  },
+  "fx_net": {
+   "label": "Foreign-exchange gain/loss (shown under other income)",
+   "nature": "expense"
+  },
+  "fines_penalties": {
+   "label": "Fines and penalties (part is shown under earlier-year tax)",
+   "nature": "expense"
+  },
+  "tax_current": {
+   "label": "Current tax",
+   "nature": "expense"
+  },
+  "tax_deferred": {
+   "label": "Deferred tax",
+   "nature": "expense"
+  },
+  "tax_earlier": {
+   "label": "Income tax of earlier years",
+   "nature": "expense"
+  }
+ },
+ "rules": [
+  {
+   "match": {
+    "family": "1-01"
+   },
+   "bucket": "ppe_net"
+  },
+  {
+   "match": {
+    "family": "1-02"
+   },
+   "bucket": "intangibles_net"
+  },
+  {
+   "match": {
+    "family": "1-03"
+   },
+   "bucket": "cwip"
+  },
+  {
+   "match": {
+    "family": "1-04"
+   },
+   "bucket": "iaud"
+  },
+  {
+   "match": {
+    "family": "1-05"
+   },
+   "bucket": "deferred_tax_net",
+   "note": "Zoho group says Liability, but the balance is a debit (asset) - classified by code, not by Zoho group"
+  },
+  {
+   "match": {
+    "family": "1-06"
+   },
+   "bucket": "investments_nc"
+  },
+  {
+   "match": {
+    "family": "1-07"
+   },
+   "bucket": "inventory"
+  },
+  {
+   "match": {
+    "code": "1-12-007"
+   },
+   "bucket": "inventory",
+   "note": "Goods in transit counts as inventory"
+  },
+  {
+   "match": {
+    "accountId": "2346113000007638003"
+   },
+   "bucket": "inventory",
+   "name": "NPD Panchu Purchase (legacy, uncoded) - sits in inventories in the audited FS"
+  },
+  {
+   "match": {
+    "family": "1-08"
+   },
+   "bucket": "ar_control"
+  },
+  {
+   "match": {
+    "accountId": "2346113000004318324"
+   },
+   "bucket": "ar_control",
+   "name": "Sundry Debtors - O&M (legacy, uncoded)"
+  },
+  {
+   "match": {
+    "accountId": "2346113000004318332"
+   },
+   "bucket": "ar_control",
+   "name": "Sundry Debtors Project (legacy, uncoded)"
+  },
+  {
+   "match": {
+    "accountId": "2346113000004318336"
+   },
+   "bucket": "ar_control",
+   "name": "Sundry Debtors(Rooftop) (legacy, uncoded)"
+  },
+  {
+   "match": {
+    "family": "1-09"
+   },
+   "bucket": "cash_bank",
+   "note": "Cash and bank accounts"
+  },
+  {
+   "match": {
+    "code": "1-09-011"
+   },
+   "bucket": "fixed_deposits"
+  },
+  {
+   "match": {
+    "code": "2-03-005"
+   },
+   "bucket": "od_accounts",
+   "note": "Overdraft - Zoho group says Asset; sign decides: debit = cash, credit = borrowing"
+  },
+  {
+   "match": {
+    "code": "2-03-008"
+   },
+   "bucket": "od_accounts"
+  },
+  {
+   "match": {
+    "family": "1-10"
+   },
+   "bucket": "loans_advances_given"
+  },
+  {
+   "match": {
+    "code": "1-10-003"
+   },
+   "bucket": "prepaid"
+  },
+  {
+   "match": {
+    "code": "1-10-004"
+   },
+   "bucket": "prepaid"
+  },
+  {
+   "match": {
+    "code": "1-10-001"
+   },
+   "bucket": "staff_advances"
+  },
+  {
+   "match": {
+    "code": "1-12-008"
+   },
+   "bucket": "staff_advances",
+   "note": "Zoho Payroll loan account"
+  },
+  {
+   "match": {
+    "accountId": "2346113000000053827"
+   },
+   "bucket": "staff_advances",
+   "name": "Staff Advance (legacy, uncoded)"
+  },
+  {
+   "match": {
+    "family": "1-11"
+   },
+   "bucket": "gst_balances",
+   "note": "Input GST, cash ledgers and other balances with revenue authorities"
+  },
+  {
+   "match": {
+    "code": "1-11-016"
+   },
+   "bucket": "advance_tax"
+  },
+  {
+   "match": {
+    "code": "1-11-019"
+   },
+   "bucket": "advance_tax"
+  },
+  {
+   "match": {
+    "code": "1-11-017"
+   },
+   "bucket": "tds_tcs_receivable"
+  },
+  {
+   "match": {
+    "code": "1-11-018"
+   },
+   "bucket": "tds_tcs_receivable"
+  },
+  {
+   "match": {
+    "code": "1-11-020"
+   },
+   "bucket": "tds_tcs_receivable"
+  },
+  {
+   "match": {
+    "code": "1-11-021"
+   },
+   "bucket": "tds_tcs_receivable"
+  },
+  {
+   "match": {
+    "code": "1-11-022"
+   },
+   "bucket": "tds_tcs_receivable"
+  },
+  {
+   "match": {
+    "code": "1-11-023"
+   },
+   "bucket": "tds_tcs_receivable"
+  },
+  {
+   "match": {
+    "code": "1-11-044"
+   },
+   "bucket": "tds_tcs_receivable"
+  },
+  {
+   "match": {
+    "family": "1-12"
+   },
+   "bucket": "other_receivables"
+  },
+  {
+   "match": {
+    "code": "1-12-001"
+   },
+   "bucket": "unbilled_revenue"
+  },
+  {
+   "match": {
+    "code": "1-12-002"
+   },
+   "bucket": "unbilled_revenue"
+  },
+  {
+   "match": {
+    "code": "1-12-003"
+   },
+   "bucket": "unbilled_revenue"
+  },
+  {
+   "match": {
+    "code": "1-12-004"
+   },
+   "bucket": "accrued_interest_fdr"
+  },
+  {
+   "match": {
+    "code": "1-12-005"
+   },
+   "bucket": "security_deposits_given"
+  },
+  {
+   "match": {
+    "accountId": "2346113000000030011"
+   },
+   "bucket": "vendor_advances",
+   "name": "Advance to Creditors (legacy, uncoded)"
+  },
+  {
+   "match": {
+    "family": "2-01"
+   },
+   "bucket": "share_capital"
+  },
+  {
+   "match": {
+    "code": "2-02-001"
+   },
+   "bucket": "securities_premium"
+  },
+  {
+   "match": {
+    "code": "2-02-002"
+   },
+   "bucket": "retained_earnings"
+  },
+  {
+   "match": {
+    "code": "2-02"
+   },
+   "bucket": "retained_earnings"
+  },
+  {
+   "match": {
+    "code": "2-03-001"
+   },
+   "bucket": "car_loans"
+  },
+  {
+   "match": {
+    "code": "2-03-002"
+   },
+   "bucket": "car_loans"
+  },
+  {
+   "match": {
+    "code": "2-03-003"
+   },
+   "bucket": "car_loans"
+  },
+  {
+   "match": {
+    "code": "2-03-004"
+   },
+   "bucket": "car_loans"
+  },
+  {
+   "match": {
+    "code": "2-03"
+   },
+   "bucket": "car_loans"
+  },
+  {
+   "match": {
+    "code": "2-03-006"
+   },
+   "bucket": "cash_credit"
+  },
+  {
+   "match": {
+    "code": "2-03-007"
+   },
+   "bucket": "other_borrowings"
+  },
+  {
+   "match": {
+    "family": "2-04"
+   },
+   "bucket": "other_borrowings"
+  },
+  {
+   "match": {
+    "family": "2-05"
+   },
+   "bucket": "employee_provisions"
+  },
+  {
+   "match": {
+    "family": "2-06"
+   },
+   "bucket": "vendor_payables"
+  },
+  {
+   "match": {
+    "accountId": "2346113000004358223"
+   },
+   "bucket": "vendor_payables",
+   "name": "Creditors for Purchase (Trade Payable) (legacy, uncoded)"
+  },
+  {
+   "match": {
+    "accountId": "2346113000004358227"
+   },
+   "bucket": "vendor_payables",
+   "name": "Creditors for Services (Trade Payable) (legacy, uncoded)"
+  },
+  {
+   "match": {
+    "accountId": "2346113000004358231"
+   },
+   "bucket": "vendor_payables",
+   "name": "Creditor_others ( Exp ) (legacy, uncoded)"
+  },
+  {
+   "match": {
+    "family": "2-07"
+   },
+   "bucket": "statutory_dues"
+  },
+  {
+   "match": {
+    "code": "2-08"
+   },
+   "bucket": "outstanding_expenses"
+  },
+  {
+   "match": {
+    "code": "2-08-001"
+   },
+   "bucket": "retention_payable"
+  },
+  {
+   "match": {
+    "code": "2-08-002"
+   },
+   "bucket": "security_deposits_taken"
+  },
+  {
+   "match": {
+    "code": "2-08-003"
+   },
+   "bucket": "outstanding_expenses"
+  },
+  {
+   "match": {
+    "code": "2-08-004"
+   },
+   "bucket": "outstanding_expenses"
+  },
+  {
+   "match": {
+    "code": "2-08-008"
+   },
+   "bucket": "outstanding_expenses"
+  },
+  {
+   "match": {
+    "code": "2-08-012"
+   },
+   "bucket": "outstanding_expenses"
+  },
+  {
+   "match": {
+    "code": "2-08-015"
+   },
+   "bucket": "outstanding_expenses"
+  },
+  {
+   "match": {
+    "code": "2-08-016"
+   },
+   "bucket": "outstanding_expenses"
+  },
+  {
+   "match": {
+    "code": "2-08-013"
+   },
+   "bucket": "statutory_dues"
+  },
+  {
+   "match": {
+    "code": "2-08-014"
+   },
+   "bucket": "statutory_dues"
+  },
+  {
+   "match": {
+    "code": "2-08-005"
+   },
+   "bucket": "unearned_revenue"
+  },
+  {
+   "match": {
+    "code": "2-08-006"
+   },
+   "bucket": "unearned_revenue"
+  },
+  {
+   "match": {
+    "code": "2-08-007"
+   },
+   "bucket": "unearned_revenue"
+  },
+  {
+   "match": {
+    "code": "2-08-009"
+   },
+   "bucket": "income_tax_provision"
+  },
+  {
+   "match": {
+    "code": "2-08-010"
+   },
+   "bucket": "rounding_suspense"
+  },
+  {
+   "match": {
+    "code": "2-08-011"
+   },
+   "bucket": "advance_from_customers"
+  },
+  {
+   "match": {
+    "accountId": "2346113000000060389"
+   },
+   "bucket": "outstanding_expenses",
+   "name": "Full and Final Payable (legacy, uncoded)"
+  },
+  {
+   "match": {
+    "family": "3-01"
+   },
+   "bucket": "revenue"
+  },
+  {
+   "match": {
+    "family": "3-02"
+   },
+   "bucket": "other_income"
+  },
+  {
+   "match": {
+    "family": "4-01"
+   },
+   "bucket": "materials_cost"
+  },
+  {
+   "match": {
+    "code": "4-01-001"
+   },
+   "bucket": "stores_consumption",
+   "note": "Reclassified to operating expenses in the audited FS"
+  },
+  {
+   "match": {
+    "family": "4-02"
+   },
+   "bucket": "project_expenses"
+  },
+  {
+   "match": {
+    "code": "4-02-015"
+   },
+   "bucket": "freight_inward",
+   "note": "Shown under purchases in the audited FS"
+  },
+  {
+   "match": {
+    "family": "4-03"
+   },
+   "bucket": "employee_cost"
+  },
+  {
+   "match": {
+    "family": "4-04"
+   },
+   "bucket": "finance_cost"
+  },
+  {
+   "match": {
+    "family": "4-05"
+   },
+   "bucket": "dep_amort"
+  },
+  {
+   "match": {
+    "family": "4-06"
+   },
+   "bucket": "other_expenses"
+  },
+  {
+   "match": {
+    "code": "4-06-034"
+   },
+   "bucket": "cha_logistics",
+   "note": "Shown under purchases in the audited FS"
+  },
+  {
+   "match": {
+    "code": "4-06-015"
+   },
+   "bucket": "fx_net"
+  },
+  {
+   "match": {
+    "code": "4-06-036"
+   },
+   "bucket": "fx_net"
+  },
+  {
+   "match": {
+    "code": "4-06-030"
+   },
+   "bucket": "fines_penalties"
+  },
+  {
+   "match": {
+    "code": "4-07-001"
+   },
+   "bucket": "tax_earlier"
+  },
+  {
+   "match": {
+    "code": "4-07-002"
+   },
+   "bucket": "tax_current"
+  },
+  {
+   "match": {
+    "code": "4-07-003"
+   },
+   "bucket": "tax_deferred"
+  },
+  {
+   "match": {
+    "code": "4-07"
+   },
+   "bucket": "tax_current"
+  },
+  {
+   "match": {
+    "accountId": "2346113000000402401"
+   },
+   "bucket": "materials_cost",
+   "name": "MMS (code '11') - old purchase account, treated as cost of materials"
+  },
+  {
+   "match": {
+    "accountId": "2346113000000065447"
+   },
+   "bucket": "materials_cost",
+   "name": "VCB (code '12') - old purchase account, treated as cost of materials"
+  },
+  {
+   "match": {
+    "accountId": "2346113000000402496"
+   },
+   "bucket": "materials_cost",
+   "name": "4 Pole, Metering and Transmission Line Material - old purchase account, treated as cost of materials"
+  },
+  {
+   "match": {
+    "accountId": "2346113000000402173"
+   },
+   "bucket": "materials_cost",
+   "name": "Cables & Condiuts - old purchase account, treated as cost of materials"
+  },
+  {
+   "match": {
+    "accountId": "2346113000000000558"
+   },
+   "bucket": "materials_cost",
+   "name": "Other Expenses (0.32) - old purchase account, treated as cost of materials"
+  },
+  {
+   "match": {
+    "accountId": "2346113000000559060"
+   },
+   "bucket": "materials_cost",
+   "name": "Purchase A/c GST 18% - old purchase account, treated as cost of materials"
+  },
+  {
+   "match": {
+    "accountId": "2346113000000065867"
+   },
+   "bucket": "materials_cost",
+   "name": "Purchase GM(CGST/SGST 18%) - old purchase account, treated as cost of materials"
+  },
+  {
+   "match": {
+    "accountId": "2346113000000403285"
+   },
+   "bucket": "materials_cost",
+   "name": "Transformer - old purchase account, treated as cost of materials"
+  }
+ ]
+}

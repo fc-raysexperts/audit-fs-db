@@ -1,0 +1,8 @@
+node_modules/
+.env
+.env.*
+!.env.example
+.vercel/
+# real company figures: keep out of git (repo should also be PRIVATE)
+fixtures/
+reports/

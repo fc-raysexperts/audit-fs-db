@@ -1,0 +1,26 @@
+{
+ "as_of": "2026-03-31",
+ "note": "Figures the Zoho Trial Balance cannot show. They come from the auditors' schedules and must be re-entered for every year-end.",
+ "inputs": {
+  "car_loan_current_maturities": {
+   "value": 3771359,
+   "ref": "Note 4-19!G32",
+   "meaning": "Part of car loans due within 12 months; moved from long-term to short-term borrowings"
+  },
+  "fd_noncurrent": {
+   "value": 79886932,
+   "ref": "Note 4-19!G150",
+   "meaning": "Fixed deposits (with accrued interest) maturing after 12 months; rest of FDs is current"
+  },
+  "security_deposit_noncurrent": {
+   "value": 33387,
+   "ref": "Note 4-19!G151",
+   "meaning": "Part of security deposits given that is non-current"
+  },
+  "fines_debit_to_earlier_year_tax": {
+   "value": 192903,
+   "ref": "Note 20-27 (earlier-year tax) vs TB 4-06-030 debit total",
+   "meaning": "Debit side of Fines & Penalties which the auditors shifted into 'Income tax of earlier year'"
+  }
+ }
+}

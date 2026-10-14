@@ -1,0 +1,12 @@
+{
+  "name": "rpel-fs-dashboard",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Live audited-style financial statements for Rays Power Experts Ltd, built from the Zoho Books Trial Balance",
+  "type": "module",
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "reconcile": "node scripts/reconcile.mjs",
+    "test": "node --test"
+  }
+}

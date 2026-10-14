@@ -1,0 +1,211 @@
+{
+ "as_of": "2026-03-31",
+ "source": "Hand-netting done by the auditors between customer receivables and customer advances (audited workbook: Debtors Ageing / BS Grouping), reverse-engineered by comparing the Zoho AR aging at 31-Mar-2026 with the audited debtors list.",
+ "rule": "receivable_i = max(0, zb_total_i + adjustment_i); customers absent from the audited list have audited = 0. Valid ONLY for the report dated as_of; do not apply to other dates.",
+ "entries": {
+  "2346113000006903334": {
+   "name": "Aman Hospitality Private Limited",
+   "zb_total": 59717715.64,
+   "audited": 29428643.64,
+   "adjustment": -30289072.0
+  },
+  "2346113000009674296": {
+   "name": "Borosil Limited (Phase 3)",
+   "zb_total": 14075356,
+   "audited": 0.0,
+   "adjustment": -14075356.0
+  },
+  "2346113000000713389": {
+   "name": "Desai Brothers Ltd.",
+   "zb_total": 2144972.52,
+   "audited": 1919972.52,
+   "adjustment": -225000.0
+  },
+  "2346113000000188003": {
+   "name": "Executive Engineer ( Electrical ) CCED,CPWD",
+   "zb_total": 146168,
+   "audited": 146167.28,
+   "adjustment": -0.72
+  },
+  "2346113000015082229": {
+   "name": "Inox Air Products Limited (Phase 2 Project)",
+   "zb_total": 47774257,
+   "audited": 23480896.0,
+   "adjustment": -24293361.0
+  },
+  "2346113000014699040": {
+   "name": "Kamdhenu Limited",
+   "zb_total": 9328792,
+   "audited": 0.0,
+   "adjustment": -9328792.0
+  },
+  "2346113000014906069": {
+   "name": "KOTHARI MEDICAL AND RESERCH INSTITUTE",
+   "zb_total": 969530,
+   "audited": 0.0,
+   "adjustment": -969530.0
+  },
+  "2346113000006164115": {
+   "name": "LE-187 QUALITY GUMS",
+   "zb_total": 778473.43,
+   "audited": 572573.43,
+   "adjustment": -205900.0
+  },
+  "2346113000000198551": {
+   "name": "LE0155 BOROSIL LIMITED_ NEW",
+   "zb_total": 42441,
+   "audited": 0.0,
+   "adjustment": -42441.0
+  },
+  "2346113000000198567": {
+   "name": "LE0156 RAHUL INTERNATIONAL PRIVATE LIMITED",
+   "zb_total": 72869,
+   "audited": 0.0,
+   "adjustment": -72869.0
+  },
+  "2346113000000190067": {
+   "name": "LE0175 RAHUL INTERNATIONAL PRIVATE LIMITED 2nd",
+   "zb_total": 481619,
+   "audited": 11250.0,
+   "adjustment": -470369.0
+  },
+  "2346113000000190099": {
+   "name": "LE0179 Rockwood Hotels & Resorts Extension",
+   "zb_total": 40000,
+   "audited": 0.0,
+   "adjustment": -40000.0
+  },
+  "2346113000000191499": {
+   "name": "LM0088 Goyal Fashions Pvt Ltd",
+   "zb_total": 390712.28,
+   "audited": 63254.28,
+   "adjustment": -327458.0
+  },
+  "2346113000000191563": {
+   "name": "LM0093 Fruitful Buildcon Pvt Ltd",
+   "zb_total": 112687,
+   "audited": 83633.08,
+   "adjustment": -29053.92
+  },
+  "2346113000013856401": {
+   "name": "MANGLAM SPA RESORT PRIVATE LIMITED",
+   "zb_total": 6495900,
+   "audited": 0.0,
+   "adjustment": -6495900.0
+  },
+  "2346113000013404363": {
+   "name": "MEC BEARINGS PVT LTD",
+   "zb_total": 4919490.5,
+   "audited": 3090490.5,
+   "adjustment": -1829000.0
+  },
+  "2346113000000193391": {
+   "name": "R052 Sitaram Bhadu",
+   "zb_total": 2100,
+   "audited": 0.0,
+   "adjustment": -2100.0
+  },
+  "2346113000003703137": {
+   "name": "R062 Himat Nath",
+   "zb_total": 499,
+   "audited": 0.0,
+   "adjustment": -499.0
+  },
+  "2346113000003707493": {
+   "name": "R064 Pema Ram",
+   "zb_total": 500,
+   "audited": 0.0,
+   "adjustment": -500.0
+  },
+  "2346113000003300355": {
+   "name": "R065 MADHO  SINGH SOLANKI",
+   "zb_total": 499,
+   "audited": 0.0,
+   "adjustment": -499.0
+  },
+  "2346113000003300371": {
+   "name": "R066 KESAR DEVI",
+   "zb_total": 500,
+   "audited": 0.0,
+   "adjustment": -500.0
+  },
+  "2346113000003300419": {
+   "name": "R069 MANOHAR SINGH RATHORE",
+   "zb_total": 500,
+   "audited": 0.0,
+   "adjustment": -500.0
+  },
+  "2346113000023197002": {
+   "name": "Raksha Bars Private Limited",
+   "zb_total": 9437098,
+   "audited": 0.0,
+   "adjustment": -9437098.0
+  },
+  "2346113000000437021": {
+   "name": "Ratan Engineering Company Pvt. Ltd. Unit 1",
+   "zb_total": 200054,
+   "audited": 42713.89,
+   "adjustment": -157340.11
+  },
+  "2346113000005213847": {
+   "name": "Ratan Engineering Company Pvt. Ltd.Unit 2",
+   "zb_total": 550325.87,
+   "audited": 0.0,
+   "adjustment": -550325.87
+  },
+  "2346113000000193725": {
+   "name": "Rays Rooftop Client",
+   "zb_total": 125500,
+   "audited": 0.0,
+   "adjustment": -125500.0
+  },
+  "2346113000003709671": {
+   "name": "RSU01 Prabha",
+   "zb_total": 2100,
+   "audited": 0.0,
+   "adjustment": -2100.0
+  },
+  "2346113000013945933": {
+   "name": "SAVILLE HOSPITAL AND RESEARCH CENTRE PVT LTD",
+   "zb_total": 10755200,
+   "audited": 5967600.0,
+   "adjustment": -4787600.0
+  },
+  "2346113000005749455": {
+   "name": "SHREE SANWARIYA METTALLICS",
+   "zb_total": 2207,
+   "audited": 0.0,
+   "adjustment": -2207.0
+  },
+  "2346113000013404251": {
+   "name": "UDYOG MANDIR",
+   "zb_total": 4645150,
+   "audited": 0.0,
+   "adjustment": -4645150.0
+  },
+  "2346113000006675021": {
+   "name": "UTTAM STRIPS LIMITED",
+   "zb_total": 61617506,
+   "audited": 24851864.0,
+   "adjustment": -36765642.0
+  },
+  "2346113000008468121": {
+   "name": "VIBRANT POLYMERS LLP",
+   "zb_total": 3238492,
+   "audited": 2292132.0,
+   "adjustment": -946360.0
+  },
+  "2346113000007844117": {
+   "name": "WONDER CEMENT LIMITED",
+   "zb_total": 48291860.1,
+   "audited": 32143560.1,
+   "adjustment": -16148300.0
+  },
+  "2346113000015402373": {
+   "name": "Wonder Cement Limited ( Phase 2)",
+   "zb_total": 221002700,
+   "audited": 120817868.0,
+   "adjustment": -100184832.0
+  }
+ }
+}

@@ -1,0 +1,648 @@
+{
+ "company": "Rays Power Experts Limited",
+ "basis": "Audited standalone FS, FY 2025-26 (signed 8 Sep 2026, R. Mohnot & Co. LLP)",
+ "unit": "INR",
+ "fy": "2025-26",
+ "as_at": "2026-03-31",
+ "bs": {
+  "share_capital": {
+   "value": 53855000,
+   "ref": "BS!F12",
+   "label": "Share capital",
+   "fy25": 50965000,
+   "fy25_ref": "BS!H12"
+  },
+  "reserves_surplus": {
+   "value": 1453685257,
+   "ref": "BS!F13",
+   "label": "Reserves and surplus",
+   "fy25": 699525670,
+   "fy25_ref": "BS!H13"
+  },
+  "equity_total": {
+   "value": 1507540257,
+   "ref": "BS!F15",
+   "label": "Total shareholders' funds",
+   "fy25": 750490670,
+   "fy25_ref": "BS!H15"
+  },
+  "lt_borrowings": {
+   "value": 12946187,
+   "ref": "BS!F20",
+   "label": "Long-term borrowings",
+   "fy25": 16717546,
+   "fy25_ref": "BS!H20"
+  },
+  "dtl": {
+   "value": 0,
+   "ref": "BS!F21",
+   "label": "Deferred tax liabilities (net)",
+   "fy25": 8074848,
+   "fy25_ref": "BS!H21"
+  },
+  "lt_provisions": {
+   "value": 22294694,
+   "ref": "BS!F23",
+   "label": "Long-term provisions",
+   "fy25": 15482772,
+   "fy25_ref": "BS!H23"
+  },
+  "noncurrent_liabilities_total": {
+   "value": 35240881,
+   "ref": "BS!F24",
+   "label": "Total non-current liabilities",
+   "fy25": 40275166,
+   "fy25_ref": "BS!H24"
+  },
+  "st_borrowings": {
+   "value": 289018903,
+   "ref": "BS!F26",
+   "label": "Short-term borrowings",
+   "fy25": 48355936,
+   "fy25_ref": "BS!H26"
+  },
+  "tp_msme": {
+   "value": 678716,
+   "ref": "BS!F28",
+   "label": "Trade payables - MSME",
+   "fy25": 26756802,
+   "fy25_ref": "BS!H28"
+  },
+  "tp_others": {
+   "value": 77314808,
+   "ref": "BS!F29",
+   "label": "Trade payables - others",
+   "fy25": 4867337,
+   "fy25_ref": "BS!H29"
+  },
+  "other_current_liabilities": {
+   "value": 406652379,
+   "ref": "BS!F30",
+   "label": "Other current liabilities",
+   "fy25": 58983670,
+   "fy25_ref": "BS!H30"
+  },
+  "st_provisions": {
+   "value": 65949085,
+   "ref": "BS!F31",
+   "label": "Short-term provisions",
+   "fy25": 48607386,
+   "fy25_ref": "BS!H31"
+  },
+  "current_liabilities_total": {
+   "value": 839613891,
+   "ref": "BS!F32",
+   "label": "Total current liabilities",
+   "fy25": 187571131,
+   "fy25_ref": "BS!H32"
+  },
+  "total_equity_liabilities": {
+   "value": 2382395029,
+   "ref": "BS!F34",
+   "label": "TOTAL equity and liabilities",
+   "fy25": 978336967,
+   "fy25_ref": "BS!H34"
+  },
+  "ppe": {
+   "value": 356639164,
+   "ref": "BS!F39",
+   "label": "Property, plant and equipment",
+   "fy25": 189855719,
+   "fy25_ref": "BS!H39"
+  },
+  "intangibles": {
+   "value": 26826281,
+   "ref": "BS!F40",
+   "label": "Intangible assets",
+   "fy25": 7688649,
+   "fy25_ref": "BS!H40"
+  },
+  "cwip": {
+   "value": 154285530,
+   "ref": "BS!F41",
+   "label": "Capital work-in-progress",
+   "fy25": 23742382,
+   "fy25_ref": "BS!H41"
+  },
+  "iaud": {
+   "value": 254822808,
+   "ref": "BS!F42",
+   "label": "Intangible assets under development",
+   "fy25": 41874183,
+   "fy25_ref": "BS!H42"
+  },
+  "nc_investments": {
+   "value": 450000,
+   "ref": "BS!F43",
+   "label": "Non-current investments",
+   "fy25": 300000,
+   "fy25_ref": "BS!H43"
+  },
+  "dta": {
+   "value": 4684338,
+   "ref": "BS!F44",
+   "label": "Deferred tax assets (net)",
+   "fy25": 0,
+   "fy25_ref": "BS!H44"
+  },
+  "other_nc_assets": {
+   "value": 79920319,
+   "ref": "BS!F46",
+   "label": "Other non-current assets",
+   "fy25": 9716673,
+   "fy25_ref": "BS!H46"
+  },
+  "noncurrent_assets_total": {
+   "value": 877628440,
+   "ref": "BS!F47",
+   "label": "Total non-current assets",
+   "fy25": 273177606,
+   "fy25_ref": "BS!H47"
+  },
+  "inventories": {
+   "value": 287377971,
+   "ref": "BS!F50",
+   "label": "Inventories",
+   "fy25": 42664577,
+   "fy25_ref": "BS!H50"
+  },
+  "trade_receivables": {
+   "value": 554432472,
+   "ref": "BS!F51",
+   "label": "Trade receivables",
+   "fy25": 409808137,
+   "fy25_ref": "BS!H51"
+  },
+  "cash": {
+   "value": 14505124,
+   "ref": "BS!F52",
+   "label": "Cash and cash equivalents",
+   "fy25": 8073988,
+   "fy25_ref": "BS!H52"
+  },
+  "st_loans_advances": {
+   "value": 358817697,
+   "ref": "BS!F53",
+   "label": "Short-term loans and advances",
+   "fy25": 56167153,
+   "fy25_ref": "BS!H53"
+  },
+  "other_current_assets": {
+   "value": 289633325,
+   "ref": "BS!F54",
+   "label": "Other current assets",
+   "fy25": 188445506,
+   "fy25_ref": "BS!H54"
+  },
+  "current_assets_total": {
+   "value": 1504766589,
+   "ref": "BS!F55",
+   "label": "Total current assets",
+   "fy25": 705159361,
+   "fy25_ref": "BS!H55"
+  },
+  "total_assets": {
+   "value": 2382395029,
+   "ref": "BS!F57",
+   "label": "TOTAL assets",
+   "fy25": 978336967,
+   "fy25_ref": "BS!H57"
+  }
+ },
+ "pl": {
+  "revenue": {
+   "value": 4035435704,
+   "ref": "P&L!E13",
+   "label": "Revenue from operations",
+   "fy25": 1335098318,
+   "fy25_ref": "P&L!G13"
+  },
+  "other_income": {
+   "value": 16171539,
+   "ref": "P&L!E14",
+   "label": "Other income",
+   "fy25": 10438504,
+   "fy25_ref": "P&L!G14"
+  },
+  "total_income": {
+   "value": 4051607243,
+   "ref": "P&L!E15",
+   "label": "Total income",
+   "fy25": 1345536822,
+   "fy25_ref": "P&L!G15"
+  },
+  "purchases": {
+   "value": 3009723976,
+   "ref": "P&L!E19",
+   "label": "Purchase of stock-in-trade",
+   "fy25": 683163324,
+   "fy25_ref": "P&L!G19"
+  },
+  "inventory_change": {
+   "value": -244713394,
+   "ref": "P&L!E20",
+   "label": "Changes in inventories",
+   "fy25": -12786912,
+   "fy25_ref": "P&L!G20"
+  },
+  "operating_expenses": {
+   "value": 287937729,
+   "ref": "P&L!E21",
+   "label": "Operating expenses",
+   "fy25": 95347355,
+   "fy25_ref": "P&L!G21"
+  },
+  "employee": {
+   "value": 98986846,
+   "ref": "P&L!E22",
+   "label": "Employee benefits expense",
+   "fy25": 67980454,
+   "fy25_ref": "P&L!G22"
+  },
+  "finance": {
+   "value": 21610499,
+   "ref": "P&L!E23",
+   "label": "Finance cost",
+   "fy25": 6355359,
+   "fy25_ref": "P&L!G23"
+  },
+  "dep_amort": {
+   "value": 91738859,
+   "ref": "P&L!E24",
+   "label": "Depreciation and amortisation",
+   "fy25": 20582429,
+   "fy25_ref": "P&L!G24"
+  },
+  "other_expenses": {
+   "value": 139177330,
+   "ref": "P&L!E25",
+   "label": "Other expenses",
+   "fy25": 123218368,
+   "fy25_ref": "P&L!G25"
+  },
+  "total_expenses": {
+   "value": 3404461845,
+   "ref": "P&L!E26",
+   "label": "Total expenses",
+   "fy25": 983860377,
+   "fy25_ref": "P&L!G26"
+  },
+  "pbt": {
+   "value": 647145398,
+   "ref": "P&L!E28",
+   "label": "Profit before tax",
+   "fy25": 361676445,
+   "fy25_ref": "P&L!G28"
+  },
+  "current_tax": {
+   "value": -186444095,
+   "ref": "P&L!E30",
+   "label": "Current tax (shown negative)",
+   "fy25": -101212749,
+   "fy25_ref": "P&L!G30"
+  },
+  "deferred_tax": {
+   "value": 12759186,
+   "ref": "P&L!E31",
+   "label": "Deferred tax",
+   "fy25": 4850462,
+   "fy25_ref": "P&L!G31"
+  },
+  "earlier_year_tax": {
+   "value": 2352488,
+   "ref": "P&L!E32",
+   "label": "Income tax of earlier year",
+   "fy25": -6497691,
+   "fy25_ref": "P&L!G32"
+  },
+  "pat": {
+   "value": 475812977,
+   "ref": "P&L!E33",
+   "label": "Profit after tax",
+   "fy25": 258816467,
+   "fy25_ref": "P&L!G33"
+  }
+ },
+ "notes": {
+  "securities_premium": {
+   "value": 464065410,
+   "ref": "Note 4-19!G17",
+   "label": "Securities premium (closing)"
+  },
+  "pl_surplus": {
+   "value": 989619847,
+   "ref": "Note 4-19!G24",
+   "label": "Surplus in P&L (closing)"
+  },
+  "car_loan_total": {
+   "value": 16717546,
+   "ref": "Note 4-19!G31",
+   "label": "Car loans (total)"
+  },
+  "car_loan_current_maturity": {
+   "value": -3771359,
+   "ref": "Note 4-19!G32",
+   "label": "Less: current maturities"
+  },
+  "lt_borrowings_net": {
+   "value": 12946187,
+   "ref": "Note 4-19!G36",
+   "label": "Long-term borrowings total"
+  },
+  "ocl_advance_customers": {
+   "value": 317954953,
+   "ref": "Note 4-19!G105",
+   "label": "Advance from customers"
+  },
+  "ocl_statutory": {
+   "value": 7084693,
+   "ref": "Note 4-19!G106",
+   "label": "Statutory liabilities"
+  },
+  "ocl_retention": {
+   "value": 62936945,
+   "ref": "Note 4-19!G107",
+   "label": "Retention money"
+  },
+  "ocl_outstanding_expenses": {
+   "value": 3066465,
+   "ref": "Note 4-19!G108",
+   "label": "Outstanding expenses"
+  },
+  "ocl_security_deposits": {
+   "value": 1271009,
+   "ref": "Note 4-19!G109",
+   "label": "Security deposits taken"
+  },
+  "ocl_unearned": {
+   "value": 14338314,
+   "ref": "Note 4-19!G110",
+   "label": "Unearned revenue"
+  },
+  "st_prov_income_tax_net": {
+   "value": 65949085,
+   "ref": "Note 4-19!G115",
+   "label": "Provision for income tax (net)"
+  },
+  "nca_bank_deposits_gt12m": {
+   "value": 79886932,
+   "ref": "Note 4-19!G150",
+   "label": "Bank deposits > 12 months"
+  },
+  "nca_security_deposits": {
+   "value": 33387,
+   "ref": "Note 4-19!G151",
+   "label": "Security deposits (non-current)"
+  },
+  "sla_advance_suppliers_others": {
+   "value": 336392526,
+   "ref": "Note 4-19!G199",
+   "label": "Advance to suppliers and others"
+  },
+  "sla_prepaid": {
+   "value": 1547807,
+   "ref": "Note 4-19!G200",
+   "label": "Prepaid expenses"
+  },
+  "sla_revenue_authorities": {
+   "value": 20877364,
+   "ref": "Note 4-19!G201",
+   "label": "Balances with revenue authorities"
+  },
+  "oca_bank_deposits_lt12m": {
+   "value": 281799964,
+   "ref": "Note 4-19!G206",
+   "label": "Bank deposits < 12 months"
+  },
+  "oca_security_deposits": {
+   "value": 1000000,
+   "ref": "Note 4-19!G207",
+   "label": "Security deposits (current)"
+  },
+  "oca_unbilled": {
+   "value": 4390483,
+   "ref": "Note 4-19!G208",
+   "label": "Unbilled revenue"
+  },
+  "oca_other_receivables": {
+   "value": 2442878,
+   "ref": "Note 4-19!G209",
+   "label": "Other receivables"
+  },
+  "rev_epc": {
+   "value": 3975450530,
+   "ref": "Note 20-27!E13",
+   "label": "Sales - solar power project (EPC)"
+  },
+  "rev_rooftop": {
+   "value": 3960343,
+   "ref": "Note 20-27!E14",
+   "label": "Sales - rooftop"
+  },
+  "rev_generation": {
+   "value": 6003554,
+   "ref": "Note 20-27!E15",
+   "label": "Sales - power generation"
+  },
+  "rev_om": {
+   "value": 38143493,
+   "ref": "Note 20-27!E19",
+   "label": "O&M services"
+  },
+  "rev_consultancy": {
+   "value": 1428508,
+   "ref": "Note 20-27!E20",
+   "label": "Consultancy income"
+  },
+  "rev_rental": {
+   "value": 10080276,
+   "ref": "Note 20-27!E24",
+   "label": "Rental income"
+  },
+  "rev_scrap": {
+   "value": 17000,
+   "ref": "Note 20-27!E25",
+   "label": "Scrap sale"
+  },
+  "rev_other_services": {
+   "value": 352000,
+   "ref": "Note 20-27!E26",
+   "label": "Other services"
+  },
+  "oi_interest_fdr": {
+   "value": 15872257,
+   "ref": "Note 20-27!E33",
+   "label": "Interest on FDR"
+  },
+  "oi_fx_gain": {
+   "value": 299282,
+   "ref": "Note 20-27!E35",
+   "label": "Gain on exchange rate fluctuation"
+  },
+  "opening_stock": {
+   "value": 42664577,
+   "ref": "Note 20-27!E46",
+   "label": "Opening stock"
+  },
+  "closing_stock": {
+   "value": 287377971,
+   "ref": "Note 20-27!E47",
+   "label": "Closing stock"
+  },
+  "opex_project": {
+   "value": 251742969,
+   "ref": "Note 20-27!E52",
+   "label": "Solar power project expenses"
+  },
+  "opex_om": {
+   "value": 18071264,
+   "ref": "Note 20-27!E53",
+   "label": "O&M expenses"
+  },
+  "opex_lease": {
+   "value": 8132430,
+   "ref": "Note 20-27!E54",
+   "label": "Lease expenses"
+  },
+  "opex_ppa": {
+   "value": 9991066,
+   "ref": "Note 20-27!E55",
+   "label": "Power purchase under PPA & PPC"
+  },
+  "emp_salary": {
+   "value": 82832403,
+   "ref": "Note 20-27!E60",
+   "label": "Salary & wages"
+  },
+  "emp_bonus": {
+   "value": 2665087,
+   "ref": "Note 20-27!E61",
+   "label": "Bonus & incentive"
+  },
+  "emp_pf": {
+   "value": 2610740,
+   "ref": "Note 20-27!E62",
+   "label": "Contribution to PF & other fund"
+  },
+  "emp_welfare": {
+   "value": 3953884,
+   "ref": "Note 20-27!E63",
+   "label": "Staff welfare"
+  },
+  "emp_gratuity": {
+   "value": 3370764,
+   "ref": "Note 20-27!E64",
+   "label": "Gratuity"
+  },
+  "emp_leave": {
+   "value": 3553968,
+   "ref": "Note 20-27!E65",
+   "label": "Leave encashment"
+  },
+  "fin_bank_charges": {
+   "value": 13604785,
+   "ref": "Note 20-27!E70",
+   "label": "Bank charges"
+  },
+  "fin_interest_od": {
+   "value": 6370213,
+   "ref": "Note 20-27!E71",
+   "label": "Interest on bank OD"
+  },
+  "fin_interest_car": {
+   "value": 1635501,
+   "ref": "Note 20-27!E72",
+   "label": "Interest on car loan"
+  },
+  "oe_auditor": {
+   "value": 1400000,
+   "ref": "Note 20-27!E79",
+   "label": "Auditor's remuneration"
+  },
+  "oe_rates_taxes": {
+   "value": 1783740,
+   "ref": "Note 20-27!E80",
+   "label": "Rates & taxes"
+  },
+  "oe_legal": {
+   "value": 27266336,
+   "ref": "Note 20-27!E81",
+   "label": "Legal & professional"
+  },
+  "oe_directors": {
+   "value": 10605483,
+   "ref": "Note 20-27!E82",
+   "label": "Directors' remuneration"
+  },
+  "oe_brokerage": {
+   "value": 40705786,
+   "ref": "Note 20-27!E83",
+   "label": "Brokerage & commission"
+  },
+  "oe_rent": {
+   "value": 1920000,
+   "ref": "Note 20-27!E84",
+   "label": "Rent"
+  },
+  "oe_insurance": {
+   "value": 2641136,
+   "ref": "Note 20-27!E85",
+   "label": "Insurance"
+  },
+  "oe_software": {
+   "value": 1675152,
+   "ref": "Note 20-27!E86",
+   "label": "Software"
+  },
+  "oe_electricity_water": {
+   "value": 516160,
+   "ref": "Note 20-27!E87",
+   "label": "Electricity & water"
+  },
+  "oe_telephone_internet": {
+   "value": 883838,
+   "ref": "Note 20-27!E88",
+   "label": "Telephone & internet"
+  },
+  "oe_business_promotion": {
+   "value": 6820686,
+   "ref": "Note 20-27!E89",
+   "label": "Business promotion"
+  },
+  "oe_repairs": {
+   "value": 523641,
+   "ref": "Note 20-27!E90",
+   "label": "Repairs and maintenance"
+  },
+  "oe_travel": {
+   "value": 11569275,
+   "ref": "Note 20-27!E91",
+   "label": "Travelling & conveyance"
+  },
+  "oe_csr": {
+   "value": 1405000,
+   "ref": "Note 20-27!E92",
+   "label": "CSR"
+  },
+  "oe_bad_debts": {
+   "value": 26497949,
+   "ref": "Note 20-27!E94",
+   "label": "Bad debts"
+  },
+  "oe_balances_written_off": {
+   "value": 2538901,
+   "ref": "Note 20-27!E95",
+   "label": "Balances written off"
+  },
+  "oe_misc": {
+   "value": 424247,
+   "ref": "Note 20-27!E96",
+   "label": "Miscellaneous"
+  },
+  "debtors_ageing_total": {
+   "value": 554432471,
+   "ref": "Debtors Ageing!D129",
+   "label": "Debtors ageing total"
+  }
+ }
+}
