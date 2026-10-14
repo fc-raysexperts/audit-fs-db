@@ -1,4 +1,4 @@
-# RPEL FS Dashboard
+# audit-fs-db — RPEL audited-FS live dashboard
 
 Live financial statements (Balance Sheet, P&L) for **Rays Power Experts Ltd.**, rebuilt from the Zoho Books
 **Trial Balance** the same way the auditors do, and reconciled line by line against the audited FY 2025-26 statements.
