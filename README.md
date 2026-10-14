@@ -11,7 +11,7 @@ Live financial statements (Balance Sheet, P&L) for **Rays Power Experts Ltd.**, 
 |---|---|---|
 | 1 | Map Zoho accounts to FS lines + reconcile with audited FY26 | **done** |
 | 2 | Party-level layer (trade payables incl. MSME, supplier advances, retention, outstanding expenses) | **done** - all 47 lines tie within Rs 5 |
-| 3 | Zoho API credentials + live fetch (TB, AR/AP aging) | not started |
+| 3 | Zoho API credentials + live fetch (TB, AR/AP aging, ledger, journals) | in progress - client + check scripts ready, waiting for the keys |
 | 4 | Redis daily cache + start-of-day pre-warm | not started |
 | 5 | Front end, localhost test, git, Vercel | not started |
 
@@ -55,6 +55,17 @@ Zoho ledger of the 11 party accounts ─► lib/gl.mjs ─► lib/vendors.mjs (+
 * **Zoho quirk handled**: when one journal posts several contacts to the same account, the ledger report merges them into one row and loses the
   per-contact amounts. `mergedTransactionIds()` lists the journals to fetch with `get_journal`; `expandMergedRows()` swaps in their own lines.
   A merged row that cannot be read is kept (so the account still ties) under "untagged" with an alert.
+
+## Zoho credentials (read-only Self Client)
+
+1. api-console.zoho.in -> Self Client -> copy Client ID + Client Secret into `.env` (copy `.env.example` first).
+2. Generate Code with scopes `ZohoBooks.reports.READ,ZohoBooks.contacts.READ,ZohoBooks.accountants.READ,ZohoBooks.settings.READ` (10 minutes).
+3. `npm run zoho:token` (paste the code) -> saves ZOHO_REFRESH_TOKEN into `.env`.
+4. `npm run zoho:check` -> PASS/FAIL per endpoint, plus a comparison of the live FY26 Trial Balance with the saved snapshot.
+
+`lib/zoho.mjs` caches the 1-hour access token (Zoho allows only 10 new tokens per 10 minutes per refresh token), backs off on HTTP 429
+and never prints secrets. The Reports endpoints are not in Zoho's public docs: `zoho:check` tries `/reports/trialbalance` first.
+Zoho's API quota (100 calls/min, plan-based daily limit) is shared by every app using the organization.
 
 ## Data safety
 
