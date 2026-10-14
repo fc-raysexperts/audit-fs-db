@@ -8,6 +8,7 @@ import { normalizeTB, checkTB } from '../lib/tb.mjs';
 import { normalizeARAging } from '../lib/receivables.mjs';
 import { computeFS } from '../lib/fsEngine.mjs';
 import { reconcile } from '../lib/reconcile.mjs';
+import { loadParty, havePartyFixtures } from '../scripts/fixtures.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const have = fs.existsSync(path.join(root, 'fixtures/tb_fy26_nonzero.raw.json')) && fs.existsSync(path.join(root, 'fixtures/ar_aging_2026-03-31.raw.json'));
@@ -37,4 +38,38 @@ test('a missing account mapping is detected, not silently dropped', { skip: !hav
   const out = computeFS({ tb, mapping, inputs: J('config/inputs.fy26.json'), aging: normalizeARAging(J('fixtures/ar_aging_2026-03-31.raw.json')), overrides: J('config/overrides.fy26.json') });
   assert.ok(out.alerts.some((a) => a.code === 'UNMAPPED_ACCOUNT'));
   assert.ok(out.checks.some((c) => !c.ok));
+});
+
+const haveParty = have && havePartyFixtures();
+const buildAll = (party) => {
+  const tb = normalizeTB(J('fixtures/tb_fy26_nonzero.raw.json'));
+  const out = computeFS({ tb, mapping: J('config/mapping.json'), inputs: J('config/inputs.fy26.json'), aging: normalizeARAging(J('fixtures/ar_aging_2026-03-31.raw.json')), overrides: J('config/overrides.fy26.json'), party });
+  return { out, rec: reconcile(out, J('config/audited.fy26.json')) };
+};
+
+test('supplier lines (payables MSME/others, advances, retention, outstanding) tie to the audited FS', { skip: !haveParty }, () => {
+  const { out, rec } = buildAll(loadParty());
+  const v = Object.fromEntries(rec.rows.map((r) => [r.key, r]));
+  for (const k of ['tp_msme', 'tp_others', 'sla_advance_suppliers_others', 'ocl_retention', 'ocl_outstanding_expenses', 'party_net']) {
+    assert.equal(v[k].status, 'OK', `${k} diff ${v[k].diff}`);
+  }
+  assert.equal(rec.summary.phase2, 0);
+  assert.equal(rec.summary.check, 0);
+  assert.ok(out.checks.every((c) => c.ok), JSON.stringify(out.checks.filter((c) => !c.ok)));
+  assert.deepEqual(out.alerts.filter((a) => a.level === 'error' || a.level === 'warn'), []);
+  assert.ok(Math.abs(v.tp_msme.value - 678716) <= 1);
+  assert.ok(Math.abs(v.sla_advance_suppliers_others.value - 336392526) <= 1);
+});
+
+test('without the FY26 judgments the totals still add up, but retention / outstanding / MSME no longer match (and it says so)', { skip: !haveParty }, () => {
+  const { out, rec } = buildAll(loadParty({ withOverrides: false }));
+  assert.ok(out.checks.every((c) => c.ok)); // arithmetic still conserved
+  assert.ok(out.alerts.length === 0 || out.alerts.every((a) => a.level !== 'error'));
+  assert.equal(rec.rows.find((r) => r.key === 'ocl_retention').status, 'CHECK');
+});
+
+test('without ledger lines the supplier lines fall back to the Trial Balance and are flagged PHASE2', { skip: !have }, () => {
+  const { rec } = buildAll(undefined);
+  assert.equal(rec.rows.find((r) => r.key === 'ocl_retention').status, 'PHASE2');
+  assert.equal(rec.rows.find((r) => r.key === 'party_net').status, 'OK');
 });

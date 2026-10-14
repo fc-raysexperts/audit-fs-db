@@ -9,13 +9,13 @@ Live financial statements (Balance Sheet, P&L) for **Rays Power Experts Ltd.**, 
 
 | Step | What | State |
 |---|---|---|
-| 1 | Map Zoho accounts to FS lines + reconcile with audited FY26 | **done** - 42 lines tie within Rs 5 |
-| 2 | Party-level layer (trade payables incl. MSME, supplier advances, retention, outstanding expenses) | next |
+| 1 | Map Zoho accounts to FS lines + reconcile with audited FY26 | **done** |
+| 2 | Party-level layer (trade payables incl. MSME, supplier advances, retention, outstanding expenses) | **done** - all 47 lines tie within Rs 5 |
 | 3 | Zoho API credentials + live fetch (TB, AR/AP aging) | not started |
 | 4 | Redis daily cache + start-of-day pre-warm | not started |
 | 5 | Front end, localhost test, git, Vercel | not started |
 
-## Run the Step-1 check
+## Run the check
 
 ```
 npm run reconcile      # prints every line: from Zoho TB | audited | difference | OK / CHECK / PHASE2
@@ -27,7 +27,9 @@ Node 20+, no dependencies.
 
 ```
 Zoho TB report ─► lib/tb.mjs ─► accounts ─► lib/mapping.mjs (config/mapping.json) ─► buckets ─► lib/fsEngine.mjs ─► FS lines
-Zoho AR aging  ─► lib/receivables.mjs (+ config/overrides.fy26.json) ──────────────────────────┘
+Zoho AR aging  ─► lib/receivables.mjs (+ config/overrides.fy26.json) ──────────────────────────┤
+Zoho ledger of the 11 party accounts ─► lib/gl.mjs ─► lib/vendors.mjs (+ config/party_rules.json,      │
+   (+ get_journal for merged rows, Imprest Staff vendor group)        config/party_overrides.fy26.json) ┘
                                                                             lib/reconcile.mjs compares with config/audited.fy26.json
 ```
 
@@ -41,8 +43,18 @@ Zoho AR aging  ─► lib/receivables.mjs (+ config/overrides.fy26.json) ──�
   security deposit, the fines reclass). Re-enter these each year-end from the auditors' schedules.
 * **Customer hand-netting** (`config/overrides.fy26.json`): the auditors netted 34 customers' advances against their invoices by hand.
   The list is valid only for the 31-Mar-2026 report and is skipped for any other date.
-* **Layer 2** (not built): trade payables, advances to suppliers, retention, outstanding expenses need party-level data. Until then the
-  engine shows the Trial Balance's own figure, flagged `PHASE2`, and checks that the *net* of the whole group ties (it does, within Rs 1).
+* **Supplier / party layer** (`lib/gl.mjs`, `lib/vendors.mjs`): the auditors show every party NET, so the ledger lines of the 11 party
+  accounts are read per contact. Net credit = trade payable (MSME list -> MSME), net debit = advance to suppliers & others (loans and staff
+  advances included). Staff (credit balance) go to Outstanding expenses (Imprest). Three kinds of rule, kept apart:
+  1. standing rules - `config/party_rules.json` (who is staff, who is MSME);
+  2. the auditors' FY26 judgments - `config/party_overrides.fy26.json` (Cyrun & Gurukripa -> retention, R. Mohnot -> outstanding, three
+     people kept as payables not staff, two insurers shown gross). Valid for 31-Mar-2026 only, skipped (with an alert) for any other date;
+  3. arithmetic - nothing year specific.
+  Safety nets: every party account's ledger total must equal the Trial Balance; the placed amounts must equal the ledger net; the party group
+  must equal the Trial Balance's own net; stale / missing override entries warn.
+* **Zoho quirk handled**: when one journal posts several contacts to the same account, the ledger report merges them into one row and loses the
+  per-contact amounts. `mergedTransactionIds()` lists the journals to fetch with `get_journal`; `expandMergedRows()` swaps in their own lines.
+  A merged row that cannot be read is kept (so the account still ties) under "untagged" with an alert.
 
 ## Data safety
 

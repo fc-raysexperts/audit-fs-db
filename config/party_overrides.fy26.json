@@ -1,0 +1,14 @@
+{
+  "as_of": "2026-03-31",
+  "note": "The auditors' judgments about individual parties at 31-Mar-2026. They are applied ONLY when the report date is exactly this date; for any other date the engine uses the standing rules alone and says so. zb_net is the party's Zoho net balance when this list was made (debit +, credit -); if it moves, a warning is raised.",
+  "entries": {
+    "2346113000000292947": { "name": "Cyrun-Infra Projects LLP", "zb_net": -15844067.54, "class": "retention", "ref": "BS Grouping row 68 (retention money)" },
+    "2346113000000298745": { "name": "Gurukripa Traders", "zb_net": -908062.00, "class": "retention", "ref": "BS Grouping row 69 (retention money)" },
+    "2346113000000319745": { "name": "R MOHNOT & CO LLP", "zb_net": -810000.00, "class": "outstanding", "ref": "Outstanding expenses: Audit Fees Payable, R. Mohnot & Co. LLP" },
+    "2346113000000306559": { "name": "Lalit Kumar Bora", "zb_net": -176195.30, "class": "trade_payable", "ref": "Shown as trade payable (others), not staff imprest, although he has a balance in the employee ledger" },
+    "2346113000025589526": { "name": "Pradeep Kumar", "zb_net": -8102.00, "class": "trade_payable", "ref": "Shown as trade payable (others), not staff imprest" },
+    "2346113000000317503": { "name": "Rajesh Sharma", "zb_net": -3500.00, "class": "trade_payable", "ref": "Shown as trade payable (others), not staff imprest" },
+    "2346113000000299421": { "name": "HDFC ERGO GENERAL INSURANCE COMPANY LIMITED", "zb_net": 9.28, "gross_up": 426892.16, "ref": "Shown both as an advance and as a payable (not netted)" },
+    "2346113000008460478": { "name": "ICICI Lombard General Insurance Co Ltd", "zb_net": 7300.60, "gross_up": 51514.14, "ref": "Shown both as an advance and as a payable (not netted)" }
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "note": "Standing rules for the supplier / party layer. They apply to every year (unlike party_overrides.fyXX.json, which is one year only).",
+  "staff": {
+    "vendor_group": "Imprest Staff",
+    "employee_ledger_account_ids": ["2346113000026786408"],
+    "meaning": "A party is staff (imprest) if it is in Zoho vendor group 'Imprest Staff' OR carries a balance in the 'Sundry Creditors- Employees' ledger (2-06-002). A staff credit balance is shown inside Outstanding expenses (Imprest Account); a staff debit balance is an advance."
+  },
+  "msme": {
+    "contact_ids": {
+      "2346113000002338005": "Bharat Prefab Solution",
+      "2346113000000294429": "Divya Associates (D-018)",
+      "2346113000000305119": "KG Solar Infratech (HR)"
+    },
+    "meaning": "Suppliers whose credit balance is shown as 'Trade payables - MSME'. Zoho does not hold the Udyam number for them (the field is empty), so the list is kept here. Source for FY26: auditors' Creditors Ageing sheet, column K = Yes and paid within the due date. Review this list every year."
+  }
+}

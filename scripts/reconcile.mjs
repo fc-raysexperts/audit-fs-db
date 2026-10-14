@@ -10,6 +10,7 @@ import { normalizeARAging } from '../lib/receivables.mjs';
 import { computeFS } from '../lib/fsEngine.mjs';
 import { reconcile } from '../lib/reconcile.mjs';
 import { inr } from '../lib/util.mjs';
+import { loadParty } from './fixtures.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const readJSON = (p) => JSON.parse(fs.readFileSync(path.join(root, p), 'utf8'));
@@ -21,13 +22,16 @@ const inputs = readJSON('config/inputs.fy26.json');
 const overrides = readJSON('config/overrides.fy26.json');
 const audited = readJSON('config/audited.fy26.json');
 
-const result = computeFS({ tb, mapping, inputs, aging, overrides });
+const party = loadParty();
+const result = computeFS({ tb, mapping, inputs, aging, overrides, party });
 result.alerts.push(...checkTB(tb));
+if (party) result.alerts.push(...party.gl.alerts);
+else console.log('NOTE: ledger snapshots (fixtures/gl, vendors_imprest_staff) not found - supplier lines fall back to the Trial Balance and are flagged PHASE2\n');
 const rec = reconcile(result, audited);
 
 const pad = (s, n) => String(s).padEnd(n).slice(0, n);
 const num = (x) => (x === null ? '-'.padStart(18) : inr(x, 0).padStart(18));
-const sections = [['pl', 'PROFIT & LOSS'], ['bs', 'BALANCE SHEET - lines that tie to the Trial Balance'], ['party', 'PARTY-LEVEL LINES (Layer 2, not built yet)']];
+const sections = [['pl', 'PROFIT & LOSS'], ['bs', 'BALANCE SHEET - lines that tie to the Trial Balance'], ['party', 'PARTY-LEVEL LINES (suppliers, advances, retention, outstanding expenses)']];
 console.log(`Trial Balance ${tb.meta.from} to ${tb.meta.to}  (${tb.meta.basis})   accounts read: ${tb.accounts.length}, with a balance: ${result.memo.mappedAccounts}`);
 for (const [sec, title] of sections) {
   console.log(`\n== ${title}`);
