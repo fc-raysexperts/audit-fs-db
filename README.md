@@ -64,7 +64,7 @@ Zoho ledger of the 11 party accounts ─► lib/gl.mjs ─► lib/vendors.mjs (+
 4. `npm run zoho:check` -> PASS/FAIL per endpoint, plus a comparison of the live FY26 Trial Balance with the saved snapshot.
 
 `lib/zoho.mjs` caches the 1-hour access token (Zoho allows only 10 new tokens per 10 minutes per refresh token), backs off on HTTP 429
-and never prints secrets. The Reports endpoints are not in Zoho's public docs: `zoho:check` tries `/reports/trialbalance` first.
+and never prints secrets. The Reports endpoints are not in Zoho's public docs. Confirmed live on 15-Oct-2026 with the read-only scope list above: `/reports/trialbalance` and `/reports/metadata` work (plus contacts, chartofaccounts, journals).
 Zoho's API quota (100 calls/min, plan-based daily limit) is shared by every app using the organization.
 
 ## Data safety
