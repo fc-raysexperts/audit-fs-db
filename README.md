@@ -11,8 +11,8 @@ Live financial statements (Balance Sheet, P&L) for **Rays Power Experts Ltd.**, 
 |---|---|---|
 | 1 | Map Zoho accounts to FS lines + reconcile with audited FY26 | **done** |
 | 2 | Party-level layer (trade payables incl. MSME, supplier advances, retention, outstanding expenses) | **done** - all 47 lines tie within Rs 5 |
-| 3 | Zoho API credentials + live fetch (TB, AR/AP aging, ledger, journals) | in progress - client + check scripts ready, waiting for the keys |
-| 4 | Redis daily cache + start-of-day pre-warm | not started |
+| 3 | Zoho API credentials + live fetch (TB, AR aging, ledger, journals, staff list) | built and tested on replayed data; **first live run pending** (`npm run live`) |
+| 4 | Redis daily cache (Upstash) | built and tested with a fake Redis; first real write pending; the morning pre-warm job comes with the web layer |
 | 5 | Front end, localhost test, git, Vercel | not started |
 
 ## Run the check
@@ -56,6 +56,25 @@ Zoho ledger of the 11 party accounts ─► lib/gl.mjs ─► lib/vendors.mjs (+
   per-contact amounts. `mergedTransactionIds()` lists the journals to fetch with `get_journal`; `expandMergedRows()` swaps in their own lines.
   A merged row that cannot be read is kept (so the account still ties) under "untagged" with an alert.
 
+## Live run and cache (`npm run live`)
+
+```
+npm run live                    # Redis self-test -> pull from Zoho -> build -> all checks -> compare with audited -> save to Redis -> read back
+npm run live -- --no-save       # same, without saving
+npm run live -- --from-cache    # show what Redis holds (no Zoho call)
+```
+* `lib/zohoData.mjs` - one function per Zoho report (TB, AR aging, ledger limited to the party accounts, journals, vendor group). Every answer is checked
+  (dates, account filter really applied, all pages present) so a wrong guess about an undocumented parameter stops the run instead of giving wrong numbers.
+* `lib/snapshot.mjs` - `buildSnapshot()` makes the whole plain-JSON snapshot (statements, receivables, suppliers, checks, alerts, audited comparison);
+  `refreshSnapshot()` adds a lock so two refreshes never run together.
+* `lib/cache.mjs` - Upstash over its REST address. **The database is shared with the MIS dashboard**: only GET/SET/DEL/TTL are possible and every key must
+  start with `audit-fs:`. Keys: `snapshot:<org>:<fy>:<India date>` (7 days), `latest:<org>:<fy>` (pointer to the newest good one), `ztoken:<org>`
+  (Zoho access token, shared between serverless runs), `journal:<org>:<id>` (12 h), `lock:<org>:refresh`. Large values are gzip-compressed and cut into
+  parts under 600 KB (the free plan limits one request to about 1 MB).
+* A cached journal that no longer agrees with the ledger (someone edited it in Zoho) is detected and read again automatically.
+* Typical cost of one refresh: 1 TB + 1 aging + 8 ledger pages + 1 staff list + one call per merged journal (38 on the first run, then served from Redis for 12 h).
+* Settings that are not secrets live in `config/settings.json` (start of the books, the known party accounts).
+
 ## Zoho credentials (read-only Self Client)
 
 1. api-console.zoho.in -> Self Client -> copy Client ID + Client Secret into `.env` (copy `.env.example` first).
@@ -64,7 +83,7 @@ Zoho ledger of the 11 party accounts ─► lib/gl.mjs ─► lib/vendors.mjs (+
 4. `npm run zoho:check` -> PASS/FAIL per endpoint, plus a comparison of the live FY26 Trial Balance with the saved snapshot.
 
 `lib/zoho.mjs` caches the 1-hour access token (Zoho allows only 10 new tokens per 10 minutes per refresh token), backs off on HTTP 429
-and never prints secrets. The Reports endpoints are not in Zoho's public docs. Confirmed live on 15-Oct-2026 with the read-only scope list above: `/reports/trialbalance` and `/reports/metadata` work (plus contacts, chartofaccounts, journals).
+and never prints secrets. The Reports endpoints are not in Zoho's public docs. Confirmed live on 15-Oct-2026 with the read-only scope list above: `/reports/trialbalance`, `/reports/metadata`, `/reports/generalledgerdetails`, `/reports/aragingsummary`, `/reports/apagingsummary` and the vendor-group filter (`/vendors?cf_vendor_group=...`) work (plus contacts, chartofaccounts, journals). Not yet confirmed live: the `rule` filter and the date parameter of the ledger / aging reports, and `/journals/{id}` - `npm run live` checks them.
 Zoho's API quota (100 calls/min, plan-based daily limit) is shared by every app using the organization.
 
 ## Data safety

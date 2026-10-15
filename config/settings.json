@@ -1,0 +1,21 @@
+{
+  "version": 1,
+  "note": "App-wide settings (not year specific).",
+  "books_start": "2025-03-01",
+  "books_start_meaning": "First day of the Zoho books (the organisation started in March 2025). The party-account ledger is always read from this day, so that every party's balance includes its opening entries.",
+  "ledger_page_size": 2000,
+  "party_account_ids": [
+    "2346113000000000471",
+    "2346113000000030011",
+    "2346113000000053827",
+    "2346113000004358223",
+    "2346113000004358227",
+    "2346113000004358231",
+    "2346113000026786146",
+    "2346113000026786401",
+    "2346113000026786408",
+    "2346113000026786417",
+    "2346113000026787305"
+  ],
+  "party_account_ids_meaning": "The 11 supplier / creditor / advance accounts known at FY26. The ledger is always asked for these PLUS any party account found in the live Trial Balance - so an account that nets to zero (and is hidden from a non-zero Trial Balance) can not hide offsetting party balances."
+}

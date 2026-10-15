@@ -50,7 +50,7 @@ await step('Report metadata  [scope ZohoBooks.reports.READ]', async () => { awai
 let tbRaw = null;
 for (const p of TB_PATHS) {
   const ok = await step(`Trial Balance FY ${FY.from} to ${FY.to}  [${p}]`, async () => {
-    tbRaw = await zoho.get(p, { filter_by: 'TransactionDate.CustomDate', from_date: FY.from, to_date: FY.to, show_rows: 'non_zero', response_option: 1, usestate: 'false', per_page: 200 });
+    tbRaw = await zoho.get(p, { filter_by: 'TransactionDate.CustomDate', from_date: FY.from, to_date: FY.to, show_rows: 'non_zero', response_option: 1, usestate: 'false' });
     const tb = normalizeTB(tbRaw);
     const bad = checkTB(tb).filter((a) => a.level === 'error');
     if (bad.length) throw new Error(bad.map((a) => a.message).join('; '));

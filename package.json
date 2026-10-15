@@ -11,6 +11,7 @@
     "reconcile": "node scripts/reconcile.mjs",
     "test": "node --test",
     "zoho:token": "node scripts/zoho-token.mjs",
-    "zoho:check": "node scripts/zoho-check.mjs"
+    "zoho:check": "node scripts/zoho-check.mjs",
+    "live": "node scripts/live.mjs"
   }
 }

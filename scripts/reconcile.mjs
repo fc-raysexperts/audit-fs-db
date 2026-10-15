@@ -9,7 +9,7 @@ import { normalizeTB, checkTB } from '../lib/tb.mjs';
 import { normalizeARAging } from '../lib/receivables.mjs';
 import { computeFS } from '../lib/fsEngine.mjs';
 import { reconcile } from '../lib/reconcile.mjs';
-import { inr } from '../lib/util.mjs';
+import { printReport } from './print.mjs';
 import { loadParty } from './fixtures.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -29,24 +29,10 @@ if (party) result.alerts.push(...party.gl.alerts);
 else console.log('NOTE: ledger snapshots (fixtures/gl, vendors_imprest_staff) not found - supplier lines fall back to the Trial Balance and are flagged PHASE2\n');
 const rec = reconcile(result, audited);
 
-const pad = (s, n) => String(s).padEnd(n).slice(0, n);
-const num = (x) => (x === null ? '-'.padStart(18) : inr(x, 0).padStart(18));
-const sections = [['pl', 'PROFIT & LOSS'], ['bs', 'BALANCE SHEET - lines that tie to the Trial Balance'], ['party', 'PARTY-LEVEL LINES (suppliers, advances, retention, outstanding expenses)']];
-console.log(`Trial Balance ${tb.meta.from} to ${tb.meta.to}  (${tb.meta.basis})   accounts read: ${tb.accounts.length}, with a balance: ${result.memo.mappedAccounts}`);
-for (const [sec, title] of sections) {
-  console.log(`\n== ${title}`);
-  console.log(`${pad('line', 62)}${'from Zoho TB'.padStart(18)}${'audited'.padStart(18)}${'diff'.padStart(14)}  status`);
-  for (const r of rec.rows.filter((x) => x.section === sec)) {
-    const d = r.diff === null ? '-' : (Math.abs(r.diff) < 0.5 ? '0' : inr(r.diff, 0));
-    console.log(`${pad(r.label, 62)}${num(r.value)}${num(r.audited)}${d.padStart(14)}  ${r.status}`);
-  }
-}
-console.log('\n== CHECKS');
-for (const c of result.checks) console.log(`${c.ok ? 'PASS' : 'FAIL'}  ${c.label}  (${c.value.toFixed(2)})`);
-console.log('\n== ALERTS');
-if (!result.alerts.length) console.log('none');
-for (const a of result.alerts) console.log(`${a.level.toUpperCase().padEnd(5)} ${a.code}: ${a.message}`);
-console.log(`\nSummary: ${rec.summary.ok} lines tie (largest gap ${rec.summary.maxAbsDiffOk.toFixed(2)} rupees, tolerance ${rec.tolerance}), ${rec.summary.check} need checking, ${rec.summary.phase2} are Phase-2 lines, ${rec.summary.noref} have no audited counterpart`);
+printReport({
+  heading: `Trial Balance ${tb.meta.from} to ${tb.meta.to}  (${tb.meta.basis})   accounts read: ${tb.accounts.length}, with a balance: ${result.memo.mappedAccounts}`,
+  rec, lines: result.lines, checks: result.checks, alerts: result.alerts,
+});
 
 if (process.argv.includes('--json')) {
   fs.mkdirSync(path.join(root, 'reports'), { recursive: true });
