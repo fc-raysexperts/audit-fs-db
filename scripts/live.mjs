@@ -57,7 +57,7 @@ try {
     if (!cache) throw new Error('--from-cache needs Redis');
     const got = await cache.getSnapshot(fy);
     if (!got) { console.log(`Nothing saved for FY ${fy} yet. Run:  npm run live`); process.exit(0); }
-    show(got.snapshot, `Saved snapshot made ${got.snapshot.meta.generatedAt} (India date ${got.snapshot.meta.istDate})${got.stale ? '  - NOT from today' : ''}`);
+    show(got.snapshot, `Saved snapshot made ${got.snapshot.meta.generatedAt} (India date ${got.snapshot.meta.istDate})${got.stale ? '  - NOT from today' : ''}${got.flawed ? '  - HAS ERRORS' : ''}`);
     process.exit(0);
   }
 
@@ -78,10 +78,14 @@ try {
   // ---- save ----
   if (cache && !flag('--no-save')) {
     const stored = await cache.putSnapshot(snap);
-    const back = await cache.getSnapshot(fy, snap.meta.istDate);
-    if (!back || back.snapshot.meta.generatedAt !== snap.meta.generatedAt) throw new Error('The snapshot was saved but could not be read back from Redis');
-    console.log(`PASS  Saved in Redis and read back (${Math.round(stored.chars / 1024)} KB in ${stored.parts || 1} piece(s)); the dashboard will show it instantly all day (India date ${snap.meta.istDate})`);
-    if (!stored.latestMoved) console.log('NOTE  This run had errors, so the "latest good" pointer was NOT moved to it');
+    if (stored.kept) {
+      console.log('NOTE  This run had errors, so it was NOT saved: a good snapshot for today is already in Redis and was kept');
+    } else {
+      const back = await cache.getSnapshot(fy, snap.meta.istDate);
+      if (!back || back.snapshot.meta.generatedAt !== snap.meta.generatedAt) throw new Error('The snapshot was saved but could not be read back from Redis');
+      console.log(`PASS  Saved in Redis and read back (${Math.round(stored.chars / 1024)} KB in ${stored.parts || 1} piece(s)); the dashboard will show it instantly all day (India date ${snap.meta.istDate})`);
+      if (!stored.latestMoved) console.log('NOTE  This run had errors, so the "latest good" pointer was NOT moved to it');
+    }
   } else if (cache) {
     console.log('(not saved: --no-save)');
   }

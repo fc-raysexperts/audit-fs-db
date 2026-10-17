@@ -1,0 +1,238 @@
+{
+ "version": 1,
+ "note": "Capital work-in-progress (CWIP) and intangible assets under development (IAUD), park by park (the CWIP sheet of the signed workbook). Zoho Books keeps two ledger accounts for them, Capital Work in Progress and Intangible Asset Under Development; neither has a park column. Zoho's FY26 books were rebuilt at the year end, so almost all of the money arrived through clean-up journals dated 31-Mar-2026 (JN-Clean-n, 'Transfering ledger balance from old to new ledger') that empty an OLD ledger account into the new one - and the old account's NAME says the park ('Land Lease Dechu', 'Connectivity Charges Kolayat NPD', 'Civil Work Napasar'). The auditors' own journals (SJ-1121 ... SJ-1130, 289) say the park in their text. Bills carry a project ('NPD - Panchu - TL') and a narration. So every line of the two ledgers is given a park by the WORDS in its journal's notes and old-ledger name, or in the bill's project / narration / location. A line that names no park (or two) is allocated by an entry of `allocate` below, and said so on the tab. The total of each park (both accounts together, as booked) is what the CWIP tab compares with the sum of its three columns. The split of a park between the three columns (pure services, boundary wall and road, transmission line and MCR) is the auditors' own classification: Zoho only has the two accounts, and one journal (SJ-1130, 'adjustment made to boundary wall & road') moves Rs 12,01,37,795 from CWIP to IAUD without saying park by park where it comes from. That journal is shown separately and left out of the parks (it nets to nil).",
+ "accounts": {
+  "cwip": {
+   "id": "2346113000027289098",
+   "name": "Capital Work in Progress"
+  },
+  "iaud": {
+   "id": "2346113000010827154",
+   "name": "Intangible Asset Under Development"
+  }
+ },
+ "cleanup_words": [
+  "transfering ledger balance"
+ ],
+ "parks": [
+  {
+   "name": "Jaisalmer",
+   "words": [
+    "jaisalmer"
+   ]
+  },
+  {
+   "name": "Churu",
+   "words": [
+    "churu"
+   ]
+  },
+  {
+   "name": "Surena",
+   "words": [
+    "surena"
+   ]
+  },
+  {
+   "name": "Jasrasar",
+   "words": [
+    "jasrasar"
+   ]
+  },
+  {
+   "name": "Aau- Jodhpur",
+   "words": [
+    "aau",
+    "jodhpur"
+   ]
+  },
+  {
+   "name": "Napasar",
+   "words": [
+    "napasar"
+   ]
+  },
+  {
+   "name": "Pugal",
+   "words": [
+    "pugal",
+    "pungal"
+   ]
+  },
+  {
+   "name": "SS Nagar",
+   "words": [
+    "ss nagar",
+    "s s nagar"
+   ]
+  },
+  {
+   "name": "Sanchore",
+   "words": [
+    "sanchore"
+   ]
+  },
+  {
+   "name": "Sayla",
+   "words": [
+    "sayla"
+   ]
+  },
+  {
+   "name": "Sarera",
+   "words": [
+    "sarera"
+   ]
+  },
+  {
+   "name": "Tosham",
+   "words": [
+    "tosham",
+    "tohsam"
+   ]
+  },
+  {
+   "name": "Bhamatsar",
+   "words": [
+    "bhamatsar",
+    "bhamastar"
+   ]
+  },
+  {
+   "name": "Thukariyasar",
+   "words": [
+    "thukariyasar"
+   ]
+  },
+  {
+   "name": "Kuchaman",
+   "words": [
+    "kuchaman"
+   ]
+  },
+  {
+   "name": "Kolayat",
+   "words": [
+    "kolayat",
+    "koyalat"
+   ]
+  },
+  {
+   "name": "Dechu",
+   "words": [
+    "dechu"
+   ]
+  },
+  {
+   "name": "Panchu",
+   "words": [
+    "panchu"
+   ]
+  },
+  {
+   "name": "Lunkaransar",
+   "words": [
+    "lunkaransar",
+    "lunkarasar"
+   ],
+   "onSheet": false,
+   "why": "capitalised in full by SJ-1124, SJ-1125 and SJ-1127 (not on the CWIP sheet)"
+  },
+  {
+   "name": "Siwani",
+   "words": [
+    "siwani"
+   ],
+   "onSheet": false,
+   "why": "project approval fees charged to the P&L by SJ-1129 (not on the CWIP sheet)"
+  },
+  {
+   "name": "Ramgarh",
+   "words": [
+    "ramgarh"
+   ],
+   "onSheet": false,
+   "why": "commission charged to the P&L by journal 289 (not on the CWIP sheet)"
+  }
+ ],
+ "allocate": [
+  {
+   "entry": "RR/25-26/2314",
+   "amount": 2500000,
+   "park": "Churu",
+   "why": "Bill of Rajasthan Renewable Energy Corporation (RRECL) with no narration and no project; the signed sheet has it under Churu, and it is the only line that makes Churu's Rs 25,00,000"
+  },
+  {
+   "entry": "CY/25-26/147",
+   "amount": 1125000,
+   "park": "Napasar",
+   "why": "Cyrun-Infra bill 'O&M Gajner'; the signed sheet has it under Napasar (Napasar's lines named by Zoho fall short of the sheet by exactly this amount)"
+  },
+  {
+   "entry": "JN-Clean-112",
+   "amount": 446600,
+   "park": "Sayla",
+   "why": "The old ledger 'Brokerage & Commission Panchu FA SAYLA' names two parks; the signed sheet has it under Sayla"
+  },
+  {
+   "entry": "JN-Clean-225",
+   "amount": 525223.84,
+   "parts": [
+    {
+     "park": "Kuchaman",
+     "amount": 102908
+    },
+    {
+     "park": "Thukariyasar",
+     "rest": true
+    }
+   ],
+   "why": "The old ledger 'land lease registration NEW NPD' names no park; the signed sheet shares it between Kuchaman (Rs 1,02,908) and Thukariyasar (the rest)"
+  },
+  {
+   "entry": "9/2025-26",
+   "amount": 17500,
+   "park": "Panchu",
+   "why": "Line of the Jay Jeen Mata Construction bill whose project is 'Hind Chemisales' (a customer's name, not a park); the other lines of the bill are Panchu transmission line"
+  },
+  {
+   "entry": "9/2025-26",
+   "amount": 75500,
+   "park": "Panchu",
+   "why": "Line of the Jay Jeen Mata Construction bill whose project is 'LE0197_BOROSIL' (a customer's name, not a park); the other lines of the bill are Panchu transmission line"
+  },
+  {
+   "txn": "2346113000035409294",
+   "amount": 210000,
+   "park": "Panchu",
+   "why": "Stock converted into NPD (inventory adjustment, Head Office): names no park; the signed sheet has it under Panchu"
+  },
+  {
+   "entry": "U225/DS/00734",
+   "amount": 480000,
+   "park": "Lunkaransar",
+   "why": "Mehru Electrical bill for '132 PSS Gajner'; no park of the sheet takes it, and with it Lunkaransar nets to nil once capitalised"
+  },
+  {
+   "entry": "CY/25-26/149",
+   "amount": 5747347.85,
+   "park": "Lunkaransar",
+   "why": "Cyrun-Infra bill with no narration, booked at Head Office; no park of the sheet takes it, and with it Lunkaransar nets to nil once capitalised"
+  },
+  {
+   "entry": "SJ-1072",
+   "amount": 1193081.97,
+   "park": "Lunkaransar",
+   "why": "Credit note 'wrongly accounted, now rectified' (Erection & Installation Work-GM); no park of the sheet takes it, and with it Lunkaransar nets to nil once capitalised"
+  }
+ ],
+ "elsewhere": [
+  {
+   "entry": "ES2526893",
+   "amount": 84000,
+   "zoho": "Kolayat",
+   "sheet": "Bhamatsar",
+   "why": "Zoho books bill ES2526893 of Electrico Services (Rs 81,000 + Rs 3,000; location Kolayat, project 'NPD-KOLAYAT- TL') to Kolayat. The signed sheet has Rs 84,000 less under Kolayat and Rs 84,000 more under Bhamatsar, and these two lines are the ones that fit to the rupee."
+  }
+ ]
+}

@@ -6,3 +6,4 @@ node_modules/
 # real company figures: keep out of git (repo should also be PRIVATE)
 fixtures/
 reports/
+.next/

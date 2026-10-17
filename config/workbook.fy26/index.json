@@ -1,0 +1,1088 @@
+{
+ "version": 1,
+ "fy": "2025-26",
+ "as_at": "2026-03-31",
+ "tabs": [
+  {
+   "id": "notes",
+   "label": "Notes 3 to 27",
+   "sheets": [
+    "note-3",
+    "note-4-19",
+    "note-20-27"
+   ],
+   "note": "Notes 3 to 27 of the audited statements (Note 3, Note 4-19 and Note 20-27 of the Excel file), kept together on one tab."
+  }
+ ],
+ "sheets": [
+  {
+   "id": "cover-page",
+   "sheet": "Cover Page",
+   "group": "Booklet",
+   "status": "fixed",
+   "page": null,
+   "note": "Title page of the signed accounts.",
+   "hidden": false,
+   "file": "cover-page.json",
+   "mode": "doc",
+   "rows": 13
+  },
+  {
+   "id": "audit-report",
+   "sheet": "Audit Report",
+   "group": "Booklet",
+   "status": "fixed",
+   "page": null,
+   "note": "The independent auditors' report, as signed.",
+   "hidden": false,
+   "file": "audit-report.json",
+   "mode": "doc",
+   "rows": 57
+  },
+  {
+   "id": "caro-ann-a",
+   "sheet": "CARO (Ann.A)",
+   "group": "Booklet",
+   "status": "fixed",
+   "page": null,
+   "note": "Annexure A to the auditors' report (Companies (Auditor's Report) Order).",
+   "hidden": false,
+   "file": "caro-ann-a.json",
+   "mode": "doc",
+   "rows": 68
+  },
+  {
+   "id": "ifc-ann-b",
+   "sheet": "IFC (Ann.B)",
+   "group": "Booklet",
+   "status": "fixed",
+   "page": null,
+   "note": "Annexure B to the auditors' report (internal financial controls).",
+   "hidden": false,
+   "file": "ifc-ann-b.json",
+   "mode": "doc",
+   "rows": 25
+  },
+  {
+   "id": "bs",
+   "sheet": "BS",
+   "group": "Statements",
+   "status": "live",
+   "page": null,
+   "note": "Balance Sheet.",
+   "hidden": false
+  },
+  {
+   "id": "p-l",
+   "sheet": "P&L",
+   "group": "Statements",
+   "status": "live",
+   "page": null,
+   "note": "Statement of Profit and Loss.",
+   "hidden": false
+  },
+  {
+   "id": "cf",
+   "sheet": "CF",
+   "group": "Statements",
+   "status": "live",
+   "page": null,
+   "note": "Cash Flow Statement.",
+   "hidden": false
+  },
+  {
+   "id": "note-1-2",
+   "sheet": "Note 1-2",
+   "group": "Notes",
+   "status": "fixed",
+   "page": null,
+   "note": "Corporate information and significant accounting policies.",
+   "hidden": false,
+   "file": "note-1-2.json",
+   "mode": "doc",
+   "rows": 97
+  },
+  {
+   "id": "note-3",
+   "sheet": "Note 3",
+   "group": "Notes",
+   "status": "live",
+   "page": null,
+   "note": "Share capital.",
+   "hidden": false
+  },
+  {
+   "id": "note-4-19",
+   "sheet": "Note 4-19",
+   "group": "Notes",
+   "status": "live",
+   "page": null,
+   "note": "Notes 4 to 19 (reserves, borrowings, provisions, payables, investments, receivables, cash, advances).",
+   "hidden": false
+  },
+  {
+   "id": "note-12-mfa",
+   "sheet": "Note-12 MFA",
+   "group": "Notes",
+   "status": "live",
+   "page": null,
+   "note": "Note 12: fixed-asset schedule, CWIP and intangibles under development.",
+   "hidden": false
+  },
+  {
+   "id": "note-20-27",
+   "sheet": "Note 20-27",
+   "group": "Notes",
+   "status": "live",
+   "page": null,
+   "note": "Notes 20 to 27 (income and expenses).",
+   "hidden": false
+  },
+  {
+   "id": "note-28-a",
+   "sheet": "Note 28(A)",
+   "group": "Notes",
+   "status": "semi",
+   "page": null,
+   "note": "Other notes: contingent liabilities, EPS, MSME, CSR, foreign currency, related parties. EPS and MSME are live on the Ratios page; the rest is as signed.",
+   "hidden": false,
+   "file": "note-28-a.json",
+   "mode": "doc",
+   "rows": 227
+  },
+  {
+   "id": "note-28-b",
+   "sheet": "Note 28(B)",
+   "group": "Notes",
+   "status": "live",
+   "page": null,
+   "note": "Analytical ratios.",
+   "hidden": false
+  },
+  {
+   "id": "note-28-c",
+   "sheet": "Note 28(C)",
+   "group": "Notes",
+   "status": "fixed",
+   "page": null,
+   "note": "Other statutory information.",
+   "hidden": false,
+   "file": "note-28-c.json",
+   "mode": "doc",
+   "rows": 39
+  },
+  {
+   "id": "aoc-1",
+   "sheet": "AOC-1",
+   "group": "Notes",
+   "status": "fixed",
+   "page": null,
+   "note": "Form AOC-1: salient features of the subsidiaries.",
+   "hidden": true,
+   "file": "aoc-1.json",
+   "mode": "grid",
+   "rows": 44
+  },
+  {
+   "id": "aoc-2",
+   "sheet": "AOC-2",
+   "group": "Notes",
+   "status": "fixed",
+   "page": null,
+   "note": "Form AOC-2: related-party contracts.",
+   "hidden": true,
+   "file": "aoc-2.json",
+   "mode": "grid",
+   "rows": 39
+  },
+  {
+   "id": "computation",
+   "sheet": "Computation",
+   "group": "Tax",
+   "status": "semi",
+   "page": null,
+   "note": "Computation of income and tax.",
+   "hidden": false
+  },
+  {
+   "id": "d-tax",
+   "sheet": "D.Tax",
+   "group": "Tax",
+   "status": "live",
+   "page": null,
+   "note": "Deferred tax working.",
+   "hidden": false
+  },
+  {
+   "id": "it-dep",
+   "sheet": "IT-Dep.",
+   "group": "Tax",
+   "status": "fixed",
+   "page": null,
+   "note": "Depreciation under the Income Tax Act (auditors' chart).",
+   "hidden": false,
+   "file": "it-dep.json",
+   "mode": "grid",
+   "rows": 27,
+   "ties": [
+    {
+     "label": "Written-down value as per Income Tax = value used in the deferred tax working",
+     "cell": "IT-Dep.!K27",
+     "value": 364917108,
+     "expr": "c:wdv_income_tax"
+    },
+    {
+     "label": "Depreciation under the Act = value used in the tax computation",
+     "cell": "IT-Dep.!J27",
+     "value": 47854719,
+     "expr": "c:it_depreciation"
+    }
+   ]
+  },
+  {
+   "id": "fa-add",
+   "sheet": "FA Add",
+   "group": "Assets",
+   "status": "fixed",
+   "page": null,
+   "note": "Additions to fixed assets during the year, item by item.",
+   "hidden": false,
+   "file": "fa-add.json",
+   "mode": "grid",
+   "rows": 92,
+   "ties": [
+    {
+     "label": "Additions: land",
+     "cell": "FA Add!E9",
+     "value": 3738800,
+     "expr": "f:add.land"
+    },
+    {
+     "label": "Additions: office building",
+     "cell": "FA Add!E13",
+     "value": 2843925,
+     "expr": "f:add.building"
+    },
+    {
+     "label": "Additions: furniture and fixtures",
+     "cell": "FA Add!E23",
+     "value": 233774,
+     "expr": "f:add.furniture"
+    },
+    {
+     "label": "Additions: motor vehicles",
+     "cell": "FA Add!E29",
+     "value": 300344,
+     "expr": "f:add.vehicles"
+    },
+    {
+     "label": "Additions: plant and machinery",
+     "cell": "FA Add!E34",
+     "value": 183340847,
+     "expr": "f:add.plant"
+    },
+    {
+     "label": "Additions: computer equipments",
+     "cell": "FA Add!E62",
+     "value": 1730112,
+     "expr": "f:add.computers"
+    },
+    {
+     "label": "Additions: office equipments",
+     "cell": "FA Add!E89",
+     "value": 468507,
+     "expr": "f:add.office_eq"
+    },
+    {
+     "label": "Additions: solar park development rights",
+     "cell": "FA Add!E108",
+     "value": 85003627,
+     "expr": "f:add.dev_rights"
+    }
+   ]
+  },
+  {
+   "id": "dep-calc",
+   "sheet": "Dep.Calc.",
+   "group": "Assets",
+   "status": "fixed",
+   "page": null,
+   "note": "Asset register with the depreciation worked out asset by asset.",
+   "hidden": false,
+   "file": "dep-calc.json",
+   "mode": "grid",
+   "rows": 501,
+   "ties": [
+    {
+     "label": "Purchase cost of all assets = closing gross block (PPE)",
+     "cell": "Dep.Calc.!E496",
+     "value": 508282125.72,
+     "expr": "f:ppe.closeGross"
+    },
+    {
+     "label": "Written-down value as per books = net block of property, plant and equipment",
+     "cell": "Dep.Calc.!Q496",
+     "value": 356639167.81,
+     "expr": "f:ppe.net"
+    },
+    {
+     "label": "Depreciation as per books = depreciation charge (PPE)",
+     "cell": "Dep.Calc.!S496",
+     "value": 25872864,
+     "expr": "f:ppe.charge"
+    }
+   ]
+  },
+  {
+   "id": "cwip",
+   "sheet": "CWIP",
+   "group": "Assets",
+   "status": "semi",
+   "page": null,
+   "note": "Capital work-in-progress and intangibles under development, project by project - each park's total is compared live with Zoho's ledgers of the two accounts.",
+   "hidden": false,
+   "file": "cwip.json",
+   "mode": "grid",
+   "rows": 21,
+   "ties": [
+    {
+     "label": "Capital work-in-progress (transmission line and MCR) = CWIP in the Balance Sheet",
+     "cell": "CWIP!D22",
+     "value": 154285530.4,
+     "expr": "l:cwip"
+    },
+    {
+     "label": "Intangibles under development (pure services + boundary wall) = Balance Sheet line",
+     "cell": "CWIP!B22 + C22",
+     "value": 254822808.09,
+     "expr": "l:iaud"
+    }
+   ],
+   "live": {
+    "label": 0,
+    "value": 3,
+    "panel": "cwip",
+    "keeps": "Zoho has two ledger accounts for this sheet - Capital Work in Progress and Intangible Asset Under Development - and no park column. Its FY26 books were rebuilt at the year end, so almost all of the money arrived through clean-up journals of 31-Mar-2026 that empty an old ledger account into the new one, and the old account's NAME says the park ('Land Lease Dechu', 'Connectivity Charges Kolayat NPD', 'Civil Work Napasar'); the auditors' own journals and the bills (project, narration, location) say it too. Every line of the two ledgers is given the park its text names, and each park is compared with the sum of its three signed columns (pure services, boundary wall and road, transmission line and MCR). The split of a park over those three columns is the auditors' own classification - Zoho only has the two accounts, and one journal (SJ-1130) moves Rs 12,01,37,795 from CWIP to IAUD without saying park by park - so the three columns are not compared one by one. A handful of lines name no park in Zoho: where the signed sheet places them is listed below. Checked on the real books on 17-Oct-2026: both ledgers add up to the Trial Balance to the paisa, and 16 of the 18 parks agree with the sheet to within Re 1; Kolayat and Bhamatsar differ by Rs 84,000 each way, one bill that Zoho books to Kolayat and the sheet counts under Bhamatsar.",
+    "blocks": [
+     {
+      "start": "Remaining CWIP",
+      "source": "cwip",
+      "group": "cwip",
+      "valueCols": [
+       1,
+       2,
+       3
+      ],
+      "title": "Parks"
+     }
+    ],
+    "groups": {
+     "cwip": {
+      "source": "cwip",
+      "title": "Park"
+     }
+    }
+   }
+  },
+  {
+   "id": "closing-stock",
+   "sheet": "Closing Stock",
+   "group": "Assets",
+   "status": "fixed",
+   "page": null,
+   "note": "Closing stock, item by item - compared live with Zoho's Inventory Valuation Summary.",
+   "hidden": false,
+   "file": "closing-stock.json",
+   "mode": "grid",
+   "rows": 252,
+   "ties": [
+    {
+     "label": "Value as per trial balance = inventories",
+     "cell": "Closing Stock!D254",
+     "value": 287377971,
+     "expr": "l:inventories"
+    }
+   ],
+   "live": {
+    "label": 0,
+    "value": 3,
+    "panel": "stock",
+    "keeps": "Zoho's Inventory Valuation Summary (its stock summary) is read as at the balance sheet date, and every signed row is paired with the Zoho line of the same item by name, quantity and value (an item can have an old SKU and a '_New' one, so it can stand on several rows and several lines). The 'Usage unit' of each row is checked against the unit of that item in Zoho's item list (matched by SKU; the stock summary itself leaves the unit blank). The 'New Rate' column is empty on the signed sheet, so there is nothing in it to check. Checked on the real books on 17-Oct-2026: all 246 rows and both totals agreed with Zoho to the paisa. The foot of the sheet works out its 'Difference' as the Trial Balance less the items less 'NPD Panchu Purchase' (4,81,953), and that is checked live too. The two NPD Panchu items (ABT meter, Raw material for Column) are already among the item rows - in Zoho's valuation as well - so the whole gap between the ledger and the items is 9,14,700.60, all of it in the Inventory Asset account; the tables below show what that account is made of, read from its ledger.",
+    "blocks": [
+     {
+      "start": "Item Name",
+      "source": "stock",
+      "group": "stock",
+      "perLine": true,
+      "title": "Items"
+     },
+     {
+      "start": "NPD Panchu Purchase",
+      "source": "account:inventory",
+      "inclusive": true,
+      "title": "NPD Panchu Purchase (ledger account)"
+     },
+     {
+      "start": "Difference",
+      "source": "stockgap:NPD Panchu Purchase",
+      "inclusive": true,
+      "title": "Difference (the auditors' working)"
+     },
+     {
+      "start": "Value as Per Trial Balance",
+      "source": "account:inventory",
+      "inclusive": true,
+      "title": "Stock accounts of the Trial Balance",
+      "sums": {
+       "Value as Per Trial Balance": "account:inventory"
+      }
+     }
+    ],
+    "groups": {
+     "stock": {
+      "source": "stock",
+      "title": "Stock item"
+     }
+    },
+    "columns": [
+     {
+      "col": 1,
+      "field": "qty",
+      "label": "Stock quantity (Initial Stock)",
+      "needs": "stock",
+      "tol": 0.01,
+      "totalTol": 1
+     },
+     {
+      "col": 4,
+      "field": "unit",
+      "label": "Usage unit",
+      "needs": "stockunit",
+      "text": true
+     }
+    ]
+   }
+  },
+  {
+   "id": "debtors-ageing",
+   "sheet": "Debtors Ageing",
+   "group": "Parties",
+   "status": "semi",
+   "page": null,
+   "note": "Customer-wise ageing of trade receivables, 31 March 2026. Every customer's closing balance is checked live against Zoho, and so are the year's invoicing and receipts and the age buckets Less than 6 months, 6 months to 1 year and Older than 1 year (the last one against the three typed columns added up). Zoho cannot split the older balances into 1-2, 2-3 and over 3 years.",
+   "hidden": false,
+   "file": "debtors-ageing.json",
+   "mode": "grid",
+   "rows": 129,
+   "ties": [
+    {
+     "label": "Closing balance, all customers = trade receivables",
+     "cell": "Debtors Ageing!D129",
+     "value": 554432471,
+     "expr": "l:trade_receivables"
+    }
+   ],
+   "live": {
+    "label": 0,
+    "value": 3,
+    "keeps": "The age buckets are not a Zoho report: they are worked out from what Zoho does give - the customer balances on 31 March 2025, 30 September 2025 and 31 March 2026 and the sales (invoices less credit notes) of each half of the year - taking the oldest invoices as paid first, which is how the auditors aged the sheet. A manual journal that debits a customer is not an invoice, so Sales by Customer does not see it: it is told from the change of the customer's balance and aged by the half of the year it falls in. A few customers still differ because the auditors adjusted them by hand: year-end journals that move a balance from one customer account to another (RAYS ROOFTOP SPV against RAYS O&M EXPERTS) and TDS they netted by hand; no rule can tell these from the books. '1 to 2 Years', '2 to 3 Years' and 'More than 3 Years' stay as signed and are compared together with the live 'older than 1 year'.",
+    "blocks": [
+     {
+      "start": "Customer Name",
+      "source": "customer",
+      "group": "cust",
+      "title": "Customers"
+     }
+    ],
+    "groups": {
+     "cust": {
+      "source": "customer",
+      "title": "Customer"
+     }
+    },
+    "columns": [
+     {
+      "col": 1,
+      "field": "invoiced",
+      "label": "Invoiced Amount",
+      "needs": "debtors"
+     },
+     {
+      "col": 2,
+      "field": "received",
+      "label": "Amount Received",
+      "needs": "debtors"
+     },
+     {
+      "col": 4,
+      "field": "lt6",
+      "label": "Less than 6M",
+      "needs": "debtors"
+     },
+     {
+      "col": 5,
+      "field": "m6_12",
+      "label": "6 Month to 1 Year",
+      "needs": "debtors"
+     },
+     {
+      "col": 6,
+      "field": "older",
+      "label": "Older than 1 year (three columns together)",
+      "needs": "debtors",
+      "sumCols": [
+       6,
+       7,
+       8
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "creditors-ageing",
+   "sheet": "Creditors Ageing",
+   "group": "Parties",
+   "status": "semi",
+   "page": null,
+   "note": "Vendor-wise ageing of trade payables, 31 March 2026. Every vendor's closing balance is checked live against Zoho, and so are the opening balance, Billed Amount, Paid Amount, the Vendor Code and the buckets Less than 1 year and Older than 1 year (the last one against the three typed columns added up). Two vendors that are retention money (Cyrun-Infra Projects LLP, Gurukripa Traders) are in no age bucket, as the auditors show them. MSME stays as signed. The three insurance policy lines (HDFC ERGO twice, ICICI Lombard) are not trade-payable vendors in Zoho: their closing balance is read from the insurer's own ledger entries (the payable side of the contact) - the ICICI Lombard line on its own, the two HDFC ERGO lines together, because Zoho books all of its bills at the Head Office. Their other columns stay as signed.",
+   "hidden": false,
+   "file": "creditors-ageing.json",
+   "mode": "grid",
+   "rows": 170,
+   "ties": [
+    {
+     "label": "Ageing buckets added up = trade payables (Note 9)",
+     "cell": "Creditors Ageing!G170:J170",
+     "value": 77993524,
+     "expr": "x:note9"
+    }
+   ],
+   "live": {
+    "label": 0,
+    "value": 4,
+    "keeps": "Opening balance and the age buckets are worked out from the Zoho ledger of the supplier accounts: the credit balance on 31 March 2025, and what is still unpaid of it after the year's payments, oldest first; the year's billing in that rule is Zoho's Billed Amount. Billed Amount and Paid Amount are compared with Zoho's Vendor Balance Summary: the year is the report up to 31 March 2026 less the report up to 31 March 2025. The Vendor Code is read from each vendor's own card in Zoho (the code is a custom field that no report gives): 40 cards per refresh until all 166 are known, then kept in Redis and read again after a week; a vendor whose card has not been read yet is simply not compared. Retention money (Cyrun-Infra Projects LLP, Gurukripa Traders: config/party_overrides.fy26.json) is listed with its balance but in no age bucket. The MSME flag stays as signed (the list is kept in config/party_rules.json: Zoho's Udyam fields are empty). '1-2 Yr.', '2-3 Yr.' and '>3 Yr' stay as signed and are compared together with the live 'older than 1 year'. The three insurance policy lines (HDFC ERGO twice, ICICI Lombard) are not trade-payable vendors in Zoho: their closing balance is read from the insurer's own ledger entries (the payable side of the contact) - the ICICI Lombard line on its own, the two HDFC ERGO lines together, because Zoho books all of its bills at the Head Office. Their other columns stay as signed.",
+    "blocks": [
+     {
+      "start": "Vendor Name",
+      "source": [
+       "supplier:trade_payable+trade_payable_msme+retention",
+       "split:icici_lombard",
+       "split:hdfc_ergo"
+      ],
+      "group": "pay",
+      "title": "Vendors",
+      "fallback": "supplier:trade_payable+trade_payable_msme+retention",
+      "aliases": {
+       "ICICI LOMBARD GENERAL INSURANCE CO LTD (Raj.)": "ICICI Lombard - payable",
+       "HDFC ERGO GENERAL INSURANCE CO LTD (RAJ)": "HDFC ERGO - payable, Rajasthan",
+       "HDFC ERGO GENERAL INSURANCE CO LTD(Delhi)": "HDFC ERGO - payable, Delhi"
+      }
+     }
+    ],
+    "groups": {
+     "pay": {
+      "source": "supplier:trade_payable+trade_payable_msme+retention",
+      "title": "Vendor"
+     }
+    },
+    "columns": [
+     {
+      "col": 1,
+      "field": "opening",
+      "label": "Opening Balance",
+      "needs": "creditors"
+     },
+     {
+      "col": 2,
+      "field": "yearBilled",
+      "label": "Billed Amount",
+      "needs": "creditors",
+      "part": "vbs"
+     },
+     {
+      "col": 3,
+      "field": "yearPaid",
+      "label": "Paid Amount",
+      "needs": "creditors",
+      "part": "vbs"
+     },
+     {
+      "col": 5,
+      "field": "code",
+      "label": "Vendor Code",
+      "needs": "creditors",
+      "part": "codes",
+      "text": true
+     },
+     {
+      "col": 6,
+      "field": "lt1",
+      "label": "Less than 1 Yr.",
+      "needs": "creditors"
+     },
+     {
+      "col": 7,
+      "field": "older",
+      "label": "Older than 1 year (three columns together)",
+      "needs": "creditors",
+      "sumCols": [
+       7,
+       8,
+       9
+      ]
+     }
+    ],
+    "ties": [
+     {
+      "title": "HDFC ERGO payable (Rajasthan + Delhi), compared in total - used only when the bills' billing-address state could not be read: the sheet shows it for Rajasthan and for Delhi, Zoho books all of it at the Head Office (one payable)",
+      "lines": [
+       {
+        "block": "Vendor Name",
+        "label": "HDFC ERGO GENERAL INSURANCE CO LTD (RAJ)"
+       },
+       {
+        "block": "Vendor Name",
+        "label": "HDFC ERGO GENERAL INSURANCE CO LTD(Delhi)"
+       }
+      ],
+      "zoho": [
+       {
+        "source": "split:hdfc_ergo",
+        "name": "HDFC ERGO GENERAL INSURANCE COMPANY LIMITED"
+       }
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "rpt-transaction",
+   "sheet": "RPT Transaction",
+   "group": "Parties",
+   "status": "fixed",
+   "page": null,
+   "note": "Related-party transactions, party by party.",
+   "hidden": false,
+   "file": "rpt-transaction.json",
+   "mode": "grid",
+   "rows": 39
+  },
+  {
+   "id": "bs-grouping",
+   "sheet": "BS Grouping",
+   "group": "Detail",
+   "status": "semi",
+   "page": "/workbook/notes",
+   "note": "Account-wise detail behind the Balance Sheet notes, checked line by line against Zoho: customers, vendors, advances to suppliers, imprest, retention, loans, outstanding expenses, investments, tax balances, GST and the other ledger accounts. The fixed deposits and the accrued interest (bank by bank), the three security deposits, the PF employee / employer share, the advance and the payable of each insurer and the loan and the advance of RPE Energy Reserve are lines of their own too: Zoho keeps each of them in one account, the entries say which line they belong to. Compared in total, because Zoho cannot tell them apart: the staff imprest advances, the ESI employee / employer share, and the two HDFC ERGO payables (Rajasthan and Delhi). One thing stays as signed: the short / long-term split of the loans. The advances received from customers are read from the ledger of the account Advance from debtors, less the auditors' hand-netting.",
+   "hidden": false,
+   "file": "bs-grouping.json",
+   "mode": "grid",
+   "rows": 929,
+   "live": {
+    "label": 1,
+    "value": 4,
+    "keeps": "What stays as signed: the short / long-term split of the loans. The list of advances from customers is read from Zoho (the ledger of the account Advance from debtors up to the balance sheet date, customer by customer, less the amounts the auditors netted by hand against the customers' invoices, plus the credit of a customer whose receivable is below zero) and checked line by line like the other lists. Read line by line, from the entries behind Zoho's one account: the fixed deposits and the accrued interest bank by bank (the bank is in the name of the old account on the clean-up journal of 31-Mar-2026, or in the text of the auditors' journal), the three security deposits, the PF employee / employer share (the payroll entry that says so, the rest is the employer share), and - by the Zoho account their entries sit in - the advance and the payable of HDFC ERGO and ICICI Lombard and the loan and the advance of RPE Energy Reserve. Compared in total, because Zoho does not hold them apart: the eleven staff imprest advances (the entries carry no name of the person), the employee and employer share of ESI, and the HDFC ERGO payables of Rajasthan and Delhi (all its bills are booked at the Head Office).",
+    "blocks": [
+     {
+      "start": "Detail of Borrowings",
+      "source": "account:car_loans+cash_credit+other_borrowings"
+     },
+     {
+      "start": "Detail of Outstanding Expenses",
+      "source": [
+       "account:outstanding_expenses",
+       "supplier:outstanding"
+      ],
+      "aliases": {
+       "Electricity Bill Payable": "Outstanding Liability"
+      },
+      "sums": {
+       "Imprest Account": "supplier:imprest"
+      }
+     },
+     {
+      "start": "Detail of Balances Outstanding to Staff Imprest",
+      "source": "supplier:imprest",
+      "group": "imprest"
+     },
+     {
+      "start": "Detail of Retention Money",
+      "source": [
+       "supplier:retention",
+       "account:retention_payable"
+      ],
+      "group": "retention"
+     },
+     {
+      "start": "Details of balances Outsanding Balnces With Foreign Supplier",
+      "source": "supplier:trade_payable+trade_payable_msme",
+      "group": "payables"
+     },
+     {
+      "start": "Details of Balnces Outsanding with other Vendors",
+      "source": [
+       "supplier:trade_payable+trade_payable_msme",
+       "split:icici_lombard",
+       "split:hdfc_ergo"
+      ],
+      "group": "payables",
+      "fallback": "supplier:trade_payable+trade_payable_msme",
+      "aliases": {
+       "ICICI LOMBARD GENERAL INSURANCE CO LTD (Raj.)": "ICICI Lombard - payable",
+       "HDFC ERGO GENERAL INSURANCE CO LTD (RAJ)": "HDFC ERGO - payable, Rajasthan",
+       "HDFC ERGO GENERAL INSURANCE CO LTD(Delhi)": "HDFC ERGO - payable, Delhi"
+      }
+     },
+     {
+      "start": "Detail of Advance from Customer",
+      "source": "advance",
+      "group": "customer_advances"
+     },
+     {
+      "start": "Detail of Statutory Liabilities",
+      "source": [
+       "account",
+       "split:pf_payable"
+      ],
+      "fallback": "account",
+      "group": "account",
+      "value": 3,
+      "totalValue": 4
+     },
+     {
+      "start": "Detail of Unearned Revenue",
+      "source": "account"
+     },
+     {
+      "start": "Detail of Investment In Companies",
+      "source": "account:investments_nc"
+     },
+     {
+      "start": "Detail of Security Deposit",
+      "source": "split:security_deposits_given",
+      "fallback": "account:security_deposits_given",
+      "lump": "Security Deposit-Given"
+     },
+     {
+      "start": "Detail of Fixed Deposit",
+      "source": "split:fixed_deposits",
+      "fallback": "account:fixed_deposits",
+      "lump": "Fixed Deposits"
+     },
+     {
+      "start": "Detail of Accured Interest Fixed Deposit",
+      "source": "split:accrued_interest_fdr",
+      "fallback": "account:accrued_interest_fdr",
+      "lump": "Accrued Interest on FDR"
+     },
+     {
+      "start": "Cash and Bank Balance",
+      "source": "account"
+     },
+     {
+      "start": "Detail of Advance to Suppliers",
+      "source": [
+       "supplier:advance",
+       "split:hdfc_ergo",
+       "split:icici_lombard",
+       "split:rpe_energy"
+      ],
+      "group": "advances",
+      "fallback": "supplier:advance",
+      "aliases": {
+       "HDFC ERGO GENERAL INSURANCE C Ltd": "HDFC ERGO - advance",
+       "ICICI LOMBARD GENERAL INSURANCE COMPANY LIMITED (Guj.)": "ICICI Lombard - advance",
+       "RPE ENERGY RESERVE PRIVATE LIMITED": "RPE Energy Reserve - advance"
+      }
+     },
+     {
+      "start": "Staff Imprest Advance",
+      "source": "supplier:advance",
+      "group": "advances",
+      "lump": "(no contact on the entry)"
+     },
+     {
+      "start": "Details of Loan Given-Others",
+      "source": [
+       "supplier:advance",
+       "split:rpe_energy"
+      ],
+      "group": "advances",
+      "fallback": "supplier:advance",
+      "aliases": {
+       "RPE ENERGY RESERVE PRIVATE LIMITED": "RPE Energy Reserve - loan"
+      }
+     },
+     {
+      "start": "Detail of Prepaid Expenses",
+      "source": "account"
+     },
+     {
+      "start": "Detail of Other Receivables",
+      "source": "account"
+     },
+     {
+      "start": "Detail of Balance with Revenue Authorities",
+      "source": "account:gst_balances"
+     },
+     {
+      "start": "Detail of Unclaimed GST",
+      "source": "account:gst_balances"
+     },
+     {
+      "start": "Detail of Provision for Income Tax",
+      "source": "account:income_tax_provision+advance_tax+tds_tcs_receivable"
+     },
+     {
+      "start": "Details Of Trade Receivables",
+      "source": "customer",
+      "group": "cust"
+     }
+    ],
+    "groups": {
+     "imprest": {
+      "source": "supplier:imprest",
+      "title": "Staff imprest payable"
+     },
+     "retention": {
+      "source": [
+       "supplier:retention",
+       "account:retention_payable"
+      ],
+      "title": "Retention money"
+     },
+     "payables": {
+      "source": "supplier:trade_payable+trade_payable_msme",
+      "title": "Vendors payable"
+     },
+     "advances": {
+      "source": "supplier:advance",
+      "title": "Advances to suppliers and others"
+     },
+     "cust": {
+      "source": "customer",
+      "title": "Customers"
+     },
+     "customer_advances": {
+      "source": "advance"
+     }
+    },
+    "ties": [
+     {
+      "title": "PF payable: employee and employer share (Zoho keeps one account)",
+      "lines": [
+       {
+        "block": "Detail of Statutory Liabilities",
+        "label": "Employee Contribution",
+        "nth": 1
+       },
+       {
+        "block": "Detail of Statutory Liabilities",
+        "label": "Employer Contribution",
+        "nth": 1
+       }
+      ],
+      "zoho": [
+       {
+        "source": "account:statutory_dues",
+        "name": "PF Payable"
+       }
+      ]
+     },
+     {
+      "title": "ESI payable: employee and employer share (Zoho keeps one account)",
+      "lines": [
+       {
+        "block": "Detail of Statutory Liabilities",
+        "label": "Employee Contribution",
+        "nth": 2
+       },
+       {
+        "block": "Detail of Statutory Liabilities",
+        "label": "Employer Contribution",
+        "nth": 2
+       }
+      ],
+      "zoho": [
+       {
+        "source": "account:statutory_dues",
+        "name": "ESI Payable"
+       }
+      ]
+     },
+     {
+      "title": "Insurance companies (used only when the split by ledger account is not available): the sheet shows each policy as payable or as advance, Zoho keeps one net balance per insurer (advances less payables)",
+      "lines": [
+       {
+        "block": "Detail of Advance to Suppliers",
+        "label": "HDFC ERGO GENERAL INSURANCE C Ltd"
+       },
+       {
+        "block": "Detail of Advance to Suppliers",
+        "label": "ICICI LOMBARD GENERAL INSURANCE COMPANY LIMITED (Guj.)"
+       },
+       {
+        "block": "Details of Balnces Outsanding with other Vendors",
+        "label": "HDFC ERGO GENERAL INSURANCE CO LTD (RAJ)",
+        "sign": -1
+       },
+       {
+        "block": "Details of Balnces Outsanding with other Vendors",
+        "label": "HDFC ERGO GENERAL INSURANCE CO LTD(Delhi)",
+        "sign": -1
+       },
+       {
+        "block": "Details of Balnces Outsanding with other Vendors",
+        "label": "ICICI LOMBARD GENERAL INSURANCE CO LTD (Raj.)",
+        "sign": -1
+       }
+      ],
+      "zoho": [
+       {
+        "source": "supplier:advance",
+        "name": "HDFC ERGO GENERAL INSURANCE COMPANY LIMITED",
+        "group": "advances"
+       },
+       {
+        "source": "supplier:advance",
+        "name": "ICICI Lombard General Insurance Co Ltd",
+        "group": "advances"
+       }
+      ]
+     },
+     {
+      "title": "RPE Energy Reserve (used only when the split by ledger account is not available): one contact in Zoho, shown on the sheet as an advance and as a loan",
+      "lines": [
+       {
+        "block": "Detail of Advance to Suppliers",
+        "label": "RPE ENERGY RESERVE PRIVATE LIMITED"
+       },
+       {
+        "block": "Details of Loan Given-Others",
+        "label": "RPE ENERGY RESERVE PRIVATE LIMITED"
+       }
+      ],
+      "zoho": [
+       {
+        "source": "supplier:advance",
+        "name": "RPE ENERGY RESERVE PRIVATE LIMITED ( Loans and Advances Assets )",
+        "group": "advances"
+       }
+      ]
+     },
+     {
+      "title": "HDFC ERGO payable (Rajasthan + Delhi), compared in total - used only when the bills' billing-address state could not be read: the sheet shows it for Rajasthan and for Delhi, Zoho books all of it at the Head Office (one payable)",
+      "lines": [
+       {
+        "block": "Details of Balnces Outsanding with other Vendors",
+        "label": "HDFC ERGO GENERAL INSURANCE CO LTD (RAJ)"
+       },
+       {
+        "block": "Details of Balnces Outsanding with other Vendors",
+        "label": "HDFC ERGO GENERAL INSURANCE CO LTD(Delhi)"
+       }
+      ],
+      "zoho": [
+       {
+        "source": "split:hdfc_ergo",
+        "name": "HDFC ERGO GENERAL INSURANCE COMPANY LIMITED"
+       }
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "p-l-grouping",
+   "sheet": "P&L Grouping",
+   "group": "Detail",
+   "status": "live",
+   "page": "/workbook/notes",
+   "note": "Account-wise detail behind the P&L notes. Every account is checked live against Zoho.",
+   "hidden": false,
+   "file": "p-l-grouping.json",
+   "mode": "grid",
+   "rows": 83,
+   "live": {
+    "label": 1,
+    "value": 2,
+    "keeps": "The numbering and the group headings stay as signed.",
+    "blocks": [
+     {
+      "start": "Detail of Sales-Project",
+      "source": "account",
+      "group": "acc",
+      "title": "Profit and loss accounts"
+     }
+    ],
+    "groups": {}
+   }
+  },
+  {
+   "id": "esi-pf",
+   "sheet": "ESI-PF",
+   "group": "Detail",
+   "status": "fixed",
+   "page": null,
+   "note": "Provident fund and ESI payments, month by month.",
+   "hidden": false,
+   "file": "esi-pf.json",
+   "mode": "grid",
+   "rows": 30,
+   "ties": [
+    {
+     "label": "PF admin + employer share + EPF admin + ESI employer = Note 25 contribution to provident and other funds",
+     "cell": "ESI-PF!B16 + C16 + H16 + E33",
+     "value": 2610740,
+     "expr": "x:n25_pf"
+    }
+   ]
+  },
+  {
+   "id": "prepaid",
+   "sheet": "Prepaid",
+   "group": "Detail",
+   "status": "fixed",
+   "page": null,
+   "note": "Insurance expense and prepaid detail.",
+   "hidden": true,
+   "file": "prepaid.json",
+   "mode": "grid",
+   "rows": 20
+  },
+  {
+   "id": "weighted-average-shares",
+   "sheet": "Weighted Average Shares",
+   "group": "Detail",
+   "status": "live",
+   "page": null,
+   "note": "Weighted average number of shares (for EPS).",
+   "hidden": false
+  },
+  {
+   "id": "i-tax-cases",
+   "sheet": "I. Tax Cases",
+   "group": "Litigation",
+   "status": "fixed",
+   "page": null,
+   "note": "Income tax cases. The portal sign-in details and the PAN are left out.",
+   "hidden": false,
+   "file": "i-tax-cases.json",
+   "mode": "grid",
+   "rows": 80
+  },
+  {
+   "id": "gst-cases",
+   "sheet": "GST Cases",
+   "group": "Litigation",
+   "status": "fixed",
+   "page": null,
+   "note": "GST cases and demands.",
+   "hidden": false,
+   "file": "gst-cases.json",
+   "mode": "grid",
+   "rows": 12
+  }
+ ]
+}

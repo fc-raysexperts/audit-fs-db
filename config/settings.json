@@ -17,5 +17,9 @@
     "2346113000026786417",
     "2346113000026787305"
   ],
-  "party_account_ids_meaning": "The 11 supplier / creditor / advance accounts known at FY26. The ledger is always asked for these PLUS any party account found in the live Trial Balance - so an account that nets to zero (and is hidden from a non-zero Trial Balance) can not hide offsetting party balances."
+  "stock_ledger_account": "Inventory Asset",
+  "stock_ledger_account_meaning": "update-18: the stock account whose ledger is read to explain the gap between the Trial Balance and the items booked to it (the Closing Stock tab). It is looked up by name among the stock accounts of the Trial Balance; leave it out to skip that call.",
+  "party_account_ids_meaning": "The 11 supplier / creditor / advance accounts known at FY26. The ledger is always asked for these PLUS any party account found in the live Trial Balance - so an account that nets to zero (and is hidden from a non-zero Trial Balance) can not hide offsetting party balances.",
+  "cwip_journal_budget": 100,
+  "cwip_journal_budget_meaning": "update-20: at most this many journals behind the CWIP and IAUD accounts are read from Zoho in one refresh when Redis is in use (137 are needed for FY26; the ones already cached are free); until all are known the CWIP tab keeps its signed park table. Without Redis (local test) all are read each time."
 }

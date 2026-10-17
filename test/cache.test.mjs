@@ -49,25 +49,36 @@ test('a part that has expired makes the value read as missing, never as half a v
   assert.equal(await cache.getJSON(PREFIX + 'nothing'), null);
 });
 
-test('snapshots: today first, else the newest good one marked stale; a bad run never replaces the good pointer', async () => {
+test('snapshots: today first, else the newest GOOD one marked stale; a flawed run never hides a good snapshot', async () => {
   const { cache, f } = make();
   const snap = (date, ok, mark) => ({ meta: { fy: '2025-26', istDate: date, generatedAt: date + 'T00:00:00Z', ok }, mark });
   assert.equal(await cache.getSnapshot('2025-26', '2026-10-15'), null);
 
+  // only a flawed snapshot exists: it is shown (flagged) rather than nothing
+  let w = await cache.putSnapshot(snap('2026-10-14', false, 'flawed-only'));
+  assert.deepEqual([w.kept, w.latestMoved], [false, false]);
+  let got = await cache.getSnapshot('2025-26', '2026-10-14');
+  assert.deepEqual([got.snapshot.mark, got.flawed, got.stale], ['flawed-only', true, false]);
+
   await cache.putSnapshot(snap('2026-10-14', true, 'yesterday'));
-  let got = await cache.getSnapshot('2025-26', '2026-10-15');
-  assert.equal(got.stale, true);
-  assert.equal(got.snapshot.mark, 'yesterday');
+  got = await cache.getSnapshot('2025-26', '2026-10-15');
+  assert.deepEqual([got.snapshot.mark, got.stale, got.flawed], ['yesterday', true, false]);
 
   await cache.putSnapshot(snap('2026-10-15', false, 'today-bad'));
   got = await cache.getSnapshot('2025-26', '2026-10-15');
-  assert.equal(got.stale, false, "today's own (bad) run is what today shows");
-  got = await cache.getSnapshot('2025-26', '2026-10-16');
-  assert.equal(got.snapshot.mark, 'yesterday', 'tomorrow falls back to the last GOOD snapshot, not the bad one');
+  assert.equal(got.snapshot.mark, 'yesterday', "today's flawed run does not replace the last good snapshot on screen");
 
   await cache.putSnapshot(snap('2026-10-15', true, 'today-good'));
+  got = await cache.getSnapshot('2025-26', '2026-10-15');
+  assert.deepEqual([got.snapshot.mark, got.stale], ['today-good', false]);
   got = await cache.getSnapshot('2025-26', '2026-10-16');
-  assert.equal(got.snapshot.mark, 'today-good');
+  assert.deepEqual([got.snapshot.mark, got.stale], ['today-good', true]);
+
+  // a later flawed run on the same day does not overwrite the good one
+  w = await cache.putSnapshot(snap('2026-10-15', false, 'today-bad-again'));
+  assert.deepEqual([w.kept, w.latestMoved], [true, false]);
+  assert.equal((await cache.getSnapshot('2025-26', '2026-10-15')).snapshot.mark, 'today-good');
+
   // seven-day life
   f.clock.t += 8 * 24 * 3600 * 1000;
   assert.equal(await cache.getSnapshot('2025-26', '2026-10-23'), null);

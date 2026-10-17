@@ -1,0 +1,352 @@
+{
+ "version": 1,
+ "fy": "2025-26",
+ "as_at": "2026-03-31",
+ "note": "Same formulas as Note 28 of the signed workbook. Ratios are shown to 2 decimals; the audited value is the one printed in the signed accounts.",
+ "constants": {
+  "issue_days": {
+   "value": 153,
+   "ref": "Weighted Average Shares!D4",
+   "meaning": "Days from the share allotment (30 Oct 2025) to the year end, both days counted"
+  }
+ },
+ "rows": [
+  {
+   "key": "r_current",
+   "label": "Current ratio",
+   "kind": "ratio",
+   "expr": "t:current_assets_total / t:current_liabilities_total",
+   "unit": "times",
+   "variance": true,
+   "tolerance": 0.02,
+   "audited": {
+    "value": 1.79,
+    "ref": "Note 28(B)!F14"
+   },
+   "fy25": 3.76,
+   "fy25_ref": "Note 28(B)!G14",
+   "numerator": "Total Current Assets",
+   "denominator": "Total Current Liabilities",
+   "reason": "Due to increase in current liabilities."
+  },
+  {
+   "key": "r_debt_equity",
+   "label": "Debt-equity ratio",
+   "kind": "ratio",
+   "expr": "(l:lt_borrowings + l:st_borrowings) / t:equity_total",
+   "unit": "times",
+   "variance": true,
+   "tolerance": 0.02,
+   "audited": {
+    "value": 0.2,
+    "ref": "Note 28(B)!F16"
+   },
+   "fy25": 0.09,
+   "fy25_ref": "Note 28(B)!G16",
+   "numerator": "Total Borrowings",
+   "denominator": "Total Shareholder's Fund",
+   "reason": "Due to increase in borrowings."
+  },
+  {
+   "key": "r_dscr",
+   "label": "Debt service coverage ratio",
+   "kind": "ratio",
+   "expr": "(l:pat + l:dep_amort + x:n26_car) / (x:n26_car + y:n8_cur)",
+   "unit": "times",
+   "variance": true,
+   "tolerance": 0.02,
+   "audited": {
+    "value": 111.86,
+    "ref": "Note 28(B)!F18"
+   },
+   "fy25": 53.92,
+   "fy25_ref": "Note 28(B)!G18",
+   "numerator": "Profit after tax + Depreciation and amortisation expenses + Interest on term loans",
+   "denominator": "Interest on term loans + Scheduled Principal repayments of terms loans during the year",
+   "reason": "Due to increase in Profit."
+  },
+  {
+   "key": "r_roe",
+   "label": "Return on equity ratio",
+   "kind": "ratio",
+   "expr": "l:pat / ((t:equity_total + p:equity_total) / 2) * 100",
+   "unit": "pct",
+   "variance": true,
+   "tolerance": 0.02,
+   "audited": {
+    "value": 42.14,
+    "ref": "Note 28(B)!F20"
+   },
+   "fy25": 49.28,
+   "fy25_ref": "Note 28(B)!G20",
+   "numerator": "Net Profit after Tax",
+   "denominator": "Average Total Shareholder's Fund",
+   "reason": "N.A."
+  },
+  {
+   "key": "r_inv_days",
+   "label": "Inventory turnover ratio",
+   "kind": "ratio",
+   "expr": "((l:inventories + p:inventories) / 2 * 365) / (x:n20_epc + x:n20_roof + x:n20_gen)",
+   "unit": "days",
+   "variance": true,
+   "tolerance": 0.02,
+   "audited": {
+    "value": 15.11,
+    "ref": "Note 28(B)!F22"
+   },
+   "fy25": 10.5,
+   "fy25_ref": "Note 28(B)!G22",
+   "numerator": "Average Inventory x No. of days in the reporting year",
+   "denominator": "Total Sale of Goods",
+   "reason": "Due to Increase in inventory levels."
+  },
+  {
+   "key": "r_rec_days",
+   "label": "Trade receivables turnover ratio",
+   "kind": "ratio",
+   "expr": "((l:trade_receivables + p:trade_receivables) / 2 * 365) / l:revenue",
+   "unit": "days",
+   "variance": true,
+   "tolerance": 0.02,
+   "audited": {
+    "value": 43.61,
+    "ref": "Note 28(B)!F24"
+   },
+   "fy25": 88.24,
+   "fy25_ref": "Note 28(B)!G24",
+   "numerator": "Average trade receivables x No. of days in the reporting year",
+   "denominator": "Revenue from Operations",
+   "reason": "Due to Increase in Revenue from Operations."
+  },
+  {
+   "key": "r_pay_days",
+   "label": "Trade payables turnover ratio",
+   "kind": "ratio",
+   "expr": "(((l:tp_msme + l:tp_others) + (p:tp_msme + p:tp_others)) / 2 * 365) / (l:purchases + l:inventory_change + l:operating_expenses + l:other_expenses)",
+   "unit": "days",
+   "variance": true,
+   "tolerance": 0.02,
+   "audited": {
+    "value": 6.27,
+    "ref": "Note 28(B)!F26"
+   },
+   "fy25": 19.01,
+   "fy25_ref": "Note 28(B)!G26",
+   "numerator": "Average trade payables x No. of days in the reporting year",
+   "denominator": "Cost of Goods Sold & Services",
+   "reason": "Due to Increase in Cost of goods sold & services."
+  },
+  {
+   "key": "r_ncap",
+   "label": "Net capital turnover ratio",
+   "kind": "ratio",
+   "expr": "l:revenue / (((t:current_assets_total - t:current_liabilities_total) + (p:current_assets_total - p:current_liabilities_total)) / 2)",
+   "unit": "times",
+   "variance": true,
+   "tolerance": 0.02,
+   "audited": {
+    "value": 6.82,
+    "ref": "Note 28(B)!F28"
+   },
+   "fy25": 3.55,
+   "fy25_ref": "Note 28(B)!G28",
+   "numerator": "Revenue from operations",
+   "denominator": "Average Working capital (i.e. Total current assets less Total current liabilities)",
+   "reason": "Due to Increase in Revenue from Operations."
+  },
+  {
+   "key": "r_np",
+   "label": "Net profit ratio",
+   "kind": "ratio",
+   "expr": "l:pbt / l:revenue * 100",
+   "unit": "pct",
+   "variance": true,
+   "tolerance": 0.02,
+   "audited": {
+    "value": 16.04,
+    "ref": "Note 28(B)!F30"
+   },
+   "fy25": 27.09,
+   "fy25_ref": "Note 28(B)!G30",
+   "numerator": "Profit before tax",
+   "denominator": "Revenue from operations",
+   "reason": "Due to increase in Revenue from Operations."
+  },
+  {
+   "key": "r_roce",
+   "label": "Return on capital employed",
+   "kind": "ratio",
+   "expr": "(l:pbt + x:n26_car) / (((t:equity_total + x:n5_car + x:note6) + (p:equity_total + y:n5_car + y:note6)) / 2) * 100",
+   "unit": "pct",
+   "variance": true,
+   "tolerance": 0.02,
+   "audited": {
+    "value": 56.46,
+    "ref": "Note 28(B)!F32"
+   },
+   "fy25": 65.24,
+   "fy25_ref": "Note 28(B)!G32",
+   "numerator": "Profit before tax and Interest on term loans",
+   "denominator": "Average Capital employed = Net worth + Total Term Loans + Deferred tax Liabilities",
+   "reason": "N.A."
+  },
+  {
+   "key": "h_eps",
+   "kind": "heading",
+   "label": "Earnings per share"
+  },
+  {
+   "key": "e_pat",
+   "kind": "line",
+   "label": "Profit after tax",
+   "expr": "l:pat",
+   "unit": "rupees",
+   "audited": {
+    "value": 475812977,
+    "ref": "Note 28(A)!K26"
+   },
+   "fy25": 258816467,
+   "fy25_ref": "Note 28(A)!L26"
+  },
+  {
+   "key": "e_shares",
+   "kind": "line",
+   "label": "Weighted average number of equity shares",
+   "unit": "shares",
+   "expr": "c:shares_opening + round((n:share_capital / c:face_value - c:shares_opening) * c:issue_days / 365)",
+   "detail": "opening shares for the full year, plus the shares issued on 30 October 2025 for the days they were outstanding",
+   "audited": {
+    "value": 5217642,
+    "ref": "Note 28(A)!K27"
+   },
+   "fy25": 4931441,
+   "fy25_ref": "Note 28(A)!L27",
+   "tolerance": 1
+  },
+  {
+   "key": "e_eps",
+   "kind": "ratio",
+   "label": "Basic and diluted earnings per share (Rs.)",
+   "expr": "row:e_pat / row:e_shares",
+   "unit": "eps",
+   "tolerance": 0.02,
+   "audited": {
+    "value": 91.19,
+    "ref": "Note 28(A)!K28"
+   },
+   "fy25": 52.48,
+   "fy25_ref": "Note 28(A)!L28"
+  },
+  {
+   "key": "h_msme",
+   "kind": "heading",
+   "label": "Micro and small enterprises (MSMED Act, 2006)"
+  },
+  {
+   "key": "m_principal",
+   "kind": "line",
+   "label": "Principal amount outstanding",
+   "expr": "l:tp_msme",
+   "unit": "rupees",
+   "audited": {
+    "value": 678716,
+    "ref": "Note 28(A)!K44"
+   },
+   "fy25": 26756802,
+   "fy25_ref": "Note 28(A)!L44"
+  },
+  {
+   "key": "m_45",
+   "kind": "line",
+   "label": "Principal amount due and remaining unpaid",
+   "expr": "0",
+   "unit": "rupees",
+   "audited": {
+    "value": 0,
+    "ref": "Note 28(A)!K45"
+   },
+   "fy25": 0,
+   "fy25_ref": "Note 28(A)!L45"
+  },
+  {
+   "key": "m_46",
+   "kind": "line",
+   "label": "Interest due on the above and the unpaid interest",
+   "expr": "0",
+   "unit": "rupees",
+   "audited": {
+    "value": 0,
+    "ref": "Note 28(A)!K46"
+   },
+   "fy25": 0,
+   "fy25_ref": "Note 28(A)!L46"
+  },
+  {
+   "key": "m_47",
+   "kind": "line",
+   "label": "Interest paid on all delayed payments",
+   "expr": "0",
+   "unit": "rupees",
+   "audited": {
+    "value": 0,
+    "ref": "Note 28(A)!K47"
+   },
+   "fy25": 0,
+   "fy25_ref": "Note 28(A)!L47"
+  },
+  {
+   "key": "m_48",
+   "kind": "line",
+   "label": "Payment made beyond the appointed day during the year",
+   "expr": "0",
+   "unit": "rupees",
+   "audited": {
+    "value": 0,
+    "ref": "Note 28(A)!K48"
+   },
+   "fy25": 0,
+   "fy25_ref": "Note 28(A)!L48"
+  },
+  {
+   "key": "m_49",
+   "kind": "line",
+   "label": "Interest due and payable for the period of delay",
+   "expr": "0",
+   "unit": "rupees",
+   "audited": {
+    "value": 0,
+    "ref": "Note 28(A)!K49"
+   },
+   "fy25": 0,
+   "fy25_ref": "Note 28(A)!L49"
+  },
+  {
+   "key": "m_50",
+   "kind": "line",
+   "label": "Interest accrued and remaining unpaid",
+   "expr": "0",
+   "unit": "rupees",
+   "audited": {
+    "value": 0,
+    "ref": "Note 28(A)!K50"
+   },
+   "fy25": 0,
+   "fy25_ref": "Note 28(A)!L50"
+  },
+  {
+   "key": "m_51",
+   "kind": "line",
+   "label": "Further interest remaining due and payable in succeeding years",
+   "expr": "0",
+   "unit": "rupees",
+   "audited": {
+    "value": 0,
+    "ref": "Note 28(A)!K51"
+   },
+   "fy25": 0,
+   "fy25_ref": "Note 28(A)!L51"
+  }
+ ],
+ "checks": []
+}

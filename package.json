@@ -8,10 +8,20 @@
     "node": ">=20"
   },
   "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
     "reconcile": "node scripts/reconcile.mjs",
     "test": "node --test",
     "zoho:token": "node scripts/zoho-token.mjs",
     "zoho:check": "node scripts/zoho-check.mjs",
     "live": "node scripts/live.mjs"
+  },
+  "dependencies": {
+    "@fontsource/ibm-plex-sans": "5.3.0",
+    "@fontsource/ibm-plex-serif": "5.3.0",
+    "next": "15.5.28",
+    "react": "19.1.1",
+    "react-dom": "19.1.1"
   }
 }

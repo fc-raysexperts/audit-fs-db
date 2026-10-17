@@ -1,0 +1,218 @@
+{
+  "version": 1,
+  "note": "Accounts that Zoho keeps as ONE ledger account but the signed workbook (BS Grouping) lists line by line. The ledger of each account (General Ledger Details, 01-Mar-2025 to the balance sheet date) is split row by row into the lines of the sheet by WORDS: in the row's own text, or - for a split with legs=true - in the journal behind the row (its notes and the names of its other accounts, for example 'IOB FD no. 015804000012280'). A row that names no part goes to the part marked rest (if there is one), otherwise it stays unassigned and the block compares it in total. A part that gets no row is not used (its line is then compared in total as before). All of this is checked against the Trial Balance: if the ledger of the account does not add up to the Trial Balance's closing balance, the split is not used. The same file also holds party_splits: a CONTACT that the sheet lists twice (an insurer as advance in one note and as payable in another, RPE Energy Reserve as loan and as advance) is split by the Zoho ledger account its entries sit in - the accounts a part names, and the part marked rest takes every other account of the contact. Nothing more is read from Zoho for this - except that a part may carry bill_state (HDFC ERGO's payable: Rajasthan / Delhi): it then takes the BILLS of its accounts whose billing-address state is one of those states, read from the bill itself (one small read per bill, kept 12 hours); a bill that cannot be read stays out of the split and is compared in total. If a part is on the other side of the ledger than the sheet shows it, or the contact has no balance, the split is not used and the sheet compares the contact's one balance.",
+  "splits": {
+    "fixed_deposits": {
+      "title": "Fixed Deposits, bank by bank",
+      "account": "2346113000000053659",
+      "name": "Fixed Deposits",
+      "normal": "debit",
+      "legs": true,
+      "parts": [
+        {
+          "name": "Axis Bank",
+          "words": [
+            "axis"
+          ]
+        },
+        {
+          "name": "State Bank of India",
+          "words": [
+            "sbi",
+            "sbbj",
+            "state bank"
+          ]
+        },
+        {
+          "name": "HDFC Bank",
+          "words": [
+            "hdfc"
+          ]
+        },
+        {
+          "name": "Kotak Bank",
+          "words": [
+            "kotak"
+          ]
+        },
+        {
+          "name": "IOB",
+          "words": [
+            "iob",
+            "indian overseas"
+          ]
+        },
+        {
+          "name": "ICICI",
+          "words": [
+            "icici"
+          ]
+        }
+      ]
+    },
+    "accrued_interest_fdr": {
+      "title": "Accrued Interest on FDR, bank by bank",
+      "account": "2346113000026786306",
+      "name": "Accrued Interest on FDR",
+      "normal": "debit",
+      "legs": true,
+      "parts": [
+        {
+          "name": "Axis Bank",
+          "words": [
+            "axis"
+          ]
+        },
+        {
+          "name": "State Bank of India",
+          "words": [
+            "sbi",
+            "sbbj",
+            "state bank"
+          ]
+        },
+        {
+          "name": "HDFC Bank",
+          "words": [
+            "hdfc"
+          ]
+        },
+        {
+          "name": "Kotak Bank",
+          "words": [
+            "kotak"
+          ]
+        },
+        {
+          "name": "IOB",
+          "words": [
+            "iob",
+            "indian overseas"
+          ]
+        },
+        {
+          "name": "ICICI",
+          "words": [
+            "icici"
+          ]
+        }
+      ]
+    },
+    "security_deposits_given": {
+      "title": "Security deposits given, one by one",
+      "account": "2346113000026786315",
+      "name": "Security Deposit-Given",
+      "normal": "debit",
+      "legs": true,
+      "parts": [
+        {
+          "name": "Security Deposit CDSL",
+          "words": [
+            "cdsl"
+          ]
+        },
+        {
+          "name": "Security Deposit NSDL",
+          "words": [
+            "nsdl"
+          ]
+        },
+        {
+          "name": "EMD for Tenders",
+          "words": [
+            "emd"
+          ]
+        }
+      ]
+    },
+    "pf_payable": {
+      "title": "PF Payable: employee share and employer share",
+      "account": "2346113000026786541",
+      "name": "PF Payable",
+      "normal": "credit",
+      "legs": false,
+      "parts": [
+        {
+          "name": "Employee Contribution",
+          "words": [
+            "employees contribution",
+            "employee contribution"
+          ]
+        },
+        {
+          "name": "Employer Contribution",
+          "rest": true
+        }
+      ]
+    }
+  },
+  "party_splits": {
+    "hdfc_ergo": {
+      "title": "HDFC ERGO General Insurance: advance, and payable for Delhi and for Rajasthan",
+      "contact": "2346113000000299421",
+      "name": "HDFC ERGO GENERAL INSURANCE COMPANY LIMITED",
+      "parts": [
+        {
+          "name": "HDFC ERGO - advance",
+          "side": "debit",
+          "accounts": [
+            "2346113000000030011"
+          ]
+        },
+        {
+          "name": "HDFC ERGO - payable, Delhi",
+          "side": "credit",
+          "accounts": [
+            "2346113000000000471"
+          ],
+          "bill_state": [
+            "Delhi"
+          ]
+        },
+        {
+          "name": "HDFC ERGO - payable, Rajasthan",
+          "side": "credit",
+          "rest": true
+        }
+      ]
+    },
+    "icici_lombard": {
+      "title": "ICICI Lombard General Insurance: advance and payable",
+      "contact": "2346113000008460478",
+      "name": "ICICI Lombard General Insurance Co Ltd",
+      "parts": [
+        {
+          "name": "ICICI Lombard - advance",
+          "side": "debit",
+          "accounts": [
+            "2346113000000030011"
+          ]
+        },
+        {
+          "name": "ICICI Lombard - payable",
+          "side": "credit",
+          "rest": true
+        }
+      ]
+    },
+    "rpe_energy": {
+      "title": "RPE Energy Reserve: loan and advance",
+      "contact": "2346113000026838287",
+      "name": "RPE ENERGY RESERVE PRIVATE LIMITED",
+      "parts": [
+        {
+          "name": "RPE Energy Reserve - loan",
+          "side": "debit",
+          "accounts": [
+            "2346113000026786146"
+          ]
+        },
+        {
+          "name": "RPE Energy Reserve - advance",
+          "side": "debit",
+          "rest": true
+        }
+      ]
+    }
+  }
+}

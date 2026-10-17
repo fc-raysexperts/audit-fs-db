@@ -1,0 +1,300 @@
+{
+ "version": 1,
+ "fy": "2025-26",
+ "as_at": "2026-03-31",
+ "note": "Gross block and accumulated depreciation by class come from the live Zoho accounts. The opening balances are last year's audited closing balances; additions and the year's charge are worked out as closing less opening (plus anything sold or written back, which was nil in FY26).",
+ "classes": [
+  {
+   "key": "land",
+   "label": "Land",
+   "section": "ppe",
+   "gross": [
+    "2346113000000054793"
+   ],
+   "accdep": [],
+   "opening": {
+    "gross": 11127118,
+    "accdep": 0,
+    "disposals": 0,
+    "writeback": 0
+   },
+   "audited": {
+    "additions": 3738800,
+    "closeGross": 14865918,
+    "charge": 0,
+    "closeAccdep": 0,
+    "net": 14865918,
+    "ref": "Note-12 MFA!row 12"
+   },
+   "prevNet": 11127118
+  },
+  {
+   "key": "building",
+   "label": "Office building",
+   "section": "ppe",
+   "gross": [
+    "2346113000000054829"
+   ],
+   "accdep": [
+    "2346113000026785877"
+   ],
+   "opening": {
+    "gross": 34667794,
+    "accdep": 13672003,
+    "disposals": 0,
+    "writeback": 0
+   },
+   "audited": {
+    "additions": 2843925,
+    "closeGross": 37511719,
+    "charge": 1063096,
+    "closeAccdep": 14735099,
+    "net": 22776620,
+    "ref": "Note-12 MFA!row 13"
+   },
+   "prevNet": 20995791
+  },
+  {
+   "key": "plant",
+   "label": "Plant and machinery",
+   "section": "ppe",
+   "gross": [
+    "2346113000026785922"
+   ],
+   "accdep": [
+    "2346113000026785931"
+   ],
+   "opening": {
+    "gross": 215826863,
+    "accdep": 80710117,
+    "disposals": 0,
+    "writeback": 0
+   },
+   "audited": {
+    "additions": 183340847,
+    "closeGross": 399167710,
+    "charge": 18095782,
+    "closeAccdep": 98805899,
+    "net": 300361811,
+    "ref": "Note-12 MFA!row 14"
+   },
+   "prevNet": 135116746
+  },
+  {
+   "key": "furniture",
+   "label": "Furniture and fixtures",
+   "section": "ppe",
+   "gross": [
+    "2346113000000054745"
+   ],
+   "accdep": [
+    "2346113000026785886"
+   ],
+   "opening": {
+    "gross": 10412427,
+    "accdep": 8346768,
+    "disposals": 0,
+    "writeback": 0
+   },
+   "audited": {
+    "additions": 233774,
+    "closeGross": 10646201,
+    "charge": 470813,
+    "closeAccdep": 8817581,
+    "net": 1828620,
+    "ref": "Note-12 MFA!row 15"
+   },
+   "prevNet": 2065659
+  },
+  {
+   "key": "vehicles",
+   "label": "Motor vehicles",
+   "section": "ppe",
+   "gross": [
+    "2346113000026785940"
+   ],
+   "accdep": [
+    "2346113000026785949"
+   ],
+   "opening": {
+    "gross": 31866584,
+    "accdep": 13650936,
+    "disposals": 0,
+    "writeback": 0
+   },
+   "audited": {
+    "additions": 300344,
+    "closeGross": 32166928,
+    "charge": 4706650,
+    "closeAccdep": 18357586,
+    "net": 13809342,
+    "ref": "Note-12 MFA!row 16"
+   },
+   "prevNet": 18215648
+  },
+  {
+   "key": "office_eq",
+   "label": "Office equipments",
+   "section": "ppe",
+   "gross": [
+    "2346113000000054853"
+   ],
+   "accdep": [
+    "2346113000026785913"
+   ],
+   "opening": {
+    "gross": 4366930,
+    "accdep": 3495091,
+    "disposals": 0,
+    "writeback": 0
+   },
+   "audited": {
+    "additions": 468507,
+    "closeGross": 4835437,
+    "charge": 446682,
+    "closeAccdep": 3941773,
+    "net": 893664,
+    "ref": "Note-12 MFA!row 17"
+   },
+   "prevNet": 871839
+  },
+  {
+   "key": "computers",
+   "label": "Computer equipments",
+   "section": "ppe",
+   "gross": [
+    "2346113000026785895"
+   ],
+   "accdep": [
+    "2346113000026785904"
+   ],
+   "opening": {
+    "gross": 7358101,
+    "accdep": 5895183,
+    "disposals": 0,
+    "writeback": 0
+   },
+   "audited": {
+    "additions": 1730112,
+    "closeGross": 9088213,
+    "charge": 1089841,
+    "closeAccdep": 6985024,
+    "net": 2103189,
+    "ref": "Note-12 MFA!row 18"
+   },
+   "prevNet": 1462918
+  },
+  {
+   "key": "dev_rights",
+   "label": "Solar park development rights",
+   "section": "intangible",
+   "gross": [
+    "2346113000026785958"
+   ],
+   "accdep": [
+    "2346113000026785967"
+   ],
+   "opening": {
+    "gross": 12528878,
+    "accdep": 4840229,
+    "disposals": 0,
+    "writeback": 0
+   },
+   "audited": {
+    "additions": 85003627,
+    "closeGross": 97532505,
+    "charge": 65865995,
+    "closeAccdep": 70706224,
+    "net": 26826281,
+    "ref": "Note-12 MFA!row 23"
+   },
+   "prevNet": 7688649
+  }
+ ],
+ "previousYearTotal": {
+  "openGross": 225891982,
+  "additions": 103753908,
+  "disposals": 1491195,
+  "closeGross": 328154695,
+  "openAccdep": 110027898,
+  "charge": 20582429,
+  "writeback": 0,
+  "closeAccdep": 130610327,
+  "net": 197544368,
+  "prevNet": 115864084
+ },
+ "cwip": {
+  "fy25": 23742382,
+  "audited": 154285530,
+  "ref": "Note-12 MFA!K30"
+ },
+ "iaud": {
+  "fy25": 41874183,
+  "audited": 254822808,
+  "ref": "Note-12 MFA!K32"
+ },
+ "ageing": {
+  "cwip": {
+   "title": "Capital work-in-progress: ageing",
+   "rows": [
+    {
+     "label": "Less than 1 year",
+     "live": "rest",
+     "fy25": 23742382,
+     "audited": 154285530
+    },
+    {
+     "label": "1 to 2 years",
+     "fixed": 0,
+     "fy25": 0,
+     "audited": 0
+    },
+    {
+     "label": "2 to 3 years",
+     "fixed": 0,
+     "fy25": 0,
+     "audited": 0
+    },
+    {
+     "label": "More than 3 years",
+     "fixed": 0,
+     "fy25": 0,
+     "audited": 0
+    }
+   ]
+  },
+  "iaud": {
+   "title": "Intangible assets under development: ageing",
+   "rows": [
+    {
+     "label": "Less than 1 year",
+     "live": "rest",
+     "fy25": 41874183,
+     "audited": 203474863
+    },
+    {
+     "label": "1 to 2 years",
+     "fixed": 51347945,
+     "fy25": 0,
+     "audited": 51347945
+    },
+    {
+     "label": "2 to 3 years",
+     "fixed": 0,
+     "fy25": 0,
+     "audited": 0
+    },
+    {
+     "label": "More than 3 years",
+     "fixed": 0,
+     "fy25": 0,
+     "audited": 0
+    }
+   ]
+  }
+ },
+ "statements": [
+  "There are no projects as on the reporting period which has exceeded cost as compared to its original plan or where completion is overdue.",
+  "There are no intangible assets under development as on the reporting period which has exceeded cost as compared to its original plan or where completion is overdue."
+ ]
+}

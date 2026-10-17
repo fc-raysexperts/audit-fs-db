@@ -1,0 +1,501 @@
+{
+ "version": 1,
+ "fy": "2025-26",
+ "as_at": "2026-03-31",
+ "note": "Indirect method (AS-3), the same formulas as the CF sheet of the signed workbook. l: = this year's statement line (live), p: = last year's audited line, x: / y: = a row of the notes this year (live) / last year (audited), c: = constant, row: = another row of this statement.",
+ "constants": {
+  "fa_disposals": {
+   "value": 0,
+   "ref": "Note-12 MFA!E27",
+   "meaning": "Gross block of assets sold or discarded in the year (nil in FY26)"
+  }
+ },
+ "rows": [
+  {
+   "key": "h_A._Cash_flow",
+   "label": "A. Cash flow from operating activities",
+   "kind": "heading"
+  },
+  {
+   "key": "cf_pbt",
+   "label": "Net profit before tax, as per the statement of profit and loss",
+   "kind": "line",
+   "expr": "l:pbt",
+   "audited": {
+    "value": 647145398,
+    "ref": "CF!G11"
+   },
+   "fy25": 361676445,
+   "fy25_ref": "CF!J11"
+  },
+  {
+   "key": "cf_prov",
+   "label": "Provision for gratuity and leave encashment",
+   "kind": "line",
+   "expr": "l:lt_provisions - p:lt_provisions",
+   "audited": {
+    "value": 6811922,
+    "ref": "CF!F13"
+   },
+   "fy25": 12677348,
+   "fy25_ref": "CF!I13",
+   "detail": "increase in long-term provisions"
+  },
+  {
+   "key": "cf_dep",
+   "label": "Depreciation and amortisation",
+   "kind": "line",
+   "expr": "l:dep_amort",
+   "audited": {
+    "value": 91738859,
+    "ref": "CF!F14"
+   },
+   "fy25": 20582429,
+   "fy25_ref": "CF!I14"
+  },
+  {
+   "key": "cf_int",
+   "label": "Interest income",
+   "kind": "line",
+   "expr": "-x:n21_fdr",
+   "audited": {
+    "value": -15872257,
+    "ref": "CF!F15"
+   },
+   "fy25": -9792238,
+   "fy25_ref": "CF!I15",
+   "detail": "shown in investing activities instead"
+  },
+  {
+   "key": "cf_fin",
+   "label": "Finance costs",
+   "kind": "line",
+   "expr": "l:finance",
+   "audited": {
+    "value": 21610499,
+    "ref": "CF!F16"
+   },
+   "fy25": 6355359,
+   "fy25_ref": "CF!I16",
+   "detail": "shown in financing activities instead"
+  },
+  {
+   "key": "cf_noncash",
+   "label": "Other non-cash items",
+   "kind": "line",
+   "expr": "c:fa_disposals",
+   "audited": {
+    "value": 0,
+    "ref": "CF!F17"
+   },
+   "fy25": 1491195,
+   "fy25_ref": "CF!I17",
+   "detail": "assets sold or discarded"
+  },
+  {
+   "key": "cf_adj",
+   "label": "Total adjustments",
+   "kind": "subtotal",
+   "expr": "row:cf_prov + row:cf_dep + row:cf_int + row:cf_fin + row:cf_noncash",
+   "audited": {
+    "value": 104289023,
+    "ref": "CF!G18"
+   },
+   "fy25": 31314093,
+   "fy25_ref": "CF!J18"
+  },
+  {
+   "key": "cf_opcp",
+   "label": "Operating cash profit before working capital changes",
+   "kind": "subtotal",
+   "expr": "row:cf_pbt + row:cf_adj",
+   "audited": {
+    "value": 751434421,
+    "ref": "CF!G19"
+   },
+   "fy25": 392990538,
+   "fy25_ref": "CF!J19"
+  },
+  {
+   "key": "h_Add_/_(deduc",
+   "label": "Add / (deduct): changes in working capital",
+   "kind": "heading"
+  },
+  {
+   "key": "cf_tp",
+   "label": "Increase / (decrease) in trade payables",
+   "kind": "line",
+   "expr": "(l:tp_msme + l:tp_others) - (p:tp_msme + p:tp_others)",
+   "audited": {
+    "value": 46369385,
+    "ref": "CF!F21"
+   },
+   "fy25": -29333125,
+   "fy25_ref": "CF!I21"
+  },
+  {
+   "key": "cf_ol",
+   "label": "Increase / (decrease) in other liabilities",
+   "kind": "line",
+   "expr": "x:note10 - y:note10",
+   "audited": {
+    "value": 347668709,
+    "ref": "CF!F22"
+   },
+   "fy25": -13267660,
+   "fy25_ref": "CF!I22",
+   "detail": "other current liabilities"
+  },
+  {
+   "key": "cf_inv",
+   "label": "(Increase) / decrease in inventories",
+   "kind": "line",
+   "expr": "-(l:inventories - p:inventories)",
+   "audited": {
+    "value": -244713394,
+    "ref": "CF!F23"
+   },
+   "fy25": -12786912,
+   "fy25_ref": "CF!I23"
+  },
+  {
+   "key": "cf_rec",
+   "label": "(Increase) / decrease in trade receivables",
+   "kind": "line",
+   "expr": "-(l:trade_receivables - p:trade_receivables)",
+   "audited": {
+    "value": -144624335,
+    "ref": "CF!F24"
+   },
+   "fy25": -174081770,
+   "fy25_ref": "CF!I24"
+  },
+  {
+   "key": "cf_loans",
+   "label": "(Increase) / decrease in loans and advances",
+   "kind": "line",
+   "expr": "-(x:note18 - y:note18)",
+   "audited": {
+    "value": -302650544,
+    "ref": "CF!F25"
+   },
+   "fy25": 3389576,
+   "fy25_ref": "CF!I25",
+   "detail": "short-term loans and advances"
+  },
+  {
+   "key": "cf_oa",
+   "label": "(Increase) / decrease in other assets",
+   "kind": "line",
+   "expr": "-((x:note19 + x:note14) - (y:note19 + y:note14) + (y:n14_fd - x:n14_fd) + (y:n19_fd - x:n19_fd))",
+   "audited": {
+    "value": 2035043,
+    "ref": "CF!F26"
+   },
+   "fy25": -9901791,
+   "fy25_ref": "CF!I26",
+   "detail": "other current and non-current assets, leaving out bank deposits (shown in investing activities)"
+  },
+  {
+   "key": "cf_wc",
+   "label": "Total working capital changes",
+   "kind": "subtotal",
+   "expr": "row:cf_tp + row:cf_ol + row:cf_inv + row:cf_rec + row:cf_loans + row:cf_oa",
+   "audited": {
+    "value": -295915136,
+    "ref": "CF!G27"
+   },
+   "fy25": -235981682,
+   "fy25_ref": "CF!J27"
+  },
+  {
+   "key": "cf_cfo",
+   "label": "Cash generated from operations",
+   "kind": "subtotal",
+   "expr": "row:cf_opcp + row:cf_wc",
+   "audited": {
+    "value": 455519285,
+    "ref": "CF!G28"
+   },
+   "fy25": 157008856,
+   "fy25_ref": "CF!J28"
+  },
+  {
+   "key": "cf_tax",
+   "label": "Direct taxes paid",
+   "kind": "line",
+   "expr": "x:n11_tax - y:n11_tax + l:current_tax + l:earlier_year_tax",
+   "audited": {
+    "value": -166749908,
+    "ref": "CF!G30"
+   },
+   "fy25": -68784557,
+   "fy25_ref": "CF!J30",
+   "detail": "tax provided in the year, adjusted for the change in the net tax provision"
+  },
+  {
+   "key": "cf_net_op",
+   "label": "Net cash flow from operating activities (A)",
+   "kind": "total",
+   "expr": "row:cf_cfo + row:cf_tax",
+   "audited": {
+    "value": 288769377,
+    "ref": "CF!G31"
+   },
+   "fy25": 88224299,
+   "fy25_ref": "CF!J31"
+  },
+  {
+   "key": "h_B._Cash_flow",
+   "label": "B. Cash flow from investing activities",
+   "kind": "heading"
+  },
+  {
+   "key": "cf_ppe",
+   "label": "Purchase of property, plant and equipment and intangible assets",
+   "kind": "line",
+   "expr": "-(l:ppe + l:intangibles - p:ppe - p:intangibles + l:dep_amort + c:fa_disposals) - (l:cwip - p:cwip) - (l:iaud - p:iaud)",
+   "audited": {
+    "value": -621151709,
+    "ref": "CF!F34"
+   },
+   "fy25": -169370473,
+   "fy25_ref": "CF!I34",
+   "detail": "additions to assets, capital work-in-progress and intangibles under development"
+  },
+  {
+   "key": "cf_subs",
+   "label": "Investment in equity shares of subsidiaries",
+   "kind": "line",
+   "expr": "-(l:nc_investments - p:nc_investments)",
+   "audited": {
+    "value": -150000,
+    "ref": "CF!F35"
+   },
+   "fy25": -300000,
+   "fy25_ref": "CF!I35"
+  },
+  {
+   "key": "cf_sale",
+   "label": "Proceeds from sale of investment",
+   "kind": "line",
+   "expr": "0",
+   "audited": {
+    "value": 0,
+    "ref": "CF!F36"
+   },
+   "fy25": 0,
+   "fy25_ref": "CF!I36"
+  },
+  {
+   "key": "cf_bank",
+   "label": "Bank deposits",
+   "kind": "line",
+   "expr": "(y:n14_fd - x:n14_fd) + (y:n19_fd - x:n19_fd)",
+   "audited": {
+    "value": -173426508,
+    "ref": "CF!F37"
+   },
+   "fy25": -138117295,
+   "fy25_ref": "CF!I37",
+   "detail": "deposits with maturity of more than 3 months"
+  },
+  {
+   "key": "cf_intrec",
+   "label": "Interest income",
+   "kind": "line",
+   "expr": "x:n21_fdr",
+   "audited": {
+    "value": 15872257,
+    "ref": "CF!F38"
+   },
+   "fy25": 9792238,
+   "fy25_ref": "CF!I38"
+  },
+  {
+   "key": "cf_otherinv",
+   "label": "Other inflow / (outflow) of investing activities",
+   "kind": "line",
+   "expr": "0",
+   "audited": {
+    "value": 0,
+    "ref": "CF!F39"
+   },
+   "fy25": 0,
+   "fy25_ref": "CF!I39"
+  },
+  {
+   "key": "cf_net_inv",
+   "label": "Net cash flow from investing activities (B)",
+   "kind": "total",
+   "expr": "row:cf_ppe + row:cf_subs + row:cf_sale + row:cf_bank + row:cf_intrec + row:cf_otherinv",
+   "audited": {
+    "value": -778855960,
+    "ref": "CF!G41"
+   },
+   "fy25": -297995530,
+   "fy25_ref": "CF!J41"
+  },
+  {
+   "key": "h_C._Cash_flow",
+   "label": "C. Cash flow from financing activities",
+   "kind": "heading"
+  },
+  {
+   "key": "cf_borrow",
+   "label": "Net inflow / (outflow) from borrowings",
+   "kind": "line",
+   "expr": "(l:lt_borrowings + l:st_borrowings) - (p:lt_borrowings + p:st_borrowings)",
+   "audited": {
+    "value": 236891608,
+    "ref": "CF!F44"
+   },
+   "fy25": 19311006,
+   "fy25_ref": "CF!I44"
+  },
+  {
+   "key": "cf_equity",
+   "label": "Net proceeds from issue of equity shares",
+   "kind": "line",
+   "expr": "l:share_capital - p:share_capital + x:n4_sp_close - x:n4_sp_open",
+   "audited": {
+    "value": 281236610,
+    "ref": "CF!F45"
+   },
+   "fy25": 191683800,
+   "fy25_ref": "CF!I45",
+   "detail": "share capital plus securities premium raised, net of issue expenses"
+  },
+  {
+   "key": "cf_fincost",
+   "label": "Finance costs",
+   "kind": "line",
+   "expr": "-l:finance",
+   "audited": {
+    "value": -21610499,
+    "ref": "CF!F46"
+   },
+   "fy25": -6355359,
+   "fy25_ref": "CF!I46"
+  },
+  {
+   "key": "cf_otherfin",
+   "label": "Other inflows / (outflows) of financing activities",
+   "kind": "line",
+   "expr": "0",
+   "audited": {
+    "value": 0,
+    "ref": "CF!F47"
+   },
+   "fy25": 0,
+   "fy25_ref": "CF!I47"
+  },
+  {
+   "key": "cf_net_fin",
+   "label": "Net cash flow from financing activities (C)",
+   "kind": "total",
+   "expr": "row:cf_borrow + row:cf_equity + row:cf_fincost + row:cf_otherfin",
+   "audited": {
+    "value": 496517719,
+    "ref": "CF!G49"
+   },
+   "fy25": 204639447,
+   "fy25_ref": "CF!J49"
+  },
+  {
+   "key": "h_Cash_and_cas",
+   "label": "Cash and cash equivalents",
+   "kind": "heading"
+  },
+  {
+   "key": "cf_net",
+   "label": "Increase / (decrease) in cash and cash equivalents (A + B + C)",
+   "kind": "subtotal",
+   "expr": "row:cf_net_op + row:cf_net_inv + row:cf_net_fin",
+   "audited": {
+    "value": 6431136,
+    "ref": "CF!G51"
+   },
+   "fy25": -5131784,
+   "fy25_ref": "CF!J51"
+  },
+  {
+   "key": "cf_open",
+   "label": "Add: balance at the beginning of the year",
+   "kind": "line",
+   "expr": "p:cash",
+   "audited": {
+    "value": 8073988,
+    "ref": "CF!G52"
+   },
+   "fy25": 13205772,
+   "fy25_ref": "CF!J52"
+  },
+  {
+   "key": "cf_close",
+   "label": "Balance at the end of the year",
+   "kind": "total",
+   "expr": "row:cf_net + row:cf_open",
+   "audited": {
+    "value": 14505124,
+    "ref": "CF!G53"
+   },
+   "fy25": 8073988,
+   "fy25_ref": "CF!J53"
+  }
+ ],
+ "proof": [
+  {
+   "key": "cf_p_hand",
+   "label": "Cash in hand",
+   "kind": "line",
+   "expr": "x:n17_hand",
+   "audited": {
+    "value": 1691336,
+    "ref": "CF!G56"
+   },
+   "fy25": 4284636,
+   "fy25_ref": "CF!J56"
+  },
+  {
+   "key": "cf_p_bank",
+   "label": "Balance with banks: current accounts",
+   "kind": "line",
+   "expr": "x:n17_bank",
+   "audited": {
+    "value": 12813788,
+    "ref": "CF!G58"
+   },
+   "fy25": 3789352,
+   "fy25_ref": "CF!J58"
+  },
+  {
+   "key": "cf_p_dep",
+   "label": "Balance with banks: deposits with original maturity under 3 months",
+   "kind": "line",
+   "expr": "x:n17_dep",
+   "audited": {
+    "value": 0,
+    "ref": "CF!G59"
+   },
+   "fy25": 0,
+   "fy25_ref": "CF!J59"
+  },
+  {
+   "key": "cf_p_tot",
+   "label": "Cash and cash equivalents as per Note 17",
+   "kind": "total",
+   "expr": "row:cf_p_hand + row:cf_p_bank + row:cf_p_dep",
+   "audited": {
+    "value": 14505124,
+    "ref": "CF!G60"
+   },
+   "fy25": 8073988,
+   "fy25_ref": "CF!J60"
+  }
+ ],
+ "notes": [
+  "Prepared under the \"indirect method\" as set out in Accounting Standard 3 on Cash Flow Statements.",
+  "Previous year's figures have been regrouped / rearranged wherever necessary."
+ ]
+}

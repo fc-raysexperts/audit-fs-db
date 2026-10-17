@@ -1,0 +1,522 @@
+{
+ "version": 1,
+ "fy": "2025-26",
+ "as_at": "2026-03-31",
+ "note": "Computation of income and the deferred tax working, as in the workbook. Figures the Trial Balance cannot show (tax-law depreciation, interest on tax) are year-end inputs from the auditors.",
+ "constants": {
+  "dis_tax_demands": {
+   "value": 0,
+   "ref": "Computation!H19",
+   "meaning": "Income tax and TDS demands disallowed (section 40(a)(ii))"
+  },
+  "dis_epf_penalty": {
+   "value": 0,
+   "ref": "Computation!H20",
+   "meaning": "EPF penalty disallowed (section 37)"
+  },
+  "dis_msme_43bh": {
+   "value": 0,
+   "ref": "Computation!H21",
+   "meaning": "Payments to micro and small vendors beyond the allowed time (section 43B(h))"
+  },
+  "dis_pf": {
+   "value": 0,
+   "ref": "Computation!H28",
+   "meaning": "Employees' contribution to PF paid late"
+  },
+  "dis_esi": {
+   "value": 0,
+   "ref": "Computation!H29",
+   "meaning": "Employees' contribution to ESI paid late"
+  },
+  "prev_year_allowed": {
+   "value": 0,
+   "ref": "Computation!H32",
+   "meaning": "Expenses disallowed in an earlier year that are now allowed"
+  },
+  "it_depreciation": {
+   "value": 47854719,
+   "ref": "IT-Dep.!J27",
+   "meaning": "Depreciation allowed under the Income Tax Act (auditors' IT depreciation chart)"
+  },
+  "cap_gains": {
+   "value": 0,
+   "ref": "Computation!J42",
+   "meaning": "Income from capital gains"
+  },
+  "tax_rate": {
+   "value": 0.22,
+   "ref": "Computation!G50",
+   "meaning": "Normal tax rate"
+  },
+  "surcharge": {
+   "value": 0.1,
+   "ref": "Computation!G51",
+   "meaning": "Surcharge"
+  },
+  "cess": {
+   "value": 0.04,
+   "ref": "Computation!G52",
+   "meaning": "Health and education cess"
+  },
+  "tax_interest": {
+   "value": 10287632,
+   "ref": "Computation!J53",
+   "meaning": "Interest on tax (sections 234B / 234C), as worked out by the auditors"
+  },
+  "wdv_income_tax": {
+   "value": 364917108,
+   "ref": "D.Tax!E24",
+   "meaning": "Written-down value of assets as per the Income Tax Act (auditors' IT depreciation chart)"
+  },
+  "dt_rate": {
+   "value": 0.25168,
+   "ref": "D.Tax!G26",
+   "meaning": "Rate for deferred tax (22% + 10% surcharge + 4% cess)"
+  }
+ },
+ "computation": {
+  "rows": [
+   {
+    "key": "c_pbt",
+    "label": "Profit before tax as per the statement of profit and loss",
+    "kind": "line",
+    "expr": "l:pbt",
+    "unit": "rupees",
+    "audited": {
+     "value": 647145398,
+     "ref": "Computation!J12"
+    }
+   },
+   {
+    "key": "h_c1",
+    "kind": "heading",
+    "label": "Add: items of expenses to be considered separately"
+   },
+   {
+    "key": "c_dep",
+    "label": "Depreciation",
+    "kind": "line",
+    "expr": "l:dep_amort",
+    "unit": "rupees",
+    "audited": {
+     "value": 91738859,
+     "ref": "Computation!J15"
+    }
+   },
+   {
+    "key": "c_mf",
+    "label": "Gain on sale of mutual fund",
+    "kind": "line",
+    "expr": "-x:n21_mf",
+    "unit": "rupees",
+    "audited": {
+     "value": 0,
+     "ref": "Computation!J16"
+    }
+   },
+   {
+    "key": "h_c2",
+    "kind": "heading",
+    "label": "Add: items of expenses disallowed under the Income Tax Act, 1961"
+   },
+   {
+    "key": "c_d1",
+    "label": "Section 40(a)(ii): income tax and TDS demands",
+    "kind": "line",
+    "expr": "c:dis_tax_demands",
+    "unit": "rupees",
+    "audited": {
+     "value": 0,
+     "ref": "Computation!H19"
+    }
+   },
+   {
+    "key": "c_d2",
+    "label": "Section 37: EPF penalty",
+    "kind": "line",
+    "expr": "c:dis_epf_penalty",
+    "unit": "rupees",
+    "audited": {
+     "value": 0,
+     "ref": "Computation!H20"
+    }
+   },
+   {
+    "key": "c_d3",
+    "label": "Section 43B(h): micro and small vendors",
+    "kind": "line",
+    "expr": "c:dis_msme_43bh",
+    "unit": "rupees",
+    "audited": {
+     "value": 0,
+     "ref": "Computation!H21"
+    }
+   },
+   {
+    "key": "c_d4",
+    "label": "Section 37: CSR expenses",
+    "kind": "line",
+    "expr": "x:n27_csr",
+    "unit": "rupees",
+    "audited": {
+     "value": 1405000,
+     "ref": "Computation!H22"
+    },
+    "detail": "live: Note 27"
+   },
+   {
+    "key": "c_d5",
+    "label": "Section 37: interest on TDS",
+    "kind": "line",
+    "expr": "a:2346113000026787088",
+    "unit": "rupees",
+    "audited": {
+     "value": 675912,
+     "ref": "Computation!H23"
+    },
+    "detail": "live: Zoho account"
+   },
+   {
+    "key": "c_d6",
+    "label": "Section 43B(f): provision for leave encashment",
+    "kind": "line",
+    "expr": "x:n25_leave",
+    "unit": "rupees",
+    "audited": {
+     "value": 3553968,
+     "ref": "Computation!H24"
+    },
+    "detail": "live: Note 25"
+   },
+   {
+    "key": "c_d7",
+    "label": "Section 40A(7): provision for gratuity",
+    "kind": "line",
+    "expr": "x:n7_grat - y:n7_grat",
+    "unit": "rupees",
+    "audited": {
+     "value": 3257954,
+     "ref": "Computation!H25"
+    },
+    "detail": "live: Note 7, closing less opening provision"
+   },
+   {
+    "key": "c_dis",
+    "label": "Total disallowed under the Act",
+    "kind": "subtotal",
+    "expr": "row:c_d1 + row:c_d2 + row:c_d3 + row:c_d4 + row:c_d5 + row:c_d6 + row:c_d7",
+    "unit": "rupees",
+    "audited": {
+     "value": 8892834,
+     "ref": "Computation!J25"
+    }
+   },
+   {
+    "key": "c_pf",
+    "label": "Add: employees' contribution to PF and ESI (section 36(1)(va))",
+    "kind": "line",
+    "expr": "c:dis_pf + c:dis_esi",
+    "unit": "rupees",
+    "audited": {
+     "value": 0,
+     "ref": "Computation!J29"
+    }
+   },
+   {
+    "key": "c_prev",
+    "label": "Less: expenses disallowed in an earlier year, now allowed",
+    "kind": "line",
+    "expr": "c:prev_year_allowed",
+    "unit": "rupees",
+    "audited": {
+     "value": 0,
+     "ref": "Computation!J32"
+    }
+   },
+   {
+    "key": "c_itdep",
+    "label": "Less: depreciation under section 32(1)",
+    "kind": "line",
+    "expr": "-c:it_depreciation",
+    "unit": "rupees",
+    "audited": {
+     "value": -47854719,
+     "ref": "Computation!J37"
+    }
+   },
+   {
+    "key": "c_pgbp",
+    "label": "Income from business or profession",
+    "kind": "subtotal",
+    "expr": "row:c_pbt + row:c_dep + row:c_mf + row:c_dis + row:c_pf - row:c_prev + row:c_itdep",
+    "unit": "rupees",
+    "audited": {
+     "value": 699922372,
+     "ref": "Computation!J38"
+    }
+   },
+   {
+    "key": "c_cg",
+    "label": "Income from capital gains",
+    "kind": "line",
+    "expr": "c:cap_gains",
+    "unit": "rupees",
+    "audited": {
+     "value": 0,
+     "ref": "Computation!J42"
+    }
+   },
+   {
+    "key": "c_gti",
+    "label": "Gross total income / taxable income",
+    "kind": "subtotal",
+    "expr": "row:c_pgbp + row:c_cg",
+    "unit": "rupees",
+    "audited": {
+     "value": 699922372,
+     "ref": "Computation!J47"
+    }
+   },
+   {
+    "key": "h_c3",
+    "kind": "heading",
+    "label": "Tax"
+   },
+   {
+    "key": "c_tax",
+    "label": "Tax at the normal rate (22%)",
+    "kind": "line",
+    "expr": "round(row:c_gti * c:tax_rate)",
+    "unit": "rupees",
+    "audited": {
+     "value": 153982922,
+     "ref": "Computation!J50"
+    }
+   },
+   {
+    "key": "c_sur",
+    "label": "Add: surcharge (10%)",
+    "kind": "line",
+    "expr": "row:c_tax * c:surcharge",
+    "unit": "rupees",
+    "audited": {
+     "value": 15398292.2,
+     "ref": "Computation!J51"
+    }
+   },
+   {
+    "key": "c_cess",
+    "label": "Add: health and education cess (4%)",
+    "kind": "line",
+    "expr": "(row:c_tax + row:c_sur) * c:cess",
+    "unit": "rupees",
+    "audited": {
+     "value": 6775248.57,
+     "ref": "Computation!J52"
+    }
+   },
+   {
+    "key": "c_int",
+    "label": "Add: interest",
+    "kind": "line",
+    "expr": "c:tax_interest",
+    "unit": "rupees",
+    "audited": {
+     "value": 10287632,
+     "ref": "Computation!J53"
+    }
+   },
+   {
+    "key": "c_total",
+    "label": "Total tax payable",
+    "kind": "total",
+    "expr": "round(row:c_tax + row:c_sur + row:c_cess + row:c_int)",
+    "unit": "rupees",
+    "audited": {
+     "value": 186444095,
+     "ref": "Computation!J54"
+    }
+   },
+   {
+    "key": "h_c4",
+    "kind": "heading",
+    "label": "Less: tax paid"
+   },
+   {
+    "key": "c_tds",
+    "label": "TDS receivable",
+    "kind": "line",
+    "expr": "r:tds_tcs_receivable",
+    "unit": "rupees",
+    "audited": {
+     "value": 14395010,
+     "ref": "Computation!H57"
+    },
+    "detail": "live: Zoho"
+   },
+   {
+    "key": "c_adv",
+    "label": "Advance tax",
+    "kind": "line",
+    "expr": "r:advance_tax",
+    "unit": "rupees",
+    "audited": {
+     "value": 106100000,
+     "ref": "Computation!H59"
+    },
+    "detail": "live: Zoho"
+   },
+   {
+    "key": "c_payable",
+    "label": "Tax payable / (refundable)",
+    "kind": "total",
+    "expr": "row:c_total - row:c_tds - row:c_adv",
+    "unit": "rupees",
+    "audited": {
+     "value": 65949085,
+     "ref": "Computation!J62"
+    }
+   }
+  ],
+  "checks": [
+   {
+    "key": "tax_vs_books",
+    "label": "Tax computed = current tax booked in Zoho (statement of profit and loss)",
+    "expr": "row:c_total + l:current_tax",
+    "tolerance": 25
+   },
+   {
+    "key": "payable_vs_note11",
+    "label": "Tax payable = provision for income tax in Note 11",
+    "expr": "row:c_payable - x:n11_tax",
+    "tolerance": 25
+   }
+  ]
+ },
+ "deferred": {
+  "rows": [
+   {
+    "key": "h_d1",
+    "kind": "heading",
+    "label": "Difference between written-down values of assets"
+   },
+   {
+    "key": "d_ca",
+    "label": "Written-down value as per the Companies Act (book value of depreciable assets, land excluded)",
+    "kind": "line",
+    "expr": "l:ppe + l:intangibles - a:2346113000000054793",
+    "unit": "rupees",
+    "audited": {
+     "value": 368599527,
+     "ref": "D.Tax!E22"
+    },
+    "detail": "live: Balance Sheet"
+   },
+   {
+    "key": "d_it",
+    "label": "Written-down value as per the Income Tax Act",
+    "kind": "line",
+    "expr": "c:wdv_income_tax",
+    "unit": "rupees",
+    "audited": {
+     "value": 364917108,
+     "ref": "D.Tax!E24"
+    }
+   },
+   {
+    "key": "d_diff",
+    "label": "Difference",
+    "kind": "subtotal",
+    "expr": "row:d_ca - row:d_it",
+    "unit": "rupees",
+    "audited": {
+     "value": 3682419,
+     "ref": "D.Tax!G25"
+    }
+   },
+   {
+    "key": "d_dtl",
+    "label": "Deferred tax liability on the difference (at 25.168%)",
+    "kind": "line",
+    "expr": "round(row:d_diff * c:dt_rate)",
+    "unit": "rupees",
+    "audited": {
+     "value": 926791,
+     "ref": "D.Tax!G27"
+    }
+   },
+   {
+    "key": "h_d2",
+    "kind": "heading",
+    "label": "Provision for employee benefits"
+   },
+   {
+    "key": "d_prov",
+    "label": "Gratuity and leave encashment provision",
+    "kind": "line",
+    "expr": "x:n7_grat + x:n7_leave",
+    "unit": "rupees",
+    "audited": {
+     "value": 22294694,
+     "ref": "D.Tax!G30"
+    },
+    "detail": "live: Note 7"
+   },
+   {
+    "key": "d_dta",
+    "label": "Deferred tax asset on the provision (at 25.168%)",
+    "kind": "line",
+    "expr": "round(row:d_prov * c:dt_rate)",
+    "unit": "rupees",
+    "audited": {
+     "value": 5611129,
+     "ref": "D.Tax!G32"
+    }
+   },
+   {
+    "key": "h_d3",
+    "kind": "heading",
+    "label": "Result"
+   },
+   {
+    "key": "d_net",
+    "label": "Deferred tax liability / (asset), net",
+    "kind": "total",
+    "expr": "row:d_dtl - row:d_dta",
+    "unit": "rupees",
+    "audited": {
+     "value": -4684338,
+     "ref": "D.Tax!C16"
+    },
+    "fy25": 8074848,
+    "fy25_ref": "D.Tax!G16"
+   },
+   {
+    "key": "d_charge",
+    "label": "Deferred tax during the year",
+    "kind": "subtotal",
+    "expr": "row:d_net - y:note6",
+    "unit": "rupees",
+    "audited": {
+     "value": -12759186,
+     "ref": "D.Tax!E16"
+    }
+   }
+  ],
+  "checks": [
+   {
+    "key": "dt_vs_books",
+    "label": "Net deferred tax asset in the working = deferred tax account in Zoho",
+    "expr": "row:d_net + r:deferred_tax_net",
+    "tolerance": 5
+   },
+   {
+    "key": "dt_vs_pl",
+    "label": "Deferred tax during the year = deferred tax in the statement of profit and loss",
+    "expr": "row:d_charge + l:deferred_tax",
+    "tolerance": 5
+   }
+  ]
+ }
+}

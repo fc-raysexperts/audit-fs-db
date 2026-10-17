@@ -1,0 +1,2039 @@
+{
+ "version": 1,
+ "fy": "2025-26",
+ "as_at": "2026-03-31",
+ "note": "Every note head is a formula over the live Zoho Trial Balance (a: account, n: bucket in natural sign, r: bucket as debit/credit, l: statement line, i: year-end input, c: constant below, row: another row of the note). \"audited\" is what the signed FY26 workbook shows (with its cell), \"fy25\" is last year's figure from the same workbook.",
+ "constants": {
+  "face_value": {
+   "value": 10,
+   "ref": "Note 3!C18",
+   "meaning": "Face value of one equity share (Rs.)"
+  },
+  "shares_opening": {
+   "value": 5096500,
+   "ref": "Note 3!H26",
+   "meaning": "Equity shares outstanding at the start of the year"
+  },
+  "premium_per_share": {
+   "value": 1011,
+   "ref": "Note 3!C38",
+   "meaning": "Premium per share on the shares issued during the year (Rs.)"
+  },
+  "authorised_capital": {
+   "value": 60000000,
+   "ref": "Note 3!H15",
+   "meaning": "Authorised share capital (Rs.)"
+  },
+  "holder1_shares": {
+   "value": 3640950,
+   "ref": "Note 3!G51",
+   "meaning": "Shares held by Rahul Gupta"
+  },
+  "holder2_shares": {
+   "value": 544050,
+   "ref": "Note 3!G52",
+   "meaning": "Shares held by Nidhi Gupta"
+  },
+  "wdv_income_tax": {
+   "value": 364917108,
+   "ref": "D.Tax!E24",
+   "meaning": "Written-down value of assets as per Income Tax Act (from the auditors' IT depreciation chart)"
+  },
+  "dt_rate": {
+   "value": 0.25168,
+   "ref": "D.Tax!G26",
+   "meaning": "Tax rate used for deferred tax (22% + 10% surcharge + 4% cess)"
+  },
+  "bad_debts": {
+   "value": 26497949,
+   "ref": "Note 20-27!E94",
+   "meaning": "Part of \"Balances written off\" that the auditors show as bad debts"
+  },
+  "audit_fee_statutory": {
+   "value": 1200000,
+   "ref": "Note 20-27!E100",
+   "meaning": "Statutory audit fees"
+  },
+  "audit_fee_tax": {
+   "value": 150000,
+   "ref": "Note 20-27!E101",
+   "meaning": "Tax audit fees"
+  },
+  "audit_fee_other": {
+   "value": 50000,
+   "ref": "Note 20-27!E102",
+   "meaning": "Other services by the auditors"
+  },
+  "sec_premium_open": {
+   "value": 185718800,
+   "ref": "Note 4-19!G13",
+   "meaning": "Securities premium at the start of the year (last year's audited closing balance)"
+  }
+ },
+ "notes": [
+  {
+   "no": "3",
+   "title": "Share capital",
+   "section": "equity",
+   "groups": [
+    {
+     "label": "Authorised capital",
+     "rows": [
+      {
+       "key": "n3_auth",
+       "label": "60,00,000 equity shares of face value Rs. 10 each",
+       "expr": "c:authorised_capital",
+       "audited": {
+        "value": 60000000,
+        "ref": "Note 3!H15"
+       },
+       "fy25": 60000000,
+       "fy25_ref": "Note 3!J15"
+      }
+     ]
+    },
+    {
+     "label": "Issued, subscribed and paid-up capital",
+     "rows": [
+      {
+       "key": "n3_paid",
+       "label": "53,85,500 equity shares of face value Rs. 10 each, fully paid up",
+       "expr": "n:share_capital",
+       "audited": {
+        "value": 53855000,
+        "ref": "Note 3!H20"
+       },
+       "fy25": 50965000,
+       "fy25_ref": "Note 3!J20"
+      }
+     ]
+    }
+   ],
+   "total": null,
+   "lineExpr": "l:share_capital",
+   "tables": [
+    {
+     "title": "Reconciliation of opening and closing number of equity shares",
+     "unit": "shares",
+     "columns": [
+      "Particulars",
+      "This year",
+      "Last year"
+     ],
+     "rows": [
+      [
+       "Shares outstanding at the beginning of the year",
+       {
+        "expr": "c:shares_opening",
+        "audited": 5096500
+       },
+       4500000
+      ],
+      [
+       "Add: shares issued during the year",
+       {
+        "expr": "n:share_capital / c:face_value - c:shares_opening",
+        "audited": 289000
+       },
+       596500
+      ],
+      [
+       "Less: shares bought back during the year",
+       0,
+       0
+      ],
+      [
+       "Shares outstanding at the end of the year",
+       {
+        "expr": "n:share_capital / c:face_value",
+        "audited": 5385500
+       },
+       5096500
+      ]
+     ]
+    },
+    {
+     "title": "Shareholders holding more than 5% of the shares",
+     "unit": "shares",
+     "columns": [
+      "Name of shareholder",
+      "Shares held",
+      "Share of total",
+      "Last year: shares",
+      "Last year: share"
+     ],
+     "rows": [
+      [
+       "Rahul Gupta",
+       {
+        "expr": "c:holder1_shares",
+        "audited": 3640950
+       },
+       {
+        "expr": "c:holder1_shares / (n:share_capital / c:face_value)",
+        "fmt": "pct",
+        "audited": 0.676065
+       },
+       3640950,
+       {
+        "fmt": "pct",
+        "static": 0.714402
+       }
+      ],
+      [
+       "Nidhi Gupta",
+       {
+        "expr": "c:holder2_shares",
+        "audited": 544050
+       },
+       {
+        "expr": "c:holder2_shares / (n:share_capital / c:face_value)",
+        "fmt": "pct",
+        "audited": 0.101021
+       },
+       544050,
+       {
+        "fmt": "pct",
+        "static": 0.10675
+       }
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "no": "4",
+   "title": "Reserves and surplus",
+   "section": "equity",
+   "groups": [
+    {
+     "label": "a) Securities premium",
+     "rows": [
+      {
+       "key": "n4_sp_open",
+       "label": "Opening balance",
+       "expr": "c:sec_premium_open",
+       "audited": {
+        "value": 185718800,
+        "ref": "Note 4-19!G13"
+       },
+       "fy25": 0,
+       "fy25_ref": "Note 4-19!I13",
+       "count": false
+      },
+      {
+       "key": "n4_sp_add",
+       "label": "Add: received on issue of shares",
+       "expr": "(n:share_capital / c:face_value - c:shares_opening) * c:premium_per_share",
+       "audited": {
+        "value": 292179000,
+        "ref": "Note 4-19!G14"
+       },
+       "fy25": 196845000,
+       "fy25_ref": "Note 4-19!I14",
+       "count": false
+      },
+      {
+       "key": "n4_sp_less",
+       "label": "Less: expenses on issue of shares",
+       "expr": "row:n4_sp_open + row:n4_sp_add - n:securities_premium",
+       "audited": {
+        "value": 13832390,
+        "ref": "Note 4-19!G16"
+       },
+       "fy25": 11126200,
+       "fy25_ref": "Note 4-19!I16",
+       "count": false,
+       "detail": "worked out: opening + issue less the closing balance in Zoho"
+      },
+      {
+       "key": "n4_sp_close",
+       "label": "Closing balance",
+       "expr": "n:securities_premium",
+       "audited": {
+        "value": 464065410,
+        "ref": "Note 4-19!G17"
+       },
+       "fy25": 185718800,
+       "fy25_ref": "Note 4-19!I17"
+      }
+     ]
+    },
+    {
+     "label": "b) Surplus: statement of profit and loss",
+     "rows": [
+      {
+       "key": "n4_ps_open",
+       "label": "Opening balance",
+       "expr": "n:retained_earnings",
+       "audited": {
+        "value": 513806870,
+        "ref": "Note 4-19!G20"
+       },
+       "fy25": 254990403,
+       "fy25_ref": "Note 4-19!I20",
+       "count": false
+      },
+      {
+       "key": "n4_ps_add",
+       "label": "Add: net profit for the year",
+       "expr": "l:pat",
+       "audited": {
+        "value": 475812977,
+        "ref": "Note 4-19!G21"
+       },
+       "fy25": 258816467,
+       "fy25_ref": "Note 4-19!I21",
+       "count": false
+      },
+      {
+       "key": "n4_ps_less",
+       "label": "Less: appropriations",
+       "expr": "0",
+       "audited": {
+        "value": 0,
+        "ref": "Note 4-19!G23"
+       },
+       "fy25": 0,
+       "fy25_ref": "Note 4-19!I23",
+       "count": false
+      },
+      {
+       "key": "n4_ps_close",
+       "label": "Closing balance",
+       "expr": "row:n4_ps_open + row:n4_ps_add - row:n4_ps_less",
+       "audited": {
+        "value": 989619847,
+        "ref": "Note 4-19!G24"
+       },
+       "fy25": 513806870,
+       "fy25_ref": "Note 4-19!I24"
+      }
+     ]
+    }
+   ],
+   "total": {
+    "label": "Total",
+    "audited": {
+     "value": 1453685257,
+     "ref": "Note 4-19!G26"
+    },
+    "fy25": 699525670,
+    "fy25_ref": "Note 4-19!I26"
+   },
+   "lineExpr": "l:reserves_surplus"
+  },
+  {
+   "no": "5",
+   "title": "Long-term borrowings",
+   "section": "liabilities",
+   "groups": [
+    {
+     "label": "a) Secured",
+     "rows": [
+      {
+       "key": "n5_car",
+       "label": "Car loans from banks",
+       "expr": "n:car_loans",
+       "audited": {
+        "value": 16717546,
+        "ref": "Note 4-19!G31"
+       },
+       "fy25": 20170379,
+       "fy25_ref": "Note 4-19!I31"
+      },
+      {
+       "key": "n5_cur",
+       "label": "Less: current maturities of loans",
+       "expr": "-i:car_loan_current_maturities",
+       "audited": {
+        "value": -3771359,
+        "ref": "Note 4-19!G32"
+       },
+       "fy25": -3452833,
+       "fy25_ref": "Note 4-19!I32"
+      }
+     ]
+    },
+    {
+     "label": "b) Unsecured",
+     "rows": [
+      {
+       "key": "n5_unsec",
+       "label": "Unsecured loans",
+       "expr": "n:other_borrowings",
+       "audited": {
+        "value": 0,
+        "ref": "Note 4-19!G34"
+       },
+       "fy25": 0,
+       "fy25_ref": "Note 4-19!I34"
+      }
+     ]
+    }
+   ],
+   "total": {
+    "label": "Total",
+    "audited": {
+     "value": 12946187,
+     "ref": "Note 4-19!G36"
+    },
+    "fy25": 16717546,
+    "fy25_ref": "Note 4-19!I36"
+   },
+   "lineExpr": "l:lt_borrowings"
+  },
+  {
+   "no": "6",
+   "title": "Deferred tax liabilities (net of assets)",
+   "section": "liabilities",
+   "groups": [
+    {
+     "label": null,
+     "rows": [
+      {
+       "key": "n6_dep",
+       "label": "Timing difference on account of depreciation",
+       "expr": "((l:ppe + l:intangibles - a:2346113000000054793) - c:wdv_income_tax) * c:dt_rate",
+       "audited": {
+        "value": 926791,
+        "ref": "Note 4-19!G60"
+       },
+       "fy25": 11971552,
+       "fy25_ref": "Note 4-19!I60",
+       "detail": "(book value of depreciable assets less land - tax value) x tax rate"
+      },
+      {
+       "key": "n6_emp",
+       "label": "Provision for employee benefits",
+       "expr": "-l:lt_provisions * c:dt_rate",
+       "audited": {
+        "value": -5611129,
+        "ref": "Note 4-19!G61"
+       },
+       "fy25": -3896704,
+       "fy25_ref": "Note 4-19!I61"
+      }
+     ]
+    }
+   ],
+   "total": {
+    "label": "Total (a negative figure is a net deferred tax asset)",
+    "audited": {
+     "value": -4684338,
+     "ref": "Note 4-19!G62"
+    },
+    "fy25": 8074848,
+    "fy25_ref": "Note 4-19!I62"
+   },
+   "lineExpr": "l:dtl - l:dta",
+   "checks": [
+    {
+     "label": "Working agrees with the deferred tax account in Zoho (net asset)",
+     "expr": "row:n6_dep + row:n6_emp + r:deferred_tax_net",
+     "tolerance": 5
+    }
+   ]
+  },
+  {
+   "no": "7",
+   "title": "Long-term provisions",
+   "section": "liabilities",
+   "groups": [
+    {
+     "label": null,
+     "rows": [
+      {
+       "key": "n7_grat",
+       "label": "Provision for gratuity",
+       "expr": "-a:2346113000026786383",
+       "audited": {
+        "value": 14695356,
+        "ref": "Note 4-19!G66"
+       },
+       "fy25": 11437402,
+       "fy25_ref": "Note 4-19!I66"
+      },
+      {
+       "key": "n7_leave",
+       "label": "Provision for leave encashment",
+       "expr": "-a:2346113000026786392",
+       "audited": {
+        "value": 7599338,
+        "ref": "Note 4-19!G67"
+       },
+       "fy25": 4045370,
+       "fy25_ref": "Note 4-19!I67"
+      }
+     ]
+    }
+   ],
+   "total": {
+    "label": "Total",
+    "audited": {
+     "value": 22294694,
+     "ref": "Note 4-19!G68"
+    },
+    "fy25": 15482772,
+    "fy25_ref": "Note 4-19!I68"
+   },
+   "lineExpr": "l:lt_provisions"
+  },
+  {
+   "no": "8",
+   "title": "Short-term borrowings",
+   "section": "liabilities",
+   "groups": [
+    {
+     "label": "Secured",
+     "rows": [
+      {
+       "key": "n8_wc",
+       "label": "Working capital loan: cash credit / bank overdraft",
+       "expr": "n:cash_credit + max(0, -r:od_accounts)",
+       "audited": {
+        "value": 285247544,
+        "ref": "Note 4-19!G73"
+       },
+       "fy25": 44903103,
+       "fy25_ref": "Note 4-19!I73",
+       "detail": "Current year: Indian Overseas Bank; previous year: ICICI Bank"
+      },
+      {
+       "key": "n8_cur",
+       "label": "Current maturities of long-term borrowings",
+       "expr": "i:car_loan_current_maturities",
+       "audited": {
+        "value": 3771359,
+        "ref": "Note 4-19!G75"
+       },
+       "fy25": 3452833,
+       "fy25_ref": "Note 4-19!I75"
+      }
+     ]
+    }
+   ],
+   "total": {
+    "label": "Total",
+    "audited": {
+     "value": 289018903,
+     "ref": "Note 4-19!G76"
+    },
+    "fy25": 48355936,
+    "fy25_ref": "Note 4-19!I76"
+   },
+   "lineExpr": "l:st_borrowings"
+  },
+  {
+   "no": "9",
+   "title": "Trade payables",
+   "section": "liabilities",
+   "groups": [
+    {
+     "label": null,
+     "rows": [
+      {
+       "key": "n9_msme",
+       "label": "Due to micro and small enterprises",
+       "expr": "l:tp_msme",
+       "audited": {
+        "value": 678716,
+        "ref": "Note 4-19!G83"
+       },
+       "fy25": 26756802,
+       "fy25_ref": "Note 4-19!I83"
+      },
+      {
+       "key": "n9_oth",
+       "label": "Due to others",
+       "expr": "l:tp_others",
+       "audited": {
+        "value": 77314808,
+        "ref": "Note 4-19!G84"
+       },
+       "fy25": 4867337,
+       "fy25_ref": "Note 4-19!I84"
+      }
+     ]
+    }
+   ],
+   "total": {
+    "label": "Total",
+    "audited": {
+     "value": 77993524,
+     "ref": "Note 4-19!G85"
+    },
+    "fy25": 31624139,
+    "fy25_ref": "Note 4-19!I85"
+   },
+   "lineExpr": "l:tp_msme + l:tp_others",
+   "tables": [
+    {
+     "title": "Ageing of trade payables (auditors' vendor-wise ageing, fixed at the audit date)",
+     "unit": "rupees",
+     "columns": [
+      "Outstanding for",
+      "Micro and small: this year",
+      "Others: this year",
+      "Micro and small: last year",
+      "Others: last year"
+     ],
+     "rows": [
+      [
+       "Not due",
+       0,
+       0,
+       26756802,
+       1890552
+      ],
+      [
+       "Less than 1 year",
+       678716,
+       76055466,
+       0,
+       1463493
+      ],
+      [
+       "1 to 2 years",
+       0,
+       476034,
+       0,
+       252370
+      ],
+      [
+       "2 to 3 years",
+       0,
+       0,
+       0,
+       0
+      ],
+      [
+       "More than 3 years",
+       0,
+       783308,
+       0,
+       1260922
+      ],
+      [
+       "Disputed",
+       0,
+       0,
+       0,
+       0
+      ],
+      [
+       "Total",
+       678716,
+       77314808,
+       26756802,
+       4867337
+      ]
+     ],
+     "ties": [
+      {
+       "label": "Micro and small total = Note 9 (a)",
+       "cell": [
+        6,
+        1
+       ],
+       "expr": "row:n9_msme"
+      },
+      {
+       "label": "Others total = Note 9 (b)",
+       "cell": [
+        6,
+        2
+       ],
+       "expr": "row:n9_oth"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "no": "10",
+   "title": "Other current liabilities",
+   "section": "liabilities",
+   "groups": [
+    {
+     "label": null,
+     "rows": [
+      {
+       "key": "n10_adv",
+       "label": "Advance from customers",
+       "expr": "l:ocl_advance_customers",
+       "audited": {
+        "value": 317954953,
+        "ref": "Note 4-19!G105"
+       },
+       "fy25": 14647345,
+       "fy25_ref": "Note 4-19!I105"
+      },
+      {
+       "key": "n10_stat",
+       "label": "Statutory liabilities",
+       "expr": "l:ocl_statutory",
+       "audited": {
+        "value": 7084693,
+        "ref": "Note 4-19!G106"
+       },
+       "fy25": 8901130,
+       "fy25_ref": "Note 4-19!I106"
+      },
+      {
+       "key": "n10_ret",
+       "label": "Retention money",
+       "expr": "l:ocl_retention",
+       "audited": {
+        "value": 62936945,
+        "ref": "Note 4-19!G107"
+       },
+       "fy25": 4584386,
+       "fy25_ref": "Note 4-19!I107"
+      },
+      {
+       "key": "n10_out",
+       "label": "Outstanding expenses",
+       "expr": "l:ocl_outstanding_expenses",
+       "audited": {
+        "value": 3066465,
+        "ref": "Note 4-19!G108"
+       },
+       "fy25": 2152738,
+       "fy25_ref": "Note 4-19!I108"
+      },
+      {
+       "key": "n10_sec",
+       "label": "Security deposits",
+       "expr": "l:ocl_security_deposits",
+       "audited": {
+        "value": 1271009,
+        "ref": "Note 4-19!G109"
+       },
+       "fy25": 1271009,
+       "fy25_ref": "Note 4-19!I109"
+      },
+      {
+       "key": "n10_unr",
+       "label": "Unearned revenue",
+       "expr": "l:ocl_unearned",
+       "audited": {
+        "value": 14338314,
+        "ref": "Note 4-19!G110"
+       },
+       "fy25": 27427062,
+       "fy25_ref": "Note 4-19!I110"
+      }
+     ]
+    }
+   ],
+   "total": {
+    "label": "Total",
+    "audited": {
+     "value": 406652379,
+     "ref": "Note 4-19!G111"
+    },
+    "fy25": 58983670,
+    "fy25_ref": "Note 4-19!I111"
+   },
+   "lineExpr": "l:ocl_advance_customers + l:ocl_statutory + l:ocl_retention + l:ocl_outstanding_expenses + l:ocl_security_deposits + l:ocl_unearned"
+  },
+  {
+   "no": "11",
+   "title": "Short-term provisions",
+   "section": "liabilities",
+   "groups": [
+    {
+     "label": null,
+     "rows": [
+      {
+       "key": "n11_tax",
+       "label": "Provision for income tax (net of advance tax and TDS)",
+       "expr": "max(0, n:income_tax_provision - r:advance_tax - r:tds_tcs_receivable)",
+       "audited": {
+        "value": 65949085,
+        "ref": "Note 4-19!G115"
+       },
+       "fy25": 48607386,
+       "fy25_ref": "Note 4-19!I115"
+      }
+     ]
+    }
+   ],
+   "total": {
+    "label": "Total",
+    "audited": {
+     "value": 65949085,
+     "ref": "Note 4-19!G116"
+    },
+    "fy25": 48607386,
+    "fy25_ref": "Note 4-19!I116"
+   },
+   "lineExpr": "l:st_provisions"
+  },
+  {
+   "no": "13",
+   "title": "Non-current investments",
+   "section": "assets",
+   "groups": [
+    {
+     "label": "Unquoted trade investments: equity shares of subsidiaries (fully paid up, face value Rs. 10 each)",
+     "rows": [
+      {
+       "key": "n13_1",
+       "label": "Rays O&M Experts Private Limited",
+       "expr": "a:2346113000026785976",
+       "audited": {
+        "value": 100000,
+        "ref": "Note 4-19!G122"
+       },
+       "fy25": 100000,
+       "fy25_ref": "Note 4-19!I122",
+       "detail": "(No. of Shares: Current Year 10,000; Previous Year 10,000)"
+      },
+      {
+       "key": "n13_2",
+       "label": "Rays Rooftop SPV Private Limited",
+       "expr": "a:2346113000026785994",
+       "audited": {
+        "value": 100000,
+        "ref": "Note 4-19!G126"
+       },
+       "fy25": 100000,
+       "fy25_ref": "Note 4-19!I126",
+       "detail": "(No. of Shares: Current Year 10,000; Previous Year 10,000)"
+      },
+      {
+       "key": "n13_3",
+       "label": "RPE Energy Reserve Private Limited",
+       "expr": "a:2346113000026785985",
+       "audited": {
+        "value": 100000,
+        "ref": "Note 4-19!G130"
+       },
+       "fy25": 100000,
+       "fy25_ref": "Note 4-19!I130",
+       "detail": "(No. of Shares: Current Year 10,000; Previous Year 10,000)"
+      },
+      {
+       "key": "n13_4",
+       "label": "RPE Technologies Private Limited",
+       "expr": "a:2346113000026786012",
+       "audited": {
+        "value": 100000,
+        "ref": "Note 4-19!G134"
+       },
+       "fy25": 0,
+       "fy25_ref": "Note 4-19!I134",
+       "detail": "(No. of Shares: Current Year 10,000; Previous Year NIL)"
+      },
+      {
+       "key": "n13_5",
+       "label": "Rays Experts Foundation",
+       "expr": "a:2346113000026786003",
+       "audited": {
+        "value": 50000,
+        "ref": "Note 4-19!G138"
+       },
+       "fy25": 0,
+       "fy25_ref": "Note 4-19!I138",
+       "detail": "(No. of Shares: Current Year 5,000; Previous Year NIL)"
+      }
+     ]
+    }
+   ],
+   "total": {
+    "label": "Total",
+    "audited": {
+     "value": 450000,
+     "ref": "Note 4-19!G141"
+    },
+    "fy25": 300000,
+    "fy25_ref": "Note 4-19!I141"
+   },
+   "lineExpr": "l:nc_investments"
+  },
+  {
+   "no": "14",
+   "title": "Other non-current assets",
+   "section": "assets",
+   "groups": [
+    {
+     "label": null,
+     "rows": [
+      {
+       "key": "n14_fd",
+       "label": "Bank deposits with maturity of more than 12 months",
+       "expr": "i:fd_noncurrent",
+       "audited": {
+        "value": 79886932,
+        "ref": "Note 4-19!G150"
+       },
+       "fy25": 9679788,
+       "fy25_ref": "Note 4-19!I150"
+      },
+      {
+       "key": "n14_sec",
+       "label": "Security deposits",
+       "expr": "i:security_deposit_noncurrent",
+       "audited": {
+        "value": 33387,
+        "ref": "Note 4-19!G151"
+       },
+       "fy25": 36885,
+       "fy25_ref": "Note 4-19!I151"
+      }
+     ]
+    }
+   ],
+   "total": {
+    "label": "Total",
+    "audited": {
+     "value": 79920319,
+     "ref": "Note 4-19!G152"
+    },
+    "fy25": 9716673,
+    "fy25_ref": "Note 4-19!I152"
+   },
+   "lineExpr": "l:other_nc_assets"
+  },
+  {
+   "no": "14A",
+   "title": "Current investments",
+   "section": "assets",
+   "groups": [
+    {
+     "label": null,
+     "rows": [
+      {
+       "key": "n14a_q",
+       "label": "Investment in quoted shares",
+       "expr": "0",
+       "audited": {
+        "value": 0,
+        "ref": "Note 4-19!G156"
+       },
+       "fy25": 0,
+       "fy25_ref": "Note 4-19!I156"
+      }
+     ]
+    }
+   ],
+   "total": {
+    "label": "Total",
+    "audited": {
+     "value": 0,
+     "ref": "Note 4-19!G158"
+    },
+    "fy25": 0,
+    "fy25_ref": "Note 4-19!I158"
+   }
+  },
+  {
+   "no": "15",
+   "title": "Inventories (valued at lower of cost or net realisable value, as taken and certified by management)",
+   "section": "assets",
+   "groups": [
+    {
+     "label": null,
+     "rows": [
+      {
+       "key": "n15_stock",
+       "label": "Stock in trade",
+       "expr": "l:inventories",
+       "audited": {
+        "value": 287377971,
+        "ref": "Note 4-19!G163"
+       },
+       "fy25": 42664577,
+       "fy25_ref": "Note 4-19!I163"
+      }
+     ]
+    }
+   ],
+   "total": {
+    "label": "Total",
+    "audited": {
+     "value": 287377971,
+     "ref": "Note 4-19!G164"
+    },
+    "fy25": 42664577,
+    "fy25_ref": "Note 4-19!I164"
+   },
+   "lineExpr": "l:inventories"
+  },
+  {
+   "no": "16",
+   "title": "Trade receivables",
+   "section": "assets",
+   "groups": [
+    {
+     "label": null,
+     "rows": [
+      {
+       "key": "n16_good",
+       "label": "Unsecured, considered good",
+       "expr": "l:trade_receivables",
+       "audited": {
+        "value": 554432472,
+        "ref": "Note 4-19!G168"
+       },
+       "fy25": 409808137,
+       "fy25_ref": "Note 4-19!I168"
+      }
+     ]
+    }
+   ],
+   "total": {
+    "label": "Total",
+    "audited": {
+     "value": 554432472,
+     "ref": "Note 4-19!G170"
+    },
+    "fy25": 409808137,
+    "fy25_ref": "Note 4-19!I170"
+   },
+   "lineExpr": "l:trade_receivables",
+   "tables": [
+    {
+     "title": "Ageing of trade receivables (auditors' customer-wise ageing, fixed at the audit date)",
+     "unit": "rupees",
+     "columns": [
+      "Outstanding for (undisputed, considered good)",
+      "This year",
+      "Last year"
+     ],
+     "rows": [
+      [
+       "Not due",
+       0,
+       0
+      ],
+      [
+       "Less than 6 months",
+       374922380,
+       252917691
+      ],
+      [
+       "6 months to 1 year",
+       46659551,
+       4160632
+      ],
+      [
+       "1 to 2 years",
+       14182512,
+       65186896
+      ],
+      [
+       "2 to 3 years",
+       55403775,
+       28243286
+      ],
+      [
+       "More than 3 years",
+       63264254,
+       59299632
+      ],
+      [
+       "Considered doubtful",
+       0,
+       0
+      ],
+      [
+       "Total",
+       554432472,
+       409808137
+      ]
+     ],
+     "ties": [
+      {
+       "label": "Ageing total = trade receivables",
+       "cell": [
+        7,
+        1
+       ],
+       "expr": "row:n16_good"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "no": "17",
+   "title": "Cash and cash equivalents",
+   "section": "assets",
+   "groups": [
+    {
+     "label": null,
+     "rows": [
+      {
+       "key": "n17_hand",
+       "label": "Cash in hand",
+       "expr": "a:2346113000026786056",
+       "audited": {
+        "value": 1691336,
+        "ref": "Note 4-19!G190"
+       },
+       "fy25": 4284636,
+       "fy25_ref": "Note 4-19!I190"
+      },
+      {
+       "key": "n17_bank",
+       "label": "Balance with banks: current accounts",
+       "expr": "r:cash_bank - a:2346113000026786056 + max(0, r:od_accounts)",
+       "audited": {
+        "value": 12813788,
+        "ref": "Note 4-19!G192"
+       },
+       "fy25": 3789352,
+       "fy25_ref": "Note 4-19!I192"
+      },
+      {
+       "key": "n17_dep",
+       "label": "Balance with banks: deposits with original maturity under 3 months",
+       "expr": "0",
+       "audited": {
+        "value": 0,
+        "ref": "Note 4-19!G193"
+       },
+       "fy25": 0,
+       "fy25_ref": "Note 4-19!I193"
+      }
+     ]
+    }
+   ],
+   "total": {
+    "label": "Total",
+    "audited": {
+     "value": 14505124,
+     "ref": "Note 4-19!G194"
+    },
+    "fy25": 8073988,
+    "fy25_ref": "Note 4-19!I194"
+   },
+   "lineExpr": "l:cash"
+  },
+  {
+   "no": "18",
+   "title": "Short-term loans and advances (unsecured, considered good)",
+   "section": "assets",
+   "groups": [
+    {
+     "label": null,
+     "rows": [
+      {
+       "key": "n18_adv",
+       "label": "Advance to suppliers and others",
+       "expr": "l:sla_advance_suppliers_others",
+       "audited": {
+        "value": 336392526,
+        "ref": "Note 4-19!G199"
+       },
+       "fy25": 32664180,
+       "fy25_ref": "Note 4-19!I199"
+      },
+      {
+       "key": "n18_pre",
+       "label": "Prepaid expenses",
+       "expr": "l:sla_prepaid",
+       "audited": {
+        "value": 1547807,
+        "ref": "Note 4-19!G200"
+       },
+       "fy25": 21764856,
+       "fy25_ref": "Note 4-19!I200"
+      },
+      {
+       "key": "n18_rev",
+       "label": "Balances with revenue authorities",
+       "expr": "l:sla_revenue_authorities",
+       "audited": {
+        "value": 20877364,
+        "ref": "Note 4-19!G201"
+       },
+       "fy25": 1738117,
+       "fy25_ref": "Note 4-19!I201"
+      }
+     ]
+    }
+   ],
+   "total": {
+    "label": "Total",
+    "audited": {
+     "value": 358817697,
+     "ref": "Note 4-19!G202"
+    },
+    "fy25": 56167153,
+    "fy25_ref": "Note 4-19!I202"
+   },
+   "lineExpr": "l:sla_advance_suppliers_others + l:sla_prepaid + l:sla_revenue_authorities"
+  },
+  {
+   "no": "19",
+   "title": "Other current assets",
+   "section": "assets",
+   "groups": [
+    {
+     "label": null,
+     "rows": [
+      {
+       "key": "n19_fd",
+       "label": "Bank deposits with maturity of less than 12 months",
+       "expr": "r:fixed_deposits + r:accrued_interest_fdr - i:fd_noncurrent",
+       "audited": {
+        "value": 281799964,
+        "ref": "Note 4-19!G206"
+       },
+       "fy25": 178580600,
+       "fy25_ref": "Note 4-19!I206"
+      },
+      {
+       "key": "n19_sec",
+       "label": "Security deposits",
+       "expr": "r:security_deposits_given - i:security_deposit_noncurrent",
+       "audited": {
+        "value": 1000000,
+        "ref": "Note 4-19!G207"
+       },
+       "fy25": 4262500,
+       "fy25_ref": "Note 4-19!I207"
+      },
+      {
+       "key": "n19_unb",
+       "label": "Unbilled revenue",
+       "expr": "r:unbilled_revenue",
+       "audited": {
+        "value": 4390483,
+        "ref": "Note 4-19!G208"
+       },
+       "fy25": 3159528,
+       "fy25_ref": "Note 4-19!I208"
+      },
+      {
+       "key": "n19_oth",
+       "label": "Other receivables",
+       "expr": "r:other_receivables",
+       "audited": {
+        "value": 2442878,
+        "ref": "Note 4-19!G209"
+       },
+       "fy25": 2442878,
+       "fy25_ref": "Note 4-19!I209"
+      }
+     ]
+    }
+   ],
+   "total": {
+    "label": "Total",
+    "audited": {
+     "value": 289633325,
+     "ref": "Note 4-19!G210"
+    },
+    "fy25": 188445506,
+    "fy25_ref": "Note 4-19!I210"
+   },
+   "lineExpr": "l:other_current_assets"
+  },
+  {
+   "no": "20",
+   "title": "Revenue from operations",
+   "section": "pl",
+   "groups": [
+    {
+     "label": "A) Sale of goods",
+     "rows": [
+      {
+       "key": "n20_epc",
+       "label": "Sales: solar power project (EPC)",
+       "expr": "-(a:2346113000000066793 + a:2346113000026786613 + a:2346113000026786627 + a:2346113000026930890)",
+       "audited": {
+        "value": 3975450530,
+        "ref": "Note 20-27!E13"
+       },
+       "fy25": 1241522973,
+       "fy25_ref": "Note 20-27!G13"
+      },
+      {
+       "key": "n20_roof",
+       "label": "Sales: solar power plant (rooftop)",
+       "expr": "-(a:2346113000026786634 + a:2346113000026786641)",
+       "audited": {
+        "value": 3960343,
+        "ref": "Note 20-27!E14"
+       },
+       "fy25": 10662926,
+       "fy25_ref": "Note 20-27!G14"
+      },
+      {
+       "key": "n20_gen",
+       "label": "Sales: power generation",
+       "expr": "-a:2346113000000066209",
+       "audited": {
+        "value": 6003554,
+        "ref": "Note 20-27!E15"
+       },
+       "fy25": 8564373,
+       "fy25_ref": "Note 20-27!G15"
+      }
+     ],
+     "total": {
+      "label": "Sale of goods",
+      "audited": {
+       "value": 3985414427,
+       "ref": "Note 20-27!E16"
+      },
+      "fy25": 1260750272,
+      "fy25_ref": "Note 20-27!G16"
+     }
+    },
+    {
+     "label": "B) Sale of services",
+     "rows": [
+      {
+       "key": "n20_om",
+       "label": "Operation and maintenance services",
+       "expr": "-a:2346113000026786648",
+       "audited": {
+        "value": 38143493,
+        "ref": "Note 20-27!E19"
+       },
+       "fy25": 23634517,
+       "fy25_ref": "Note 20-27!G19"
+      },
+      {
+       "key": "n20_cons",
+       "label": "Consultancy income",
+       "expr": "-a:2346113000026786655",
+       "audited": {
+        "value": 1428508,
+        "ref": "Note 20-27!E20"
+       },
+       "fy25": 47039245,
+       "fy25_ref": "Note 20-27!G20"
+      }
+     ],
+     "total": {
+      "label": "Sale of services",
+      "audited": {
+       "value": 39572001,
+       "ref": "Note 20-27!E21"
+      },
+      "fy25": 70673762,
+      "fy25_ref": "Note 20-27!G21"
+     }
+    },
+    {
+     "label": "C) Other operating revenues",
+     "rows": [
+      {
+       "key": "n20_rent",
+       "label": "Rental income",
+       "expr": "-a:2346113000026786671",
+       "audited": {
+        "value": 10080276,
+        "ref": "Note 20-27!E24"
+       },
+       "fy25": 3220684,
+       "fy25_ref": "Note 20-27!G24"
+      },
+      {
+       "key": "n20_scrap",
+       "label": "Scrap sale",
+       "expr": "-a:2346113000026786678",
+       "audited": {
+        "value": 17000,
+        "ref": "Note 20-27!E25"
+       },
+       "fy25": 357600,
+       "fy25_ref": "Note 20-27!G25"
+      },
+      {
+       "key": "n20_oth",
+       "label": "Other services",
+       "expr": "-a:2346113000026786685",
+       "audited": {
+        "value": 352000,
+        "ref": "Note 20-27!E26"
+       },
+       "fy25": 96000,
+       "fy25_ref": "Note 20-27!G26"
+      }
+     ],
+     "total": {
+      "label": "Other operating revenues",
+      "audited": {
+       "value": 10449276,
+       "ref": "Note 20-27!E27"
+      },
+      "fy25": 3674284,
+      "fy25_ref": "Note 20-27!G27"
+     }
+    }
+   ],
+   "total": {
+    "label": "Total",
+    "audited": {
+     "value": 4035435704,
+     "ref": "Note 20-27!E29"
+    },
+    "fy25": 1335098318,
+    "fy25_ref": "Note 20-27!G29"
+   },
+   "lineExpr": "l:revenue"
+  },
+  {
+   "no": "21",
+   "title": "Other income",
+   "section": "pl",
+   "groups": [
+    {
+     "label": null,
+     "rows": [
+      {
+       "key": "n21_fdr",
+       "label": "Interest on FDR",
+       "expr": "-a:2346113000026930915",
+       "audited": {
+        "value": 15872257,
+        "ref": "Note 20-27!E33"
+       },
+       "fy25": 9792238,
+       "fy25_ref": "Note 20-27!G33"
+      },
+      {
+       "key": "n21_oth",
+       "label": "Interest from others",
+       "expr": "0",
+       "audited": {
+        "value": 0,
+        "ref": "Note 20-27!E34"
+       },
+       "fy25": 500000,
+       "fy25_ref": "Note 20-27!G34"
+      },
+      {
+       "key": "n21_fx",
+       "label": "Gain on exchange rate fluctuation",
+       "expr": "-(a:2346113000000000513 + a:2346113000026787007)",
+       "audited": {
+        "value": 299282,
+        "ref": "Note 20-27!E35"
+       },
+       "fy25": 0,
+       "fy25_ref": "Note 20-27!G35"
+      },
+      {
+       "key": "n21_mf",
+       "label": "Gain on sale of mutual fund",
+       "expr": "0",
+       "audited": {
+        "value": 0,
+        "ref": "Note 20-27!E36"
+       },
+       "fy25": 146266,
+       "fy25_ref": "Note 20-27!G36"
+      }
+     ]
+    }
+   ],
+   "total": {
+    "label": "Total",
+    "audited": {
+     "value": 16171539,
+     "ref": "Note 20-27!E37"
+    },
+    "fy25": 10438504,
+    "fy25_ref": "Note 20-27!G37"
+   },
+   "lineExpr": "l:other_income"
+  },
+  {
+   "no": "22",
+   "title": "Purchase of stock-in-trade",
+   "section": "pl",
+   "groups": [
+    {
+     "label": null,
+     "rows": [
+      {
+       "key": "n22_p",
+       "label": "Purchases: solar power project supplies",
+       "expr": "l:purchases",
+       "audited": {
+        "value": 3009723976,
+        "ref": "Note 20-27!E41"
+       },
+       "fy25": 683163324,
+       "fy25_ref": "Note 20-27!G41"
+      }
+     ]
+    }
+   ],
+   "total": {
+    "label": "Total",
+    "audited": {
+     "value": 3009723976,
+     "ref": "Note 20-27!E42"
+    },
+    "fy25": 683163324,
+    "fy25_ref": "Note 20-27!G42"
+   },
+   "lineExpr": "l:purchases"
+  },
+  {
+   "no": "23",
+   "title": "Changes in inventories of stock-in-trade",
+   "section": "pl",
+   "groups": [
+    {
+     "label": null,
+     "rows": [
+      {
+       "key": "n23_open",
+       "label": "Opening stock",
+       "expr": "l:inventory_change + l:inventories",
+       "audited": {
+        "value": 42664577,
+        "ref": "Note 20-27!E46"
+       },
+       "fy25": 29877665,
+       "fy25_ref": "Note 20-27!G46",
+       "count": false
+      },
+      {
+       "key": "n23_close",
+       "label": "Less: closing stock",
+       "expr": "l:inventories",
+       "audited": {
+        "value": 287377971,
+        "ref": "Note 20-27!E47"
+       },
+       "fy25": 42664577,
+       "fy25_ref": "Note 20-27!G47",
+       "count": false
+      }
+     ]
+    }
+   ],
+   "total": {
+    "label": "Total",
+    "audited": {
+     "value": -244713394,
+     "ref": "Note 20-27!E48"
+    },
+    "fy25": -12786912,
+    "fy25_ref": "Note 20-27!G48",
+    "expr": "row:n23_open - row:n23_close"
+   },
+   "lineExpr": "l:inventory_change"
+  },
+  {
+   "no": "24",
+   "title": "Operating expenses",
+   "section": "pl",
+   "groups": [
+    {
+     "label": null,
+     "rows": [
+      {
+       "key": "n24_proj",
+       "label": "Solar power project expenses",
+       "expr": "a:2346113000026786710 + a:2346113000026786719 + a:2346113000026786728 + a:2346113000026786737 + a:2346113000026786746 + a:2346113000026786755 + a:2346113000026786764",
+       "audited": {
+        "value": 251742969,
+        "ref": "Note 20-27!E52"
+       },
+       "fy25": 74010796,
+       "fy25_ref": "Note 20-27!G52"
+      },
+      {
+       "key": "n24_om",
+       "label": "Operation and maintenance expenses",
+       "expr": "a:2346113000004482301 + a:2346113000030435240 + a:2346113000026786818 + a:2346113000026786692",
+       "audited": {
+        "value": 18071264,
+        "ref": "Note 20-27!E53"
+       },
+       "fy25": 16943103,
+       "fy25_ref": "Note 20-27!G53"
+      },
+      {
+       "key": "n24_lease",
+       "label": "Lease expenses",
+       "expr": "a:2346113000004432539 + a:2346113000026786782",
+       "audited": {
+        "value": 8132430,
+        "ref": "Note 20-27!E54"
+       },
+       "fy25": 3389973,
+       "fy25_ref": "Note 20-27!G54"
+      },
+      {
+       "key": "n24_ppa",
+       "label": "Power purchase under PPA and PPC",
+       "expr": "a:2346113000030435224 + a:2346113000030435234",
+       "audited": {
+        "value": 9991066,
+        "ref": "Note 20-27!E55"
+       },
+       "fy25": 1003483,
+       "fy25_ref": "Note 20-27!G55"
+      }
+     ]
+    }
+   ],
+   "total": {
+    "label": "Total",
+    "audited": {
+     "value": 287937729,
+     "ref": "Note 20-27!E56"
+    },
+    "fy25": 95347355,
+    "fy25_ref": "Note 20-27!G56"
+   },
+   "lineExpr": "l:operating_expenses"
+  },
+  {
+   "no": "25",
+   "title": "Employee benefits expenses",
+   "section": "pl",
+   "groups": [
+    {
+     "label": null,
+     "rows": [
+      {
+       "key": "n25_sal",
+       "label": "Salary and wages",
+       "expr": "a:2346113000026786827",
+       "audited": {
+        "value": 82832403,
+        "ref": "Note 20-27!E60"
+       },
+       "fy25": 49087022,
+       "fy25_ref": "Note 20-27!G60"
+      },
+      {
+       "key": "n25_bon",
+       "label": "Bonus and incentive",
+       "expr": "a:2346113000026786845",
+       "audited": {
+        "value": 2665087,
+        "ref": "Note 20-27!E61"
+       },
+       "fy25": 1994536,
+       "fy25_ref": "Note 20-27!G61"
+      },
+      {
+       "key": "n25_pf",
+       "label": "Contribution to provident and other funds",
+       "expr": "a:2346113000026786836 + a:2346113000000063137",
+       "audited": {
+        "value": 2610740,
+        "ref": "Note 20-27!E62"
+       },
+       "fy25": 1606983,
+       "fy25_ref": "Note 20-27!G62"
+      },
+      {
+       "key": "n25_wel",
+       "label": "Staff welfare expenses",
+       "expr": "a:2346113000026786854",
+       "audited": {
+        "value": 3953884,
+        "ref": "Note 20-27!E63"
+       },
+       "fy25": 2280151,
+       "fy25_ref": "Note 20-27!G63"
+      },
+      {
+       "key": "n25_grat",
+       "label": "Gratuity expenses",
+       "expr": "a:2346113000026786863",
+       "audited": {
+        "value": 3370764,
+        "ref": "Note 20-27!E64"
+       },
+       "fy25": 8966392,
+       "fy25_ref": "Note 20-27!G64"
+      },
+      {
+       "key": "n25_leave",
+       "label": "Leave encashment expenses",
+       "expr": "a:2346113000026786872",
+       "audited": {
+        "value": 3553968,
+        "ref": "Note 20-27!E65"
+       },
+       "fy25": 4045370,
+       "fy25_ref": "Note 20-27!G65"
+      }
+     ]
+    }
+   ],
+   "total": {
+    "label": "Total",
+    "audited": {
+     "value": 98986846,
+     "ref": "Note 20-27!E66"
+    },
+    "fy25": 67980454,
+    "fy25_ref": "Note 20-27!G66"
+   },
+   "lineExpr": "l:employee"
+  },
+  {
+   "no": "26",
+   "title": "Finance cost",
+   "section": "pl",
+   "groups": [
+    {
+     "label": null,
+     "rows": [
+      {
+       "key": "n26_bank",
+       "label": "Bank charges",
+       "expr": "a:2346113000000062969",
+       "audited": {
+        "value": 13604785,
+        "ref": "Note 20-27!E70"
+       },
+       "fy25": 775217,
+       "fy25_ref": "Note 20-27!G70"
+      },
+      {
+       "key": "n26_od",
+       "label": "Interest on bank overdraft and cash credit",
+       "expr": "a:2346113000026786881",
+       "audited": {
+        "value": 6370213,
+        "ref": "Note 20-27!E71"
+       },
+       "fy25": 2527537,
+       "fy25_ref": "Note 20-27!G71"
+      },
+      {
+       "key": "n26_car",
+       "label": "Interest on car loan",
+       "expr": "a:2346113000000063389",
+       "audited": {
+        "value": 1635501,
+        "ref": "Note 20-27!E72"
+       },
+       "fy25": 2058207,
+       "fy25_ref": "Note 20-27!G72"
+      },
+      {
+       "key": "n26_unsec",
+       "label": "Interest on unsecured loan",
+       "expr": "0",
+       "audited": {
+        "value": 0,
+        "ref": "Note 20-27!E73"
+       },
+       "fy25": 969904,
+       "fy25_ref": "Note 20-27!G73"
+      },
+      {
+       "key": "n26_oth",
+       "label": "Interest to others",
+       "expr": "0",
+       "audited": {
+        "value": 0,
+        "ref": "Note 20-27!E74"
+       },
+       "fy25": 24494,
+       "fy25_ref": "Note 20-27!G74"
+      }
+     ]
+    }
+   ],
+   "total": {
+    "label": "Total",
+    "audited": {
+     "value": 21610499,
+     "ref": "Note 20-27!E75"
+    },
+    "fy25": 6355359,
+    "fy25_ref": "Note 20-27!G75"
+   },
+   "lineExpr": "l:finance"
+  },
+  {
+   "no": "27",
+   "title": "Other expenses",
+   "section": "pl",
+   "groups": [
+    {
+     "label": null,
+     "rows": [
+      {
+       "key": "n27_aud",
+       "label": "Auditor's remuneration",
+       "expr": "a:2346113000026786908",
+       "audited": {
+        "value": 1400000,
+        "ref": "Note 20-27!E79"
+       },
+       "fy25": 700000,
+       "fy25_ref": "Note 20-27!G79"
+      },
+      {
+       "key": "n27_rates",
+       "label": "Rates and taxes",
+       "expr": "a:2346113000005238029 + a:2346113000026787124 + a:2346113000026787088",
+       "audited": {
+        "value": 1783740,
+        "ref": "Note 20-27!E80"
+       },
+       "fy25": 3563620,
+       "fy25_ref": "Note 20-27!G80"
+      },
+      {
+       "key": "n27_legal",
+       "label": "Legal and professional expenses",
+       "expr": "a:2346113000026786926",
+       "audited": {
+        "value": 27266336,
+        "ref": "Note 20-27!E81"
+       },
+       "fy25": 21561596,
+       "fy25_ref": "Note 20-27!G81"
+      },
+      {
+       "key": "n27_dir",
+       "label": "Directors' remuneration / fees",
+       "expr": "a:2346113000026786944",
+       "audited": {
+        "value": 10605483,
+        "ref": "Note 20-27!E82"
+       },
+       "fy25": 8650000,
+       "fy25_ref": "Note 20-27!G82"
+      },
+      {
+       "key": "n27_brok",
+       "label": "Brokerage and commission",
+       "expr": "a:2346113000026786935",
+       "audited": {
+        "value": 40705786,
+        "ref": "Note 20-27!E83"
+       },
+       "fy25": 0,
+       "fy25_ref": "Note 20-27!G83"
+      },
+      {
+       "key": "n27_rent",
+       "label": "Rent expenses",
+       "expr": "a:2346113000026786953",
+       "audited": {
+        "value": 1920000,
+        "ref": "Note 20-27!E84"
+       },
+       "fy25": 2880000,
+       "fy25_ref": "Note 20-27!G84"
+      },
+      {
+       "key": "n27_ins",
+       "label": "Insurance expenses",
+       "expr": "a:2346113000000063485",
+       "audited": {
+        "value": 2641136,
+        "ref": "Note 20-27!E85"
+       },
+       "fy25": 583295,
+       "fy25_ref": "Note 20-27!G85"
+      },
+      {
+       "key": "n27_soft",
+       "label": "Software expenses",
+       "expr": "a:2346113000000063755",
+       "audited": {
+        "value": 1675152,
+        "ref": "Note 20-27!E86"
+       },
+       "fy25": 479722,
+       "fy25_ref": "Note 20-27!G86"
+      },
+      {
+       "key": "n27_elec",
+       "label": "Electricity and water expenses",
+       "expr": "a:2346113000026786962 + a:2346113000000063629",
+       "audited": {
+        "value": 516160,
+        "ref": "Note 20-27!E87"
+       },
+       "fy25": 584611,
+       "fy25_ref": "Note 20-27!G87"
+      },
+      {
+       "key": "n27_tel",
+       "label": "Telephone and internet expenses",
+       "expr": "a:2346113000000063773 + a:2346113000026786971",
+       "audited": {
+        "value": 883838,
+        "ref": "Note 20-27!E88"
+       },
+       "fy25": 646967,
+       "fy25_ref": "Note 20-27!G88"
+      },
+      {
+       "key": "n27_promo",
+       "label": "Business promotion expenses",
+       "expr": "a:2346113000026787016 + a:2346113000000064277",
+       "audited": {
+        "value": 6820686,
+        "ref": "Note 20-27!E89"
+       },
+       "fy25": 4171704,
+       "fy25_ref": "Note 20-27!G89"
+      },
+      {
+       "key": "n27_rm",
+       "label": "Repairs and maintenance",
+       "expr": "a:2346113000026787043",
+       "audited": {
+        "value": 523641,
+        "ref": "Note 20-27!E90"
+       },
+       "fy25": 1859475,
+       "fy25_ref": "Note 20-27!G90"
+      },
+      {
+       "key": "n27_trav",
+       "label": "Travelling and conveyance expenses",
+       "expr": "a:2346113000026787070 + a:2346113000026787052 + a:2346113000026787034",
+       "audited": {
+        "value": 11569275,
+        "ref": "Note 20-27!E91"
+       },
+       "fy25": 10567829,
+       "fy25_ref": "Note 20-27!G91"
+      },
+      {
+       "key": "n27_csr",
+       "label": "CSR expenses",
+       "expr": "a:2346113000026787079",
+       "audited": {
+        "value": 1405000,
+        "ref": "Note 20-27!E92"
+       },
+       "fy25": 0,
+       "fy25_ref": "Note 20-27!G92"
+      },
+      {
+       "key": "n27_don",
+       "label": "Donation",
+       "expr": "0",
+       "audited": {
+        "value": 0,
+        "ref": "Note 20-27!E93"
+       },
+       "fy25": 14900,
+       "fy25_ref": "Note 20-27!G93"
+      },
+      {
+       "key": "n27_bad",
+       "label": "Bad debts",
+       "expr": "c:bad_debts",
+       "audited": {
+        "value": 26497949,
+        "ref": "Note 20-27!E94"
+       },
+       "fy25": 21093580,
+       "fy25_ref": "Note 20-27!G94",
+       "detail": "part of the \"Balances written off\" account, as classified by the auditors"
+      },
+      {
+       "key": "n27_wo",
+       "label": "Balances written off",
+       "expr": "a:2346113000027291302 + a:2346113000000063671 - c:bad_debts",
+       "audited": {
+        "value": 2538901,
+        "ref": "Note 20-27!E95"
+       },
+       "fy25": 44479740,
+       "fy25_ref": "Note 20-27!G95"
+      },
+      {
+       "key": "n27_misc",
+       "label": "Miscellaneous expenses",
+       "expr": "a:2346113000026786989 + a:2346113000026786998 + a:2346113000000063683 + a:2346113000026787061 + a:2346113000026787106 - i:fines_debit_to_earlier_year_tax",
+       "audited": {
+        "value": 424247,
+        "ref": "Note 20-27!E96"
+       },
+       "fy25": 1381329,
+       "fy25_ref": "Note 20-27!G96",
+       "detail": "fines and penalties are shown net of the part moved to income tax of earlier year"
+      }
+     ]
+    }
+   ],
+   "total": {
+    "label": "Total",
+    "audited": {
+     "value": 139177330,
+     "ref": "Note 20-27!E97"
+    },
+    "fy25": 123218368,
+    "fy25_ref": "Note 20-27!G97"
+   },
+   "lineExpr": "l:other_expenses",
+   "tables": [
+    {
+     "title": "Auditor's remuneration (fixed at the audit date)",
+     "unit": "rupees",
+     "columns": [
+      "Particulars",
+      "This year",
+      "Last year"
+     ],
+     "rows": [
+      [
+       "Statutory audit fees",
+       {
+        "expr": "c:audit_fee_statutory",
+        "audited": 1200000
+       },
+       550000
+      ],
+      [
+       "Tax audit fees",
+       {
+        "expr": "c:audit_fee_tax",
+        "audited": 150000
+       },
+       100000
+      ],
+      [
+       "Other services",
+       {
+        "expr": "c:audit_fee_other",
+        "audited": 50000
+       },
+       50000
+      ],
+      [
+       "Total",
+       {
+        "expr": "c:audit_fee_statutory + c:audit_fee_tax + c:audit_fee_other",
+        "audited": 1400000
+       },
+       700000
+      ]
+     ],
+     "ties": [
+      {
+       "label": "Auditor's fees = Note 27 auditor's remuneration",
+       "cell": [
+        3,
+        1
+       ],
+       "expr": "row:n27_aud"
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}
