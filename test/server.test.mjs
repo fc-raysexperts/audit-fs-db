@@ -97,7 +97,7 @@ test('first load of the day: empty -> refresh from Zoho -> fresh statements that
 test('Refresh pressed twice: the second is refused; after 10 minutes it runs again using the journal cache', { skip }, async () => {
   const { ctx, clock, clients } = setup();
   await ctx.refresh({ manual: false });
-  // update-20: on an empty cache the first load reads 100 of the 137 journals behind CWIP / IAUD; the rest follows at once, not after 10 minutes
+  // update-20: on an empty cache the first load reads 100 of the 172 journals and bills behind CWIP / IAUD (update-22: the 35 bills first); the rest follows at once, not after 10 minutes
   assert.equal((await ctx.view()).snapshot.cwip.complete, false);
   const more = await ctx.refresh({ manual: false });
   assert.deepEqual([more.status, more.continued], ['refreshed', true], more.message);
@@ -119,9 +119,10 @@ test('update-20: the continuation reads only the journals still missing, finishe
   const [a, b] = await Promise.all([ctx.refresh({ manual: false }), ctx.refresh({ manual: false })]);
   assert.deepEqual([a.status, b.status].sort(), ['recent', 'refreshed'], 'one of the two runs, the other is told to wait');
   assert.equal(clients.length, 2);
-  assert.equal(clients[1].cwipJournalCalls.length, 37, 'the 100 read before are in Redis');
+  assert.equal(clients[1].cwipJournalCalls.length, 72, 'the 65 read before (after the 35 bills, update-22) are in Redis');
+  assert.equal(clients[1].cwipBillCalls.length, 0, 'and so are the bills');
   const v = await ctx.view();
-  assert.deepEqual([v.snapshot.cwip.complete, v.snapshot.cwip.pending, v.snapshot.meta.cwip.journalsFromCache], [true, 0, 100]);
+  assert.deepEqual([v.snapshot.cwip.complete, v.snapshot.cwip.pending, v.snapshot.meta.cwip.journalsFromCache, v.snapshot.meta.cwip.billsFromCache], [true, 0, 65, 35]);
   assert.equal(v.bookProblems, 0);
   const after = await ctx.refresh({ manual: false });
   assert.equal(after.status, 'recent', 'nothing left to continue: the ordinary rules apply');

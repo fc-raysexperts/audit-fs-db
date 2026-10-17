@@ -547,7 +547,7 @@ test('the CWIP park split that is only half read is "still loading" - said on th
   const half = buildOverlay({ ...snap(), cwip: { complete: false, pending: 37, parks: [{ name: 'Alpha', total: 150 }] } }, sheet(...rows), cfg);
   assert.deepEqual(half.problems, []);
   assert.equal(half.waiting.length, 1);
-  assert.match(half.waiting[0], /37 journals behind the two accounts still to be read/);
+  assert.match(half.waiting[0], /37 journals and bills behind the two accounts still to be read/);
   assert.equal(half.byRow[1], undefined, 'until then the lines carry no live figure: they stay as signed');
   for (const cwip of [undefined, { error: 'the ledger could not be read' }]) {
     const none = buildOverlay({ ...snap(), cwip }, sheet(...rows), cfg);
@@ -558,15 +558,15 @@ test('the CWIP park split that is only half read is "still loading" - said on th
   }
 });
 
-test('CWIP: 16 of the 18 parks give the signed figure, Kolayat and Bhamatsar differ by the one bill, and the total agrees', { skip }, async () => {
+test('CWIP: 16 of the 18 parks give the signed figure, Kolayat and Bhamatsar differ by the one bill and say so (Explained), and the total agrees', { skip }, async () => {
   const { snapshot, workbook } = await world();
   const o = overlayOf(snapshot, 'cwip');
-  assert.deepEqual([o.summary.lines, o.summary.ok, o.summary.name, o.summary.diff, o.summary.none], [18, 16, 0, 2, 0]);
+  assert.deepEqual([o.summary.lines, o.summary.ok, o.summary.name, o.summary.diff, o.summary.expl, o.summary.none], [18, 16, 0, 0, 2, 0]);
   assert.deepEqual([o.summary.totalsOk, o.summary.totalsBad], [1, 0]);
   assert.deepEqual([o.problems, o.waiting, o.extras.length], [[], [], 0], 'the three parks that are not on the sheet are capitalised in full, so nothing is left over');
   const rows = readSheet(config.workbook, 'cwip').rows;
-  const differ = Object.entries(o.byRow).filter(([, v]) => v.status === 'DIFF').map(([r, v]) => [rows[r][0], Math.round(v.diff)]);
-  assert.deepEqual(differ, [['Bhamatsar', -84000], ['Kolayat', 84000]]);
+  const differ = Object.entries(o.byRow).filter(([, v]) => v.status === 'EXPL').map(([r, v]) => [rows[r][0], Math.round(v.diff), v.explain.entries]);
+  assert.deepEqual(differ, [['Bhamatsar', -84000, ['ES2526893']], ['Kolayat', 84000, ['ES2526893']]]);
   for (const [r, v] of Object.entries(o.byRow)) if (v.status === 'OK') assert.ok(Math.abs(v.diff) <= 1, `${rows[r][0]} is within Re 1 (${v.diff})`);
   assert.ok(Math.abs(Object.values(o.byRow).find((v) => v.kind === 'total').diff) < 1, 'the total of the sheet agrees to under a rupee');
   // the two ties of the sheet (CWIP and Intangibles in the Balance Sheet) keep agreeing
@@ -581,7 +581,25 @@ test('CWIP: a park whose line moved in Zoho is a difference of its own, the othe
   const dechu = changed.cwip.parks.find((p) => p.name === 'Dechu');
   dechu.total += 5000;
   const o = overlayOf(changed, 'cwip');
-  assert.equal(o.summary.diff, 3);
+  assert.equal(o.summary.diff, 1);
+  assert.equal(o.summary.expl, 2, 'the two parks of the documented bill are still explained');
   assert.equal(o.summary.totalsBad, 1, 'and the total of the sheet, worked out live, now differs');
   assert.equal(o.summary.ok, 15);
+});
+
+test('CWIP: a park is Explained only when it differs by exactly the documented amount - any other figure is a difference', { skip }, async () => {
+  const { snapshot } = await world();
+  const changed = clone(snapshot);
+  changed.cwip.parks.find((p) => p.name === 'Kolayat').total += 100; // 84,100 more than the sheet: not the bill's 84,000 any more
+  const o = overlayOf(changed, 'cwip');
+  const rows = readSheet(config.workbook, 'cwip').rows;
+  const lines = Object.entries(o.byRow).filter(([, v]) => v.kind === 'detail');
+  const named = (st) => lines.filter(([, v]) => v.status === st).map(([r]) => rows[r][0]);
+  assert.deepEqual(named('DIFF'), ['Kolayat']);
+  assert.deepEqual(named('EXPL'), ['Bhamatsar']);
+  // the documented bill is no longer in the ledger: nothing is explained, both parks differ
+  const gone = clone(snapshot);
+  for (const p of gone.cwip.parks) delete p.explain;
+  const o2 = overlayOf(gone, 'cwip');
+  assert.deepEqual([o2.summary.diff, o2.summary.expl], [2, 0]);
 });

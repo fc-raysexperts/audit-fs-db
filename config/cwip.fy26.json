@@ -232,7 +232,7 @@
    "amount": 84000,
    "zoho": "Kolayat",
    "sheet": "Bhamatsar",
-   "why": "Zoho books bill ES2526893 of Electrico Services (Rs 81,000 + Rs 3,000; location Kolayat, project 'NPD-KOLAYAT- TL') to Kolayat. The signed sheet has Rs 84,000 less under Kolayat and Rs 84,000 more under Bhamatsar, and these two lines are the ones that fit to the rupee."
+   "why": "Zoho books bill ES2526893 of Electrico Services (Rs 81,000 + Rs 3,000) to Kolayat, and every field of the bill says Kolayat: its location, the project of both lines ('NPD-KOLAYAT- TL'), the customer (Kolayat Solar Park), the project name on the bill ('KOLAYAT') and its purchase order PO/25-26/00867 (no other park appears anywhere on the bill). The signed sheet has Rs 84,000 less under Kolayat and Rs 84,000 more under Bhamatsar, and these two lines are the ones that fit to the rupee."
   }
  ]
 }

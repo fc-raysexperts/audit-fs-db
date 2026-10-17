@@ -131,6 +131,12 @@ export function fakeUpstash({ token = 'secret-token', clock = { t: 1_800_000_000
  * options.cwipIgnoreRule -> that ledger answers with a line of another account (filter ignored)
  * options.cwipJournalEdit -> function(id, raw) -> raw: change a journal behind the two accounts before it is returned
  * options.cwipJournalMissing -> ids of journals behind the two accounts that answer 404
+ * options.cwipKeepBillLines -> true: the ledger of the two accounts gives every bill line on its own line (as the Zoho connector did when fixtures/cwip_fy26.json was saved). By default it answers
+ *   like the REAL REST ledger report (checked on the user's connection, 17-Oct-2026): ONE line per bill and account - the lines of a bill that go to the same account are added up and the line
+ *   keeps the project of only one of them (here the middle one: bill 482 of Anita Freight Carrier, three lines of 2,784 for Kolayat, Bhamatsar and Pugal, comes as 8,352 under Bhamatsar) (update-22)
+ * options.cwipBillsFail -> 'all' | [ids]: those bills behind the two accounts are refused (HTTP 401, code 57)
+ * options.cwipBillEdit  -> function(id, raw) -> raw: change a bill behind the two accounts before it is returned
+ * (a bill behind the two accounts is answered from the saved ledger lines of that bill, with one more line of another account so that the account of each line has to be looked at)
  * options.codesRateAfter  -> a vendor card is refused (HTTP 429) from this many cards on
  * options.codesMissing    -> ids of vendor cards that answer 404
  * options.codes           -> { id: code } to answer for a vendor card instead of the saved code
@@ -162,6 +168,14 @@ export function replayZoho(options = {}) {
 
   let splitJournalCalls = 0;
   const cwipJournalCalls = []; // the ids of the CWIP / IAUD journals asked for (update-20)
+  const cwipBillCalls = []; // the ids of the CWIP / IAUD bills asked for (update-22)
+  const cwipBillRaw = (id) => { // a bill behind the CWIP / IAUD accounts, made from its lines in the saved ledger (update-22)
+    const mine = cwipFx.groups.flatMap((g) => g.rows).filter((r) => r.transaction_id === id && r.transaction_type === 'bill');
+    if (!mine.length) return null;
+    const lines = mine.map((r, i) => ({ line_item_id: `${id}-${i}`, account_id: r.account_id, item_total: Number(r.debit || 0) - Number(r.credit || 0), project_name: r.project_name, location_name: r.branch?.location_name ?? '', description: `line ${i + 1} of ${mine.length}` }));
+    lines.push({ line_item_id: `${id}-x`, account_id: '2346113000004482477', item_total: 111, project_name: 'LE0188_UTTAM STRIPS', location_name: 'Head Office', description: 'freight to a customer (another account)' });
+    return { code: 0, message: 'success', bill: { bill_id: id, bill_number: mine[0].entity_number, notes: mine[0].description ?? '', location_name: mine[0].branch?.location_name ?? '', line_items: lines } };
+  };
   const rawJournal = (id) => {
     if (cwipFx.journals[id]) { // a journal behind the CWIP / IAUD accounts (update-20)
       cwipJournalCalls.push(id);
@@ -244,6 +258,26 @@ export function replayZoho(options = {}) {
       const asked = new Set((query.select_columns ?? []).map((c) => c.field));
       const ids = (query.rule.columns[0].value ?? []).map(String);
       let groups = cwipFx.groups.filter((g) => ids.includes(g.group_name)).map((g) => ({ group_name: g.group_name, rows: structuredClone(g.rows) }));
+      if (!options.cwipKeepBillLines) { // like the real REST report: one line per bill and account, the project of one of the lines (update-22)
+        groups = groups.map((g) => {
+          const by = new Map();
+          for (const r of g.rows) if (r.transaction_type === 'bill') { const k = `${r.transaction_id}|${r.account_id}`; by.set(k, [...(by.get(k) ?? []), r]); }
+          const merged = new Map();
+          for (const [k, rs] of by) if (rs.length > 1) {
+            const keep = structuredClone(rs[Math.floor(rs.length / 2)]);
+            keep.debit = rs.reduce((t, r) => t + Number(r.debit || 0), 0) || '';
+            keep.credit = rs.reduce((t, r) => t + Number(r.credit || 0), 0) || '';
+            merged.set(k, keep);
+          }
+          const seen = new Set();
+          const rows = [];
+          for (const r of g.rows) {
+            const k = `${r.transaction_id}|${r.account_id}`;
+            if (r.transaction_type === 'bill' && merged.has(k)) { if (!seen.has(k)) { seen.add(k); rows.push(merged.get(k)); } } else rows.push(r);
+          }
+          return { ...g, rows };
+        });
+      }
       if (options.cwipRows) groups = options.cwipRows(groups);
       return {
         data: {
@@ -319,6 +353,14 @@ export function replayZoho(options = {}) {
         page_context: { page, per_page: perPage, has_more_page: page * perPage < items.length, report_name: 'Items', applied_filter: query.filter_by ?? 'Status.Active', sort_column: query.sort_column ?? 'name', sort_order: 'A' },
       };
     }
+    if (p.startsWith('/bills/') && !billsFx[p.slice('/bills/'.length)]) { // update-22: a bill behind the CWIP / IAUD accounts
+      const id = p.slice('/bills/'.length);
+      cwipBillCalls.push(id);
+      if (options.cwipBillsFail === 'all' || (Array.isArray(options.cwipBillsFail) && options.cwipBillsFail.includes(id))) throw new ZohoError('Zoho /bills failed: You are not authorized to perform this operation (HTTP 401)', { status: 401, code: 57, path: p });
+      const raw = cwipBillRaw(id);
+      if (!raw) throw new ZohoError(`Zoho ${p} failed: The bill does not exist. (HTTP 404)`, { status: 404, code: 1002, path: p });
+      return options.cwipBillEdit ? options.cwipBillEdit(id, raw) : raw;
+    }
     if (p.startsWith('/bills/')) { // update-16
       const id = p.slice('/bills/'.length);
       billCalls.push(id);
@@ -385,5 +427,5 @@ export function replayZoho(options = {}) {
     }
     throw new Error(`replayZoho: unexpected request ${p}`);
   }
-  return { get, stats, calls, billCalls, cwipJournalCalls, orgId: '60038956413', dc: 'in' };
+  return { get, stats, calls, billCalls, cwipJournalCalls, cwipBillCalls, orgId: '60038956413', dc: 'in' };
 }

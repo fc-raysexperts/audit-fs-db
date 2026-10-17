@@ -18,7 +18,7 @@ export default function AutoLoad({ state, canRefresh, generatedAt, savedLabel, m
     if (!auto || started.current) return;
     started.current = true;
     (async () => {
-      setNote({ kind: 'working', text: more ? 'Finishing the CWIP tab: reading the rest of its journals from Zoho Books. This takes about 30 seconds.' : 'Updating from Zoho Books. This takes about 30 seconds.' });
+      setNote({ kind: 'working', text: more ? 'Finishing the CWIP tab: reading the rest of its journals and bills from Zoho Books. This takes about 30 seconds.' : 'Updating from Zoho Books. This takes about 30 seconds.' });
       const r = await requestRefresh(false);
       if (r.status === 'refreshed' || r.status === 'flawed') { router.refresh(); setNote(null); return; }
       if (r.status === 'busy' || r.status === 'recent') {
@@ -42,7 +42,7 @@ export default function AutoLoad({ state, canRefresh, generatedAt, savedLabel, m
   return (
     <div className={`notice ${note?.kind === 'problem' ? 'bad' : 'warn'}`} role="status" aria-live="polite">
       {state === 'stale' && <><b>Showing figures {savedLabel}.</b>{' '}</>}
-      {note ? note.text : !canRefresh ? 'Loading from Zoho Books is not set up, so these figures will not update.' : more ? 'The CWIP tab is only partly loaded: the rest of its journals are read from Zoho Books.' : 'Updating from Zoho Books.'}
+      {note ? note.text : !canRefresh ? 'Loading from Zoho Books is not set up, so these figures will not update.' : more ? 'The CWIP tab is only partly loaded: the rest of its journals and bills are read from Zoho Books.' : 'Updating from Zoho Books.'}
     </div>
   );
 }

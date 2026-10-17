@@ -27,7 +27,9 @@ const ITEM_PAGES = 5; // update-19: the item list (active and inactive: the unit
 const billCount = () => Object.keys(J('fixtures/bills_fy26.json').bills).length; // update-16: the four bills of HDFC ERGO
 const splitJournalCount = () => Object.keys(J('fixtures/splits_fy26.json').journals).length; // update-15: the clean-up journals behind the deposit accounts
 const cwipJournalCount = () => Object.keys(J('fixtures/cwip_fy26.json').journals).length; // update-20: the journals behind the CWIP and IAUD ledgers (137)
-const CWIP_BUDGET = config.settings.cwip_journal_budget; // update-20: with Redis a refresh reads at most this many journals that are not cached yet (100)
+const cwipBillCount = () => new Set(Object.values(J('fixtures/cwip_fy26.json').groups).flatMap((g) => g.rows).filter((r) => r.transaction_type === 'bill').map((r) => r.transaction_id)).size; // update-22: the bills behind the two accounts (35)
+const CWIP_BUDGET = config.settings.cwip_journal_budget; // update-20: with Redis a refresh reads at most this many journals AND bills that are not cached yet (100; update-22: the 35 bills first, so 65 journals)
+const CWIP_FIRST = CWIP_BUDGET - cwipBillCount(); // update-22: the journals the first run gets to
 
 test('live pipeline reproduces the audited FY26 statements (47 lines within Rs 5) and passes every check', { skip }, async () => {
   const zoho = replayZoho();
@@ -45,8 +47,9 @@ test('live pipeline reproduces the audited FY26 statements (47 lines within Rs 5
   // + (update-16) one call per bill of HDFC ERGO (the state of its billing address)
   // + (update-17) the stock summary: 819 item lines on 5 pages of 200
   // + (update-20) 1 ledger page of the CWIP and IAUD accounts and one call per journal behind it (no Redis: all of them, 137)
-  assert.equal(snap.meta.apiCalls, 25 + 1 + 1 + STOCK_PAGES + STOCK_LEDGER_PAGES + ITEM_PAGES + 166 + journalCount() + splitJournalCount() + billCount() + cwipJournalCount());
-  assert.deepEqual(snap.meta.cwip, { rows: 184, journals: cwipJournalCount(), journalsFromCache: 0, journalsFetched: cwipJournalCount(), journalsRefetched: 0, pending: 0 });
+  // + (update-22) one call per bill behind those two accounts (35): the ledger adds up the lines of a bill, 175 ledger lines instead of the 184 postings
+  assert.equal(snap.meta.apiCalls, 25 + 1 + 1 + STOCK_PAGES + STOCK_LEDGER_PAGES + ITEM_PAGES + 166 + journalCount() + splitJournalCount() + billCount() + cwipJournalCount() + cwipBillCount());
+  assert.deepEqual(snap.meta.cwip, { rows: 175, journals: cwipJournalCount(), journalsFromCache: 0, journalsFetched: cwipJournalCount(), journalsRefetched: 0, bills: cwipBillCount(), billsFromCache: 0, billsFetched: cwipBillCount(), billsRefetched: 0, billsFailed: 0, billsSplit: 6, pending: 0 });
   assert.equal(snap.cwip.complete, true);
   assert.deepEqual(snap.meta.bills, { read: billCount(), fromCache: 0, failed: 0 });
   assert.deepEqual(snap.meta.splits, { rows: 52, journalsRead: splitJournalCount(), journalsFromCache: 0, journalsRefetched: 0 });
@@ -109,11 +112,11 @@ test('second run the same day: journals come from Redis, the rest is read again'
   const zoho2 = replayZoho();
   const second = await buildSnapshot({ zoho: zoho2, cache, config, fy: FY, now: () => NOW });
   assert.equal(second.meta.ledger.journalsFromCache, journalCount());
-  assert.equal(second.meta.apiCalls, 27 + STOCK_PAGES + STOCK_LEDGER_PAGES + ITEM_PAGES + 40 + (cwipJournalCount() - CWIP_BUDGET), 'the 25 reports + the ledger of the deposit accounts + the ledger of the CWIP and IAUD accounts (update-20) + the stock summary (5 pages) + the ledger of Inventory Asset (4 pages) + the item list (5 pages, update-19), and the next 40 vendor cards (the first run read 40; the codes are kept in Redis), and the CWIP journals the first run did not get to (137 - 100)');
-  // update-20: the first run reads the first 100 journals behind CWIP / IAUD and says so (the tab keeps its signed park table); the second finishes
-  assert.deepEqual([first.cwip.complete, first.cwip.pending, first.meta.cwip.journalsFetched], [false, cwipJournalCount() - CWIP_BUDGET, CWIP_BUDGET]);
+  assert.equal(second.meta.apiCalls, 27 + STOCK_PAGES + STOCK_LEDGER_PAGES + ITEM_PAGES + 40 + (cwipJournalCount() - CWIP_FIRST), 'the 25 reports + the ledger of the deposit accounts + the ledger of the CWIP and IAUD accounts (update-20) + the stock summary (5 pages) + the ledger of Inventory Asset (4 pages) + the item list (5 pages, update-19), and the next 40 vendor cards (the first run read 40; the codes are kept in Redis), and the CWIP journals the first run did not get to (137 - 65; its 100 reads went to the 35 bills and 65 journals, update-22)');
+  // update-20: the first run reads the 35 bills and the first 65 journals behind CWIP / IAUD (100 in all) and says so (the tab keeps its signed park table); the second finishes
+  assert.deepEqual([first.cwip.complete, first.cwip.pending, first.meta.cwip.journalsFetched, first.meta.cwip.billsFetched], [false, cwipJournalCount() - CWIP_FIRST, CWIP_FIRST, cwipBillCount()]);
   assert.ok(first.alerts.some((a) => a.code === 'CWIP_PARTIAL'));
-  assert.deepEqual(second.meta.cwip, { rows: 184, journals: cwipJournalCount(), journalsFromCache: CWIP_BUDGET, journalsFetched: cwipJournalCount() - CWIP_BUDGET, journalsRefetched: 0, pending: 0 });
+  assert.deepEqual(second.meta.cwip, { rows: 175, journals: cwipJournalCount(), journalsFromCache: CWIP_FIRST, journalsFetched: cwipJournalCount() - CWIP_FIRST, journalsRefetched: 0, bills: cwipBillCount(), billsFromCache: cwipBillCount(), billsFetched: 0, billsRefetched: 0, billsFailed: 0, billsSplit: 6, pending: 0 });
   assert.deepEqual([second.cwip.complete, second.cwip.pending], [true, 0]);
   assert.ok(!second.alerts.some((a) => /^CWIP_/.test(a.code)), JSON.stringify(second.alerts.filter((a) => /^CWIP_/.test(a.code))));
   assert.deepEqual(second.meta.bills, { read: billCount(), fromCache: billCount(), failed: 0 }, 'the bills of HDFC ERGO come from Redis too');
@@ -170,7 +173,7 @@ test('update-15: if the ledger of the deposit accounts is refused the run goes o
   assert.equal(snap.splits.hdfc_ergo.error, undefined, 'the contacts come from the party ledger, not from the deposit ledger');
   assert.deepEqual(snap.alerts.filter((a) => /^SPLIT/.test(a.code)).map((a) => [a.level, a.code]), [['warn', 'SPLITS_UNAVAILABLE']]);
   assert.equal(snap.meta.splits, null);
-  assert.equal(snap.meta.apiCalls, 25 + 1 + 1 + STOCK_PAGES + STOCK_LEDGER_PAGES + ITEM_PAGES + 166 + journalCount() + billCount() + cwipJournalCount(), 'the failed call is counted; no clean-up journal is read; the four bills of HDFC ERGO still are');
+  assert.equal(snap.meta.apiCalls, 25 + 1 + 1 + STOCK_PAGES + STOCK_LEDGER_PAGES + ITEM_PAGES + 166 + journalCount() + billCount() + cwipJournalCount() + cwipBillCount(), 'the failed call is counted; no clean-up journal is read; the four bills of HDFC ERGO still are');
 });
 
 test('update-15: a ledger that does not add up to the Trial Balance is not used; a clean-up journal Zoho cannot open leaves its amount for the total', { skip }, async () => {
@@ -210,7 +213,8 @@ test('update-16: HDFC ERGO\'s payable is split into Delhi and Rajasthan by the b
   const zoho = replayZoho();
   const snap = await buildSnapshot({ zoho, config, fy: FY, now: () => NOW });
   assert.deepEqual(zoho.billCalls.slice().sort(), Object.keys(J('fixtures/bills_fy26.json').bills).sort(), 'exactly the four bills of the contact, each once');
-  assert.deepEqual(zoho.calls.filter((c) => c.path.startsWith('/bills/')).map((c) => c.path).sort(), zoho.billCalls.map((id) => `/bills/${id}`).sort());
+  assert.deepEqual(zoho.calls.filter((c) => c.path.startsWith('/bills/')).map((c) => c.path).sort(), [...zoho.billCalls, ...zoho.cwipBillCalls].map((id) => `/bills/${id}`).sort(), 'and the bills behind the CWIP and IAUD accounts (update-22)');
+  assert.equal(zoho.cwipBillCalls.length, cwipBillCount());
   assert.equal(snap.alerts.filter((a) => /^SPLIT/.test(a.code)).length, 0);
   // the auditors' figures to the paisa: Delhi 4,14,242.16 (three bills), Rajasthan 12,650 (the bill with no billing state)
   assert.deepEqual(snap.splits.hdfc_ergo.parts.map((p) => [p.name, p.amount, p.rows]), [['HDFC ERGO - advance', 426901.44, 2], ['HDFC ERGO - payable, Delhi', 414242.16, 3], ['HDFC ERGO - payable, Rajasthan', 12650, 5]]);
@@ -395,10 +399,12 @@ test('update-20: the journals behind CWIP / IAUD are kept a month, the others 12
   const zoho = replayZoho();
   const second = await buildSnapshot({ zoho, cache, config, fy: FY, now: () => NOW });
   assert.equal(second.meta.ledger.journalsFromCache, 0, 'the journals of the ledger were kept 12 hours only');
-  assert.equal(second.meta.cwip.journalsFromCache, CWIP_BUDGET, 'the 100 CWIP journals are still there');
-  assert.equal(second.meta.cwip.journalsFetched, cwipJournalCount() - CWIP_BUDGET, 'only the rest is read, and the tab is complete');
+  assert.equal(second.meta.cwip.journalsFromCache, CWIP_FIRST, 'the 65 CWIP journals of the first run are still there');
+  assert.equal(second.meta.cwip.billsFromCache, cwipBillCount(), 'and so are the 35 bills');
+  assert.equal(second.meta.cwip.journalsFetched, cwipJournalCount() - CWIP_FIRST, 'only the rest is read, and the tab is complete');
   assert.equal(second.cwip.complete, true);
   f.clock.t += 31 * 24 * 3600 * 1000;
   const third = await buildSnapshot({ zoho: replayZoho(), cache, config, fy: FY, now: () => NOW });
   assert.equal(third.meta.cwip.journalsFromCache, 0, 'after a month they are read again');
+  assert.equal(third.meta.cwip.billsFromCache, 0, 'and so are the bills');
 });

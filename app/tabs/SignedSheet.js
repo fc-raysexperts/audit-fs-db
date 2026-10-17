@@ -67,6 +67,7 @@ const CHECK = {
   OK: ['ok', 'Agrees', 'The figure Zoho gives today is the signed figure'],
   NAME: ['info', 'Matched by amount', 'Not found under this name: Zoho has a balance of the same amount under the closest name (shown below the chip)'],
   DIFF: ['warn', 'Differs', 'Zoho gives another figure today: the books changed after signing, or the auditors regrouped the line'],
+  EXPL: ['info', 'Explained', 'Zoho gives another figure, by exactly the amount of a line that Zoho books to this line and the signed sheet counts under another: see the table of this tab that names it'],
   NONE: ['mute', 'Not in Zoho', 'No line of this name in Zoho. It stays as signed'],
   LUMP: ['info', 'Checked in total', 'Zoho holds these lines as one combined balance (or one balance for a few lines), so they are compared together: see the tables of this check'],
 };
@@ -198,6 +199,7 @@ function LiveCheck({ overlay, keeps }) {
           <span className={m.diff === 0 ? 'ok' : ''}>{agree.toLocaleString('en-IN')} of {m.lines.toLocaleString('en-IN')} lines give the same figure in Zoho today</span>
           {m.name > 0 && <>, {m.name.toLocaleString('en-IN')} of them under a slightly different name</>}
           {m.lump > 0 && <>; {m.lump} more are compared together as one combined balance</>}
+          {m.expl > 0 && <>; {m.expl === 1 ? '1 gives' : `${m.expl} give`} another figure, by exactly an amount that is explained on this tab</>}
           {m.diff > 0 && <>; {m.diff === 1 ? '1 gives' : `${m.diff} give`} another figure</>}
           {m.none > 0 && <>; {m.none} are not in Zoho under that name and stay as signed</>}.
           {m.totalsOk + m.totalsBad > 0 && <> {m.totalsOk} of {m.totalsOk + m.totalsBad} totals work out the same with the live figures.</>}
@@ -209,24 +211,24 @@ function LiveCheck({ overlay, keeps }) {
           <div className="tablewrap">
             <table className="tbl-plain">
               <thead>
-                <tr><th scope="col">Part of the sheet</th><th scope="col" className="num">Lines</th><th scope="col" className="num">Agree</th><th scope="col" className="num">By amount</th><th scope="col" className="num">Differ</th><th scope="col" className="num">Not in Zoho</th><th scope="col">Totals</th></tr>
+                <tr><th scope="col">Part of the sheet</th><th scope="col" className="num">Lines</th><th scope="col" className="num">Agree</th><th scope="col" className="num">By amount</th><th scope="col" className="num">Differ</th>{m.expl > 0 && <th scope="col" className="num">Explained</th>}<th scope="col" className="num">Not in Zoho</th><th scope="col">Totals</th></tr>
               </thead>
               <tbody>
                 {overlay.blocks.map((b) => {
-                  const n = b.ok + b.name + b.diff + b.none + b.lumpLines;
+                  const n = b.ok + b.name + b.diff + b.expl + b.none + b.lumpLines;
                   return (
                     <tr key={b.start}>
                       <th scope="row">{b.title}</th>
                       {b.source ? (
                         <>
-                          <td className="num">{n}</td><td className="num">{b.ok || '–'}</td><td className="num">{b.name || '–'}</td><td className="num">{b.diff || '–'}</td><td className="num">{b.none || '–'}</td>
+                          <td className="num">{n}</td><td className="num">{b.ok || '–'}</td><td className="num">{b.name || '–'}</td><td className="num">{b.diff || '–'}</td>{m.expl > 0 && <td className="num">{b.expl || '–'}</td>}<td className="num">{b.none || '–'}</td>
                           <td>
                             {b.totalsOk + b.totalsBad > 0 ? <span className={`chip ${b.totalsBad === 0 ? 'ok' : 'warn'}`}>{b.totalsBad === 0 ? 'Agrees' : 'Differs'}</span> : <span className="dim">–</span>}
                             {b.lump && <> <span className={`chip ${b.lump.ok ? 'ok' : 'warn'}`} title={`${b.lump.lines} lines that matched nothing add up to ${cell(round2(b.lump.signed))} as signed; Zoho's one combined balance "${b.lump.name}" is ${cell(round2(b.lump.live))}`}>{b.lump.lines} lines together {b.lump.ok ? 'agree' : 'differ'}</span></>}
                           </td>
                         </>
                       ) : (
-                        <td colSpan={6} className="dim">As signed, {b.signed} {b.signed === 1 ? 'line' : 'lines'} (no live check for this part)</td>
+                        <td colSpan={m.expl > 0 ? 7 : 6} className="dim">As signed, {b.signed} {b.signed === 1 ? 'line' : 'lines'} (no live check for this part)</td>
                       )}
                     </tr>
                   );
@@ -457,10 +459,10 @@ function CwipPanel({ cwip }) {
   return (
     <>
       <section className="sheet" aria-label="The two ledger accounts in Zoho">
-        <div className="sheet-title"><h2>The two ledger accounts in Zoho</h2><small>{cwip.rows.toLocaleString('en-IN')} ledger lines, read with their journals</small></div>
+        <div className="sheet-title"><h2>The two ledger accounts in Zoho</h2><small>{cwip.rows.toLocaleString('en-IN')} ledger lines, read with their journals and bills</small></div>
         <div className="tablewrap">
           <table className="tbl-plain">
-            <thead><tr><th scope="col">Ledger account</th><th scope="col" className="num">Lines</th><th scope="col" className="num">Ledger, ₹</th><th scope="col" className="num">Trial Balance, ₹</th><th scope="col">Check</th></tr></thead>
+            <thead><tr><th scope="col">Ledger account</th><th scope="col" className="num">Ledger lines</th><th scope="col" className="num">Ledger, ₹</th><th scope="col" className="num">Trial Balance, ₹</th><th scope="col">Check</th></tr></thead>
             <tbody>
               {cwip.accounts.map((a) => (
                 <tr key={a.key}>
@@ -474,7 +476,7 @@ function CwipPanel({ cwip }) {
             </tbody>
           </table>
         </div>
-        <p className="tbl-note">Zoho keeps the whole of the capital work in two ledger accounts and has no park column. The park of each ledger line is read from the words Zoho holds for it: for a bill its project and narration, for a journal its notes and the name of the old ledger account that was emptied into the new one. The sheet shows the three headings (Intangible under development, Boundary wall and road, Transmission line and MCR) as the auditors grouped them; Zoho gives each park's total, not that split by heading, so each park is compared by its total.</p>
+        <p className="tbl-note">Zoho keeps the whole of the capital work in two ledger accounts and has no park column. The park of each ledger line is read from the words Zoho holds for it: for a bill its project and narration, for a journal its notes and the name of the old ledger account that was emptied into the new one. The sheet shows the three headings (Intangible under development, Boundary wall and road, Transmission line and MCR) as the auditors grouped them; Zoho gives each park's total, not that split by heading, so each park is compared by its total.{(cwip.lines ?? cwip.rows) > cwip.rows && <> Zoho's ledger report gives one line for each bill and account, adding up the lines of a bill that go to the same account; the {(cwip.billSplits ?? []).length} bills with several lines are read from the bills themselves, which makes {(cwip.lines ?? cwip.rows).toLocaleString('en-IN')} postings in all (table below).</>}</p>
       </section>
 
       <section className="sheet" aria-label="Zoho by park">
@@ -530,7 +532,7 @@ function CwipPanel({ cwip }) {
                 <td className="num"><Amt v={iaud} /></td>
                 <td className="num"><Amt v={cw} /></td>
                 <td className="num"><Amt v={iaud + cw} /></td>
-                <td className="num">{cwip.rows}</td>
+                <td className="num">{cwip.lines ?? cwip.rows}</td>
                 <td />
               </tr>
             </tbody>
@@ -557,7 +559,7 @@ function CwipPanel({ cwip }) {
             </tbody>
           </table>
         </div>
-        <p className="tbl-note">The year-end clean-up journals (JN-Clean) emptied the old ledger accounts of each park into these two accounts on 31-Mar-2026; the old account's name is what says the park. The bills are the ones posted straight to these accounts, with the project and narration the staff entered.</p>
+        <p className="tbl-note">The year-end clean-up journals (JN-Clean) emptied the old ledger accounts of each park into these two accounts on 31-Mar-2026; the old account's name is what says the park. The bills are the ones posted straight to these accounts, with the project and narration the staff entered; a bill counts one line for each of its lines to these accounts.</p>
       </section>
 
       {cwip.allocations.length > 0 && (
@@ -589,6 +591,32 @@ function CwipPanel({ cwip }) {
         </section>
       )}
 
+      {(cwip.billSplits ?? []).length > 0 && (
+        <section className="sheet" aria-label="Bills whose lines the ledger adds up">
+          <div className="sheet-title"><h2>Bills with several lines for one account</h2><small>{cwip.billSplits.length} {cwip.billSplits.length === 1 ? 'bill' : 'bills'}</small></div>
+          <div className="tablewrap">
+            <table className="tbl-plain">
+              <thead><tr><th scope="col">Bill</th><th scope="col">Date</th><th scope="col" className="num">In the ledger, ₹</th><th scope="col">The lines of the bill, and the park each one is in</th></tr></thead>
+              <tbody>
+                {cwip.billSplits.map((b) => (
+                  <tr key={b.txnId}>
+                    <th scope="row">{b.entry}<span className="detail" style={SUB}>{b.who}</span></th>
+                    <td style={{ whiteSpace: 'nowrap' }}>{day(b.date)}</td>
+                    <td className="num">{rs(b.amount)}</td>
+                    <td>
+                      {b.lines.map((l, i) => (
+                        <div key={i}>{l.park ?? 'no park'}: {rs(l.amount)}<span className="detail" style={SUB}>{[l.project, l.text].filter(Boolean).join(' · ')}</span></div>
+                      ))}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <p className="tbl-note">Zoho's ledger report gives one line for each bill and account: the lines of a bill that go to the same account are added up there, with the project of only one of them. So the bills are read from Zoho as well, where every line has its own project and location, and each line is put in its own park. The lines add up to the ledger's line to the paisa; a bill that did not would be left as the ledger gives it.</p>
+        </section>
+      )}
+
       {cwip.elsewhere.length > 0 && (
         <section className="sheet" aria-label="Where Zoho and the signed sheet place a line differently">
           <div className="sheet-title"><h2>Where Zoho and the signed sheet place a line differently</h2><small>{cwip.elsewhere.length} line</small></div>
@@ -612,7 +640,7 @@ function CwipPanel({ cwip }) {
               </tbody>
             </table>
           </div>
-          <p className="tbl-note">These two parks therefore differ on the sheet's own live check by this amount, in opposite directions; together they agree, and so does the total of the sheet.</p>
+          <p className="tbl-note">These two parks therefore differ on the sheet's own live check by this amount, in opposite directions: they are marked Explained there (a park is Explained only when it differs by exactly this amount, any other figure shows as Differs); together they agree, and so does the total of the sheet.</p>
         </section>
       )}
 
