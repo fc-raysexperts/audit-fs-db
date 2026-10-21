@@ -210,7 +210,7 @@ test('Closing Stock: a figure changed in Zoho since signing is a difference on i
   assert.equal(o.summary.totalsBad, 1);
   assert.ok(o.problems.length === 0);
   // the web page and the booklet count the sheet as one that has differences
-  const w = buildWorkbook(snap, null, config.workbook, config.books);
+  const w = buildWorkbook(snap, null, config.workbook, { ...config.books, related: config.related, register: config.register, subsidiaries: config.subsidiaries });
   const s = w.sheets.find((x) => x.id === 'closing-stock');
   assert.equal(s.liveCheck.diff, 3);
 });

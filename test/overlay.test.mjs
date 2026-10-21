@@ -308,18 +308,20 @@ async function world() {
     const snapshot = await buildSnapshot({ zoho: replayZoho(), config, fy: '2025-26', now: () => NOW });
     const statements = buildView(snapshot, config.audited);
     const books = buildBooks(snapshot, config, statements);
-    memo = { snapshot, statements, books, workbook: buildWorkbook(snapshot, books, config.workbook, config.books) };
+    memo = { snapshot, statements, books, workbook: buildWorkbook(snapshot, books, config.workbook, { ...config.books, related: config.related, register: config.register, subsidiaries: config.subsidiaries }) };
   }
   return memo;
 }
 const overlayOf = (snapshot, id) => liveOverlay(snapshot, readSheet(config.workbook, id));
 
-test('the six detail sheets are checked, every block is found on its sheet, and no check fails to run', { skip }, async () => {
+test('the eleven checked sheets are checked, every block is found on its sheet, and no check fails to run', { skip }, async () => {
   const { workbook } = await world();
-  assert.equal(workbook.summary.liveSheets, 6, 'the four lists + (update-17) the Closing Stock + (update-20) CWIP');
+  assert.equal(workbook.summary.liveSheets, 11, 'the four lists + (update-17) the Closing Stock + (update-20) CWIP + (update-27) the related parties of Note 28(A) and RPT Transaction + (update-28) FA Add, Dep.Calc. and AOC-1');
   assert.equal(workbook.summary.liveProblems, 0);
+  // update-23: every counter of the live check is a number (a comment once swallowed liveNone / liveLump, and the Workbook page printed NaN)
+  for (const k of ['liveLines', 'liveOk', 'liveName', 'liveDiff', 'liveNone', 'liveLump', 'liveExtras']) assert.ok(Number.isFinite(workbook.summary[k]), `${k} is a number (${workbook.summary[k]})`);
   const status = Object.fromEntries(workbook.sheets.filter((s) => s.liveCheck).map((s) => [s.id, s.status]));
-  assert.deepEqual(status, { 'closing-stock': 'fixed', cwip: 'semi', 'debtors-ageing': 'semi', 'creditors-ageing': 'semi', 'p-l-grouping': 'live', 'bs-grouping': 'semi' });
+  assert.deepEqual(status, { 'closing-stock': 'semi', cwip: 'semi', 'debtors-ageing': 'semi', 'creditors-ageing': 'semi', 'p-l-grouping': 'live', 'bs-grouping': 'semi', 'note-28-a': 'semi', 'rpt-transaction': 'semi', 'fa-add': 'semi', 'dep-calc': 'semi', 'aoc-1': 'semi' }, 'update-28: FA Add, Dep.Calc. and AOC-1 are checked against Zoho\'s fixed asset register and the subsidiaries\' books (part live); update-27: Closing Stock is checked line by line but its signed sheet stays (semi, it was marked fixed by mistake); the two related-party sheets are checked figure by figure');
   for (const s of workbook.sheets.filter((x) => x.liveCheck)) assert.deepEqual(s.liveCheck.problems, [], s.id);
   assert.equal(liveOverlay((await world()).snapshot, readSheet(config.workbook, 'fa-add')), null, 'a sheet without a live entry has no check');
 });
@@ -517,8 +519,8 @@ test('a changed book shows as a difference on the sheet, but is information - it
 
 test('a sheet file that cannot be read is a failed check and counts as a problem', { skip }, async () => {
   const { snapshot, books } = await world();
-  const w = buildWorkbook(snapshot, books, config.workbook, config.books, () => null);
-  assert.equal(w.summary.liveProblems, 6);
+  const w = buildWorkbook(snapshot, books, config.workbook, { ...config.books, related: config.related, register: config.register, subsidiaries: config.subsidiaries }, () => null);
+  assert.equal(w.summary.liveProblems, 11);
   assert.ok(w.sheets.filter((s) => s.liveCheck).every((s) => s.liveCheck.error));
   assert.equal(w.summary.liveLines, 0);
 });

@@ -296,6 +296,23 @@ thead th { font-weight: 500; color: var(--muted); font-size: 13px; padding-top: 
 .grid .tick { color: var(--ok); font-size: 12px; font-weight: 600; }
 .grid .lvx { color: var(--warn); font-size: 12px; line-height: 1.3; }
 .grid td.lvc-diff { background: var(--warn-soft); }
+/* update-27: the related parties - a figure explained by a named amount, the result beside a figure in a text note, the note's related-party tables */
+.grid td.lvc-expl { background: var(--teal-soft); }
+.grid .lvx-expl { color: var(--teal); }
+.doc-row .relm { grid-column: 1 / -1; text-align: right; font-size: 12px; line-height: 1.3; }
+.doc-row .relm .tick { color: var(--ok); font-weight: 600; }
+.doc-row .relm .lvx { display: inline-block; margin-left: 8px; color: var(--warn); }
+.doc-row .relm .lvx-expl { color: var(--teal); }
+.reltable th, .reltable td { white-space: normal; }
+.reltable th[scope='row'] { text-align: left; min-width: 220px; }
+.reltable thead th, .reltable tr.rt-hdr th { position: static; background: var(--sheet-tint); font-weight: 600; text-align: right; vertical-align: bottom; }
+.reltable tr.rt-hdr th:first-child { text-align: left; }
+.reltable tr.rt-hdr .detail { display: block; font-weight: 400; color: var(--muted); }
+.reltable tr.rt-sec th { background: var(--sheet-tint); font-weight: 600; }
+.reltable tr.rt-sub th { font-family: var(--serif); font-size: 15px; font-weight: 600; padding-top: 14px; }
+.reltable td.side { color: var(--muted); font-size: 12px; max-width: 220px; }
+.stays { margin: 6px 0 0 18px; padding: 0; }
+.stays li { margin: 3px 0; }
 .grid .lvh { color: var(--teal); font-size: 11.5px; font-weight: 500; white-space: normal; min-width: 120px; }
 .grid .lvh.dim { color: var(--muted); }
 .doc { padding: 6px 20px 24px; max-width: 110ch; }

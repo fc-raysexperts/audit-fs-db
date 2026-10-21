@@ -1,0 +1,1614 @@
+{
+  "_about": "update-27: the related parties of Note 28(A) (xii) and the RPT Transaction sheet, checked against Zoho Books. Read by lib/related.mjs. A new year needs its own copy (related.fy27.json): contacts, accounts and the checks. Ids are Zoho's own (probe of 21-Oct-2026).",
+  "fy": "2025-26",
+  "tolerance": 10,
+  "contacts": {
+    "om_c": {
+      "name": "Rays O&M Experts Private Limited (customer)",
+      "id": "2346113000000193711"
+    },
+    "rooftop_spv_c": {
+      "name": "Rays Rooftop SPV Private Limited (customer)",
+      "id": "2346113000000193739"
+    },
+    "soltown": {
+      "name": "Soltown Infra Private Limited",
+      "id": "2346113000000197141"
+    },
+    "agrasen_c": {
+      "name": "Agrasenprime Overseas Pvt Ltd (customer)",
+      "id": "2346113000000193879"
+    },
+    "cyrun": {
+      "name": "Cyrun-Infra Projects LLP",
+      "id": "2346113000000292947"
+    },
+    "mighty": {
+      "name": "Mighty Avengers Solar Private Limited",
+      "id": "2346113000000309893"
+    },
+    "rooftop_pvt": {
+      "name": "Rays Rooftop Private Limited",
+      "id": "2346113000004056944"
+    },
+    "agrasen_v": {
+      "name": "Agrasen Prime Overseas (Creditor)",
+      "id": "2346113000000284913"
+    },
+    "rahul_rent": {
+      "name": "Rahul Gupta (Rent)",
+      "id": "2346113000000316867"
+    },
+    "nidhi_rent": {
+      "name": "Nidhi Gupta (Rent)",
+      "id": "2346113000000312607"
+    },
+    "rajendra": {
+      "name": "Rajendra Prasad Gupta Consultants",
+      "id": "2346113000000317415"
+    },
+    "huf": {
+      "name": "Rajendra Prasad Gupta HUF",
+      "id": "2346113000010255955"
+    },
+    "satya": {
+      "name": "Satya Narayan Vijayvergiya",
+      "id": "2346113000000321981"
+    },
+    "jai": {
+      "name": "Jai Shanker Prasad Bansal",
+      "id": "2346113000007821144"
+    },
+    "rahul_imprest": {
+      "name": "Rahul Gupta (imprest)",
+      "id": "2346113000026839995"
+    },
+    "nidhi_imprest": {
+      "name": "Nidhi Gupta (imprest)",
+      "id": "2346113000000590383"
+    },
+    "rajendra_imprest": {
+      "name": "Rajendra Prasad Gupta (imprest)",
+      "id": "2346113000026838427"
+    },
+    "rooftop_spv_inv": {
+      "name": "Rays Rooftop SPV Private Limited (inv)",
+      "id": "2346113000026838245"
+    },
+    "om_loan": {
+      "name": "Rays O&M Experts Private Limited - Loan",
+      "id": "2346113000026838343"
+    },
+    "om_vendor": {
+      "name": "Rays O&M Experts Private Limited - Vendor",
+      "id": "2346113000035638372"
+    },
+    "rper": {
+      "name": "RPE Energy Reserve Private Limited (Loans and Advances Assets)",
+      "id": "2346113000026838287"
+    },
+    "rpetech": {
+      "name": "RPE Technologies Private Limited (RPE 2)",
+      "id": "2346113000026838259"
+    },
+    "kainer": {
+      "name": "Kainer Creations Pvt Ltd",
+      "id": "2346113000026838273"
+    }
+  },
+  "accounts": {
+    "csr": {
+      "name": "CSR Expenses",
+      "id": "2346113000026787079"
+    },
+    "remuneration": {
+      "name": "Director's Remuneration & Sitting Fees",
+      "id": "2346113000026786944"
+    },
+    "rent": {
+      "name": "Office Rent Expense",
+      "id": "2346113000026786953"
+    },
+    "inv_om": {
+      "name": "Investment in Equity - Rays O&M Experts Private Limited",
+      "id": "2346113000026785976"
+    },
+    "inv_rooftop_spv": {
+      "name": "Investment in Equity - Rays Rooftop SPV Private Limited",
+      "id": "2346113000026785994"
+    },
+    "inv_rper": {
+      "name": "Investment in Equity - RPE Energy Reserve Private Limited",
+      "id": "2346113000026785985"
+    },
+    "inv_rpetech": {
+      "name": "Investment in Equity - RPE Technologies Private Limited",
+      "id": "2346113000026786012"
+    },
+    "inv_foundation": {
+      "name": "Investment in Equity - Rays Experts Foundation",
+      "id": "2346113000026786003"
+    }
+  },
+  "sales": {
+    "contacts": [
+      "om_c",
+      "rooftop_spv_c",
+      "soltown",
+      "agrasen_c"
+    ]
+  },
+  "purchases": {
+    "contacts": [
+      "cyrun",
+      "mighty",
+      "rooftop_pvt",
+      "agrasen_v",
+      "rahul_rent",
+      "nidhi_rent",
+      "rajendra",
+      "huf",
+      "satya",
+      "jai"
+    ],
+    "types": [
+      "bill",
+      "vendor_credit"
+    ],
+    "accountTypes": [
+      "fixed_asset",
+      "stock",
+      "cost_of_goods_sold",
+      "expense",
+      "other_expense"
+    ],
+    "setAside": [
+      {
+        "label": "vendor credit notes booked to cost of goods sold",
+        "contacts": [
+          "cyrun"
+        ],
+        "types": [
+          "vendor_credit"
+        ],
+        "accounts": [
+          "Consumption- Project Material GM",
+          "Cost of Goods Sold"
+        ]
+      }
+    ]
+  },
+  "ledgers": {
+    "loans": {
+      "om": {
+        "name": "Rays O&M Experts Private Limited (Loans & Advances)",
+        "account": "2346113000023307603"
+      },
+      "rooftop_spv": {
+        "name": "Rays Rooftop SPV Private Limited (inv)",
+        "account": "2346113000002528303"
+      },
+      "rper": {
+        "name": "RPE Energy Reserve Private Limited (Loans & Advances)",
+        "account": "2346113000009499405"
+      },
+      "rpetech": {
+        "name": "RPE Technologies Private Limited (RPE Energy Reserve 2)",
+        "account": "2346113000011640653"
+      }
+    },
+    "loanSkipTypes": [
+      "journal"
+    ],
+    "remuneration": {
+      "account": "2346113000026786944",
+      "pattern": "from salary of (.+?)\\s+Rs\\.?\\s*([\\d,]+(?:\\s*&\\s*[\\d,]+)*)\\s*respectively"
+    },
+    "exposure": {
+      "account": "2346113000026786401",
+      "pattern": "on ([A-Z]{3}) ([\\d,.]+)\\s*@\\s*([\\d.]+)\\s*=\\s*([\\d,]+)"
+    }
+  },
+  "colsets": {
+    "purchases": [
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      22,
+      23,
+      24,
+      31
+    ],
+    "sales": [
+      25,
+      26,
+      27,
+      28,
+      29
+    ]
+  },
+  "headers": {
+    "4": "Remuneration",
+    "6": "Rent paid",
+    "10": "Consultancy fee (Expense) Revenue",
+    "11": "Consultancy fee (Expense) Capital",
+    "12": "Civil & Other Work (Expense)",
+    "13": "Civil & Other Work (Capital)",
+    "14": "Freight Expense",
+    "15": "Freight Expense Capital",
+    "18": "Loan Given",
+    "19": "Loan Received Back",
+    "22": "Purchase of goods",
+    "23": "Purchase of Capital goods",
+    "24": "Purchase of Service",
+    "25": "Sale of Service",
+    "26": "Development Services",
+    "27": "Consultancy Services",
+    "28": "Sale Of Goods",
+    "29": "Technical Services",
+    "30": "CSR",
+    "31": "Others Exp",
+    "32": "Receivables",
+    "33": "Payables",
+    "34": "Investment",
+    "36": "Imprest",
+    "37": "Rent"
+  },
+  "groups": [
+    {
+      "id": "sales",
+      "title": "Sales to related parties"
+    },
+    {
+      "id": "purchases",
+      "title": "Purchases and works from related parties"
+    },
+    {
+      "id": "pay",
+      "title": "Directors' remuneration, fees, rent and CSR"
+    },
+    {
+      "id": "loans",
+      "title": "Loans given and received back"
+    },
+    {
+      "id": "receivables",
+      "title": "Owed to the company on 31 March 2026"
+    },
+    {
+      "id": "confirm",
+      "title": "Confirmed by the subsidiaries' own books (the loan each owes the company)"
+    },
+    {
+      "id": "payables",
+      "title": "Owed by the company on 31 March 2026"
+    },
+    {
+      "id": "investments",
+      "title": "Investments in equity on 31 March 2026"
+    },
+    {
+      "id": "fx",
+      "title": "Unhedged foreign currency"
+    }
+  ],
+  "checks": [
+    {
+      "id": "sales-om",
+      "group": "sales",
+      "title": "Rays O&M Experts: services sold",
+      "zoho": [
+        "sales:om_c"
+      ],
+      "rpt": [
+        {
+          "party": "RAYS O&M EXPERTS PRIVATE LIMITED",
+          "cols": "sales"
+        }
+      ],
+      "n28": [
+        {
+          "party": "Rays O&M Experts Private Limited",
+          "col": 4,
+          "sections": [
+            "Sale of Services"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sales-spv",
+      "group": "sales",
+      "title": "Rays Rooftop SPV: goods sold",
+      "zoho": [
+        "sales:rooftop_spv_c"
+      ],
+      "rpt": [
+        {
+          "party": "RAYS ROOFTOP SPV PRIVATE LIMITED",
+          "cols": "sales"
+        }
+      ],
+      "n28": [
+        {
+          "party": "Rays Rooftop SPV Private Limited",
+          "col": 4,
+          "sections": [
+            "Sale of Goods"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sales-soltown",
+      "group": "sales",
+      "title": "Soltown Infra: goods and services sold",
+      "zoho": [
+        "sales:soltown"
+      ],
+      "rpt": [
+        {
+          "party": "SOLTOWN INFRA PRIVATE LIMITED",
+          "cols": "sales"
+        }
+      ],
+      "n28": [
+        {
+          "party": "Soltown Infra Private Limited",
+          "col": 7,
+          "sections": [
+            "Sale of Goods",
+            "Sale of Services"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sales-agrasen",
+      "group": "sales",
+      "title": "Agrasen Prime Overseas: services sold",
+      "zoho": [
+        "sales:agrasen_c"
+      ],
+      "rpt": [
+        {
+          "party": "AGRASENPRIME OVERSEAS PVT LTD",
+          "cols": "sales"
+        }
+      ],
+      "n28": [
+        {
+          "party": "Agrasen Prime Overseas Private Limited",
+          "col": 7,
+          "sections": [
+            "Sale of Services"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "purch-cyrun",
+      "group": "purchases",
+      "title": "Cyrun Infra Projects: purchases and works",
+      "zoho": [
+        "purch:cyrun"
+      ],
+      "rpt": [
+        {
+          "party": "CYRUN INFRA PROJECTS LLP",
+          "cols": "purchases"
+        }
+      ],
+      "n28": [
+        {
+          "party": "Cyrun Infra Projects LLP",
+          "col": 7,
+          "sections": [
+            "Purchase of Capital Goods/Services",
+            "Purchase of Goods",
+            "Other Services (Expense)",
+            "Consultancy Fees (Expenses)"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "purch-mighty",
+      "group": "purchases",
+      "title": "Mighty Avengers Solar: purchases and works",
+      "zoho": [
+        "purch:mighty"
+      ],
+      "rpt": [
+        {
+          "party": "MIGHTY AVENGERS SOLAR PRIVATE LIMITED",
+          "cols": "purchases"
+        }
+      ],
+      "n28": [
+        {
+          "party": "Mighty Avengers Solar Private Limited",
+          "col": 7,
+          "sections": [
+            "Purchase of Capital Goods/Services",
+            "Purchase of Goods",
+            "Other Services (Expense)",
+            "Consultancy Fees (Expenses)"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "purch-rooftop",
+      "group": "purchases",
+      "title": "Rays Rooftop Private Limited: goods and services bought",
+      "zoho": [
+        "purch:rooftop_pvt"
+      ],
+      "rpt": [
+        {
+          "party": "RAYS ROOFTOP PRIVATE LIMITED",
+          "cols": "purchases"
+        }
+      ],
+      "n28": [
+        {
+          "party": "Rays Rooftop Private Limited",
+          "col": 7,
+          "sections": [
+            "Purchase of Capital Goods/Services",
+            "Purchase of Goods",
+            "Other Services (Expense)",
+            "Consultancy Fees (Expenses)"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "purch-agrasen",
+      "group": "purchases",
+      "title": "Agrasen Prime Overseas: other services bought",
+      "zoho": [
+        "purch:agrasen_v"
+      ],
+      "rpt": [
+        {
+          "party": "AGRASENPRIME OVERSEAS PVT LTD",
+          "cols": "purchases"
+        }
+      ],
+      "n28": [
+        {
+          "party": "Agrasen Prime Overseas Private Limited",
+          "col": 7,
+          "sections": [
+            "Purchase of Capital Goods/Services",
+            "Purchase of Goods",
+            "Other Services (Expense)",
+            "Consultancy Fees (Expenses)"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "consult-rajendra",
+      "group": "purchases",
+      "title": "Rajendra Prasad Gupta: consultancy fees",
+      "zoho": [
+        "purch:rajendra"
+      ],
+      "rpt": [
+        {
+          "party": "RAJENDRA PRASAD GUPTA",
+          "cols": "purchases"
+        }
+      ],
+      "n28": [
+        {
+          "party": "Rajendra Prasad Gupta",
+          "col": 6,
+          "sections": [
+            "Purchase of Capital Goods/Services",
+            "Purchase of Goods",
+            "Other Services (Expense)",
+            "Consultancy Fees (Expenses)"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "consult-huf",
+      "group": "purchases",
+      "title": "Rajendra Prasad Gupta HUF: consultancy fees",
+      "zoho": [
+        "purch:huf"
+      ],
+      "rpt": [
+        {
+          "party": "RAJENDRA PRASAD GUPTA HUF",
+          "cols": "purchases"
+        }
+      ],
+      "n28": [
+        {
+          "party": "Rajendra Prasad Gupta HUF",
+          "col": 6,
+          "sections": [
+            "Purchase of Capital Goods/Services",
+            "Purchase of Goods",
+            "Other Services (Expense)",
+            "Consultancy Fees (Expenses)"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "rem-rahul",
+      "group": "pay",
+      "title": "Rahul Gupta: remuneration",
+      "zoho": [
+        "narr.rem:Rahul Gupta"
+      ],
+      "rpt": [
+        {
+          "party": "RAHUL GUPTA",
+          "cols": [
+            4
+          ]
+        }
+      ],
+      "n28": [
+        {
+          "party": "Rahul Gupta",
+          "col": 5,
+          "sections": [
+            "Director's Remuneration / Fees"
+          ]
+        }
+      ],
+      "note": "Zoho books the remuneration in one journal without a person on it; the person-by-person split is read from that journal's narration."
+    },
+    {
+      "id": "rem-nidhi",
+      "group": "pay",
+      "title": "Nidhi Gupta: remuneration",
+      "zoho": [
+        "narr.rem:Nidhi Gupta"
+      ],
+      "rpt": [
+        {
+          "party": "NIDHI GUPTA",
+          "cols": [
+            4
+          ]
+        }
+      ],
+      "n28": [
+        {
+          "party": "Nidhi Gupta",
+          "col": 5,
+          "sections": [
+            "Director's Remuneration / Fees"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "fee-satya",
+      "group": "pay",
+      "title": "Satya Narayan Vijayvergiya: sitting fees",
+      "zoho": [
+        "purch:satya"
+      ],
+      "n28": [
+        {
+          "party": "Satya Narayan Vijayvergiya",
+          "col": 5,
+          "sections": [
+            "Director's Remuneration / Fees"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "fee-jai",
+      "group": "pay",
+      "title": "Jai Shanker Prasad Bansal: sitting fees",
+      "zoho": [
+        "purch:jai"
+      ],
+      "n28": [
+        {
+          "party": "Jai Shanker Prasad Bansal",
+          "col": 5,
+          "sections": [
+            "Director's Remuneration / Fees"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "rem-total",
+      "group": "pay",
+      "title": "All directors' remuneration and fees together",
+      "zoho": [
+        "acct:remuneration"
+      ],
+      "marks": false,
+      "n28": [
+        {
+          "all": true,
+          "col": 5,
+          "sections": [
+            "Director's Remuneration / Fees"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "rent-rahul",
+      "group": "pay",
+      "title": "Rahul Gupta: rent paid",
+      "zoho": [
+        "purch:rahul_rent"
+      ],
+      "rpt": [
+        {
+          "party": "RAHUL GUPTA",
+          "cols": [
+            6
+          ]
+        }
+      ],
+      "n28": [
+        {
+          "party": "Rahul Gupta",
+          "col": 5,
+          "sections": [
+            "Rent Paid"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "rent-nidhi",
+      "group": "pay",
+      "title": "Nidhi Gupta: rent paid",
+      "zoho": [
+        "purch:nidhi_rent"
+      ],
+      "rpt": [
+        {
+          "party": "NIDHI GUPTA",
+          "cols": [
+            6
+          ]
+        }
+      ],
+      "n28": [
+        {
+          "party": "Nidhi Gupta",
+          "col": 5,
+          "sections": [
+            "Rent Paid"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "rent-total",
+      "group": "pay",
+      "title": "All rent paid together",
+      "zoho": [
+        "acct:rent"
+      ],
+      "marks": false,
+      "rpt": [
+        {
+          "party": "RAHUL GUPTA",
+          "cols": [
+            6
+          ]
+        },
+        {
+          "party": "NIDHI GUPTA",
+          "cols": [
+            6
+          ]
+        }
+      ],
+      "n28": [
+        {
+          "all": true,
+          "col": 5,
+          "sections": [
+            "Rent Paid"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "csr",
+      "group": "pay",
+      "title": "CSR paid to Rays Experts Foundation",
+      "zoho": [
+        "acct:csr"
+      ],
+      "rpt": [
+        {
+          "party": "RAYS EXPERTS FOUNDATION",
+          "cols": [
+            30
+          ]
+        }
+      ],
+      "n28": [
+        {
+          "party": "Rays Experts Foundation",
+          "col": 4,
+          "sections": [
+            "CSR Expenses"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "loan-om",
+      "group": "loans",
+      "title": "Rays O&M Experts: loan given",
+      "zoho": [
+        "loan.given:om"
+      ],
+      "rpt": [
+        {
+          "party": "RAYS O&M EXPERTS PRIVATE LIMITED",
+          "cols": [
+            18
+          ]
+        }
+      ],
+      "n28": [
+        {
+          "party": "Rays O&M Experts Private Limited",
+          "col": 4,
+          "sections": [
+            "Loan Given"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "loan-spv-given",
+      "group": "loans",
+      "title": "Rays Rooftop SPV: loan given",
+      "zoho": [
+        "loan.given:rooftop_spv"
+      ],
+      "rpt": [
+        {
+          "party": "RAYS ROOFTOP SPV PRIVATE LIMITED",
+          "cols": [
+            18
+          ]
+        }
+      ],
+      "n28": [
+        {
+          "party": "Rays Rooftop SPV Private Limited",
+          "col": 4,
+          "sections": [
+            "Loan Given"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "loan-spv-back",
+      "group": "loans",
+      "title": "Rays Rooftop SPV: loan received back",
+      "zoho": [
+        "loan.back:rooftop_spv"
+      ],
+      "rpt": [
+        {
+          "party": "RAYS ROOFTOP SPV PRIVATE LIMITED",
+          "cols": [
+            19
+          ]
+        }
+      ],
+      "n28": [
+        {
+          "party": "Rays Rooftop SPV Private Limited",
+          "col": 4,
+          "sections": [
+            "Loan Received back"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "loan-rpetech",
+      "group": "loans",
+      "title": "RPE Technologies: loan given",
+      "zoho": [
+        "loan.given:rpetech"
+      ],
+      "rpt": [
+        {
+          "party": "RPE TECHNOLOGIES PRIVATE LIMITED",
+          "cols": [
+            18
+          ]
+        }
+      ],
+      "n28": [
+        {
+          "party": "RPE Technologies Private Limited",
+          "col": 4,
+          "sections": [
+            "Loan Given"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "loan-rper-net",
+      "group": "loans",
+      "title": "RPE Energy Reserve: loan given less received back",
+      "zoho": [
+        "loan.net:rper"
+      ],
+      "rpt": [
+        {
+          "party": "RPE ENERGY RESERVE PRIVATE LIMITED",
+          "cols": [
+            18
+          ]
+        },
+        {
+          "party": "RPE ENERGY RESERVE PRIVATE LIMITED",
+          "cols": [
+            19
+          ],
+          "sign": -1
+        }
+      ],
+      "n28": [
+        {
+          "party": "RPE Energy Reserve Private Limited",
+          "col": 4,
+          "sections": [
+            "Loan Given"
+          ]
+        },
+        {
+          "party": "RPE Energy Reserve Private Limited",
+          "col": 4,
+          "sections": [
+            "Loan Received back"
+          ],
+          "sign": -1
+        }
+      ],
+      "note": "Zoho's ledger of this loan has the net movement only; the gross figures of the sheet (₹9.4 cr given, ₹7.1 cr received back) are not in Zoho."
+    },
+    {
+      "id": "rec-om",
+      "group": "receivables",
+      "title": "Rays O&M Experts: owed to the company (receivable and loan)",
+      "zoho": [
+        "cust:om_c",
+        "sup:om_loan:dr"
+      ],
+      "rpt": [
+        {
+          "party": "RAYS O&M EXPERTS PRIVATE LIMITED",
+          "cols": [
+            32
+          ]
+        }
+      ],
+      "n28": [
+        {
+          "party": "Rays O&M Experts Private Limited",
+          "col": 4,
+          "sections": [
+            "Receivables",
+            "Loans & Advances"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "rec-spv",
+      "group": "receivables",
+      "title": "Rays Rooftop SPV: owed to the company (receivable and advance)",
+      "zoho": [
+        "cust:rooftop_spv_c",
+        "sup:rooftop_spv_inv:dr"
+      ],
+      "rpt": [
+        {
+          "party": "RAYS ROOFTOP SPV PRIVATE LIMITED",
+          "cols": [
+            32
+          ]
+        }
+      ],
+      "n28": [
+        {
+          "party": "Rays Rooftop SPV Private Limited",
+          "col": 4,
+          "sections": [
+            "Receivables",
+            "Loans & Advances"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "rec-rper",
+      "group": "receivables",
+      "title": "RPE Energy Reserve: owed to the company",
+      "zoho": [
+        "sup:rper:dr"
+      ],
+      "rpt": [
+        {
+          "party": "RPE ENERGY RESERVE PRIVATE LIMITED",
+          "cols": [
+            32
+          ]
+        }
+      ],
+      "n28": [
+        {
+          "party": "RPE Energy Reserve Private Limited",
+          "col": 4,
+          "sections": [
+            "Receivables",
+            "Loans & Advances"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "rec-rpetech",
+      "group": "receivables",
+      "title": "RPE Technologies: owed to the company",
+      "zoho": [
+        "sup:rpetech:dr"
+      ],
+      "rpt": [
+        {
+          "party": "RPE TECHNOLOGIES PRIVATE LIMITED",
+          "cols": [
+            32
+          ]
+        }
+      ],
+      "n28": [
+        {
+          "party": "RPE Technologies Private Limited",
+          "col": 4,
+          "sections": [
+            "Receivables",
+            "Loans & Advances"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "rec-rooftop",
+      "group": "receivables",
+      "title": "Rays Rooftop Private Limited: advance given",
+      "zoho": [
+        "sup:rooftop_pvt:dr"
+      ],
+      "rpt": [
+        {
+          "party": "RAYS ROOFTOP PRIVATE LIMITED",
+          "cols": [
+            32
+          ]
+        }
+      ],
+      "n28": [
+        {
+          "party": "Rays Rooftop Private Limited",
+          "col": 7,
+          "sections": [
+            "Receivables",
+            "Loans & Advances"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "rec-soltown",
+      "group": "receivables",
+      "title": "Soltown Infra: receivable",
+      "zoho": [
+        "cust:soltown"
+      ],
+      "rpt": [
+        {
+          "party": "SOLTOWN INFRA PRIVATE LIMITED",
+          "cols": [
+            32
+          ]
+        }
+      ],
+      "n28": [
+        {
+          "party": "Soltown Infra Private Limited",
+          "col": 7,
+          "sections": [
+            "Receivables",
+            "Loans & Advances"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "rec-kainera",
+      "group": "receivables",
+      "title": "Kainera Creations: advance given",
+      "zoho": [
+        "sup:kainer:dr"
+      ],
+      "rpt": [
+        {
+          "party": "KAINERA CREATION PRIVATE LIMITED",
+          "cols": [
+            32
+          ]
+        }
+      ],
+      "n28": [
+        {
+          "party": "Kainera Creations Private Limited",
+          "col": 7,
+          "sections": [
+            "Receivables",
+            "Loans & Advances"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "rec-mighty",
+      "group": "receivables",
+      "title": "Mighty Avengers Solar: advance given",
+      "zoho": [
+        "sup:mighty:dr"
+      ],
+      "rpt": [
+        {
+          "party": "MIGHTY AVENGERS SOLAR PRIVATE LIMITED",
+          "cols": [
+            32
+          ]
+        }
+      ],
+      "n28": [
+        {
+          "party": "Mighty Avengers Solar Private Limited",
+          "col": 7,
+          "sections": [
+            "Receivables",
+            "Loans & Advances"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "rec-agrasen",
+      "group": "receivables",
+      "title": "Agrasen Prime Overseas: receivable",
+      "zoho": [
+        "cust:agrasen_c"
+      ],
+      "rpt": [
+        {
+          "party": "AGRASENPRIME OVERSEAS PVT LTD",
+          "cols": [
+            32
+          ]
+        }
+      ],
+      "n28": [
+        {
+          "party": "Agrasen Prime Overseas Private Limited",
+          "col": 7,
+          "sections": [
+            "Receivables",
+            "Loans & Advances"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pay-cyrun",
+      "group": "payables",
+      "title": "Cyrun Infra Projects: payable",
+      "zoho": [
+        "sup:cyrun:cr"
+      ],
+      "rpt": [
+        {
+          "party": "CYRUN INFRA PROJECTS LLP",
+          "cols": [
+            33
+          ]
+        }
+      ],
+      "n28": [
+        {
+          "party": "Cyrun Infra Projects LLP",
+          "col": 7,
+          "sections": [
+            "Payables"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pay-rahul",
+      "group": "payables",
+      "title": "Rahul Gupta: payable (rent and imprest)",
+      "zoho": [
+        "sup:rahul_rent:cr",
+        "sup:rahul_imprest:cr"
+      ],
+      "rpt": [
+        {
+          "party": "RAHUL GUPTA",
+          "cols": [
+            33
+          ]
+        }
+      ],
+      "n28": [
+        {
+          "party": "Rahul Gupta",
+          "col": 5,
+          "sections": [
+            "Payables"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pay-nidhi",
+      "group": "payables",
+      "title": "Nidhi Gupta: payable (rent and imprest)",
+      "zoho": [
+        "sup:nidhi_rent:cr",
+        "sup:nidhi_imprest:cr"
+      ],
+      "rpt": [
+        {
+          "party": "NIDHI GUPTA",
+          "cols": [
+            33
+          ]
+        }
+      ],
+      "n28": [
+        {
+          "party": "Nidhi Gupta",
+          "col": 5,
+          "sections": [
+            "Payables"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pay-rajendra",
+      "group": "payables",
+      "title": "Rajendra Prasad Gupta: payable (consultancy and imprest)",
+      "zoho": [
+        "sup:rajendra:cr",
+        "sup:rajendra_imprest:cr"
+      ],
+      "rpt": [
+        {
+          "party": "RAJENDRA PRASAD GUPTA",
+          "cols": [
+            33
+          ]
+        }
+      ],
+      "n28": [
+        {
+          "party": "Rajendra Prasad Gupta",
+          "col": 6,
+          "sections": [
+            "Payables"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pay-huf",
+      "group": "payables",
+      "title": "Rajendra Prasad Gupta HUF: payable",
+      "zoho": [
+        "sup:huf:cr"
+      ],
+      "rpt": [
+        {
+          "party": "RAJENDRA PRASAD GUPTA HUF",
+          "cols": [
+            33
+          ]
+        }
+      ],
+      "n28": [
+        {
+          "party": "Rajendra Prasad Gupta HUF",
+          "col": 6,
+          "sections": [
+            "Payables"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pay-om",
+      "group": "payables",
+      "title": "Rays O&M Experts: payable",
+      "zoho": [
+        "sup:om_vendor:cr"
+      ],
+      "rpt": [
+        {
+          "party": "RAYS O&M EXPERTS PRIVATE LIMITED",
+          "cols": [
+            33
+          ]
+        }
+      ],
+      "n28": [
+        {
+          "party": "Rays O&M Experts Private Limited",
+          "col": 4,
+          "sections": [
+            "Payables"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "rpt-imprest-rahul",
+      "group": "payables",
+      "title": "Rahul Gupta: imprest balance",
+      "zoho": [
+        "sup:rahul_imprest:cr"
+      ],
+      "rpt": [
+        {
+          "party": "RAHUL GUPTA",
+          "cols": [
+            36
+          ]
+        }
+      ]
+    },
+    {
+      "id": "rpt-imprest-nidhi",
+      "group": "payables",
+      "title": "Nidhi Gupta: imprest balance",
+      "zoho": [
+        "sup:nidhi_imprest:cr"
+      ],
+      "rpt": [
+        {
+          "party": "NIDHI GUPTA",
+          "cols": [
+            36
+          ]
+        }
+      ]
+    },
+    {
+      "id": "rpt-rent-rahul",
+      "group": "payables",
+      "title": "Rahul Gupta: rent payable",
+      "zoho": [
+        "sup:rahul_rent:cr"
+      ],
+      "rpt": [
+        {
+          "party": "RAHUL GUPTA",
+          "cols": [
+            37
+          ]
+        }
+      ]
+    },
+    {
+      "id": "rpt-rent-nidhi",
+      "group": "payables",
+      "title": "Nidhi Gupta: rent payable",
+      "zoho": [
+        "sup:nidhi_rent:cr"
+      ],
+      "rpt": [
+        {
+          "party": "NIDHI GUPTA",
+          "cols": [
+            37
+          ]
+        }
+      ]
+    },
+    {
+      "id": "inv-om",
+      "group": "investments",
+      "title": "Rays O&M Experts: equity held",
+      "zoho": [
+        "acct:inv_om"
+      ],
+      "rpt": [
+        {
+          "party": "RAYS O&M EXPERTS PRIVATE LIMITED",
+          "cols": [
+            34
+          ]
+        }
+      ],
+      "n28": [
+        {
+          "party": "Rays O&M Experts Private Limited",
+          "col": 4,
+          "sections": [
+            "Investment in Equity Shares"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "inv-spv",
+      "group": "investments",
+      "title": "Rays Rooftop SPV: equity held",
+      "zoho": [
+        "acct:inv_rooftop_spv"
+      ],
+      "rpt": [
+        {
+          "party": "RAYS ROOFTOP SPV PRIVATE LIMITED",
+          "cols": [
+            34
+          ]
+        }
+      ],
+      "n28": [
+        {
+          "party": "Rays Rooftop SPV Private Limited",
+          "col": 4,
+          "sections": [
+            "Investment in Equity Shares"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "inv-rper",
+      "group": "investments",
+      "title": "RPE Energy Reserve: equity held",
+      "zoho": [
+        "acct:inv_rper"
+      ],
+      "rpt": [
+        {
+          "party": "RPE ENERGY RESERVE PRIVATE LIMITED",
+          "cols": [
+            34
+          ]
+        }
+      ],
+      "n28": [
+        {
+          "party": "RPE Energy Reserve Private Limited",
+          "col": 4,
+          "sections": [
+            "Investment in Equity Shares"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "inv-rpetech",
+      "group": "investments",
+      "title": "RPE Technologies: equity held",
+      "zoho": [
+        "acct:inv_rpetech"
+      ],
+      "rpt": [
+        {
+          "party": "RPE TECHNOLOGIES PRIVATE LIMITED",
+          "cols": [
+            34
+          ]
+        }
+      ],
+      "n28": [
+        {
+          "party": "RPE Technologies Private Limited",
+          "col": 4,
+          "sections": [
+            "Investment in Equity Shares"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "inv-fdn",
+      "group": "investments",
+      "title": "Rays Experts Foundation: equity held",
+      "zoho": [
+        "acct:inv_foundation"
+      ],
+      "rpt": [
+        {
+          "party": "RAYS EXPERTS FOUNDATION",
+          "cols": [
+            34
+          ]
+        }
+      ],
+      "n28": [
+        {
+          "party": "Rays Experts Foundation",
+          "col": 4,
+          "sections": [
+            "Investment in Equity Shares"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "fx-amount",
+      "group": "fx",
+      "title": "Payable in foreign currency: amount (USD)",
+      "zoho": [
+        "fx.amount"
+      ],
+      "n28": [
+        {
+          "after": "UNHEDGED FOREIGN",
+          "label": "Payables",
+          "labelCol": 1,
+          "col": 6
+        }
+      ],
+      "tol": 0.5
+    },
+    {
+      "id": "fx-rate",
+      "group": "fx",
+      "title": "Payable in foreign currency: rate",
+      "zoho": [
+        "fx.rate"
+      ],
+      "n28": [
+        {
+          "after": "UNHEDGED FOREIGN",
+          "label": "Payables",
+          "labelCol": 1,
+          "col": 7
+        }
+      ],
+      "tol": 0.005
+    },
+    {
+      "id": "fx-local",
+      "group": "fx",
+      "title": "Payable in foreign currency: amount in rupees",
+      "zoho": [
+        "fx.local"
+      ],
+      "n28": [
+        {
+          "after": "UNHEDGED FOREIGN",
+          "label": "Payables",
+          "labelCol": 1,
+          "col": 8
+        }
+      ]
+    },
+    {
+      "id": "confirm-om",
+      "group": "confirm",
+      "title": "Rays O&M Experts: the loan it owes the company",
+      "zoho": [
+        "subs.loan:om"
+      ],
+      "marks": false,
+      "n28": [
+        {
+          "party": "Rays O&M Experts Private Limited",
+          "col": 4,
+          "sections": [
+            "Loans & Advances"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "confirm-rper",
+      "group": "confirm",
+      "title": "RPE Energy Reserve: the loan it owes the company",
+      "zoho": [
+        "subs.loan:rper"
+      ],
+      "marks": false,
+      "n28": [
+        {
+          "party": "RPE Energy Reserve Private Limited",
+          "col": 4,
+          "sections": [
+            "Loans & Advances"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "confirm-rpetech",
+      "group": "confirm",
+      "title": "RPE Technologies: the loan it owes the company",
+      "zoho": [
+        "subs.loan:rpetech"
+      ],
+      "marks": false,
+      "n28": [
+        {
+          "party": "RPE Technologies Private Limited",
+          "col": 4,
+          "sections": [
+            "Loans & Advances"
+          ]
+        }
+      ]
+    }
+  ],
+  "stays": [
+    {
+      "text": "Salary of Sharda Gupta (₹8,28,000) and Neha Gupta (₹12,42,000): payroll is not kept in Zoho Books, so these two stay as signed."
+    },
+    {
+      "text": "Imprest paid to the directors and Rajendra Prasad Gupta during the year: Zoho has the balance of each card (checked above), not the payments of the year; the payments stay as signed."
+    },
+    {
+      "text": "The three working columns of Rajendra Prasad Gupta on the RPT sheet (−₹26,161, −₹1,62,000 and ₹96,990) are the auditors' workings and stay as signed.",
+      "sides": [
+        "rpt"
+      ]
+    },
+    {
+      "text": "Investments made during the year (RPE Technologies ₹1,00,000 and Rays Experts Foundation ₹50,000): only the balance at the year end is checked, above."
+    },
+    {
+      "text": "The value of imports on CIF basis (₹6,01,15,399), the expenditure in foreign currency (₹1,80,850) and the contingent liabilities are as signed.",
+      "sides": [
+        "n28"
+      ]
+    },
+    {
+      "text": "Parties with nothing to report this year (Vibhu Gupta, Hopper Energy, GMG Technologies, Arin Power, Renaus Power, Noor Rides, Goblu Mobility, BIA Energy, Sky Consulting, the other Agrasen companies, THN Alliance, Zelen Parks, Terrarium Energy, Sorenty Parks, Ubiq Solar and Arka Energy) are as signed.",
+      "sides": [
+        "rpt"
+      ]
+    },
+    {
+      "text": "The figures of 31 March 2025 (last year's columns) are not checked: this dashboard reads the year to 31 March 2026."
+    }
+  ]
+}

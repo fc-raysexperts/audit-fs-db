@@ -1,7 +1,7 @@
 import { Fragment } from 'react';
 import Link from 'next/link';
 import { getContext } from '../lib/data';
-import { liveOverlay } from '../../lib/workbook.mjs';
+import { liveOverlay, liveRelated, liveVerify } from '../../lib/workbook.mjs';
 import PageHead from '../components/PageHead';
 import Badge from '../components/Badge';
 import Amt from '../components/Amt';
@@ -20,11 +20,12 @@ const isValue = (v) => isNum(v) || (v && typeof v === 'object' && v.d);
  * Text sheets (the auditors' report, the accounting policies, the other notes ...): a marker such as "(i)" or "a)", the words, and up to
  * two figures at the end of the line (this year, last year). Anything beyond that, such as a small side table, follows in grey.
  */
-function DocRows({ rows }) {
+function DocRows({ rows, marks = null, offset = 0 }) {
   const withFigures = rows.some((r) => r.some(isValue));
   return (
     <div className={`doc ${withFigures ? 'with-figures' : ''}`}>
       {rows.map((cells, i) => {
+        const rowMarks = marks ? cells.map((_, j) => marks[`${offset + i}:${j}`]).filter(Boolean) : [];
         const filled = cells.filter((c) => c !== null && c !== undefined);
         if (!filled.length) return null;
         let t = -1; // the main text: the longest piece of text
@@ -44,6 +45,7 @@ function DocRows({ rows }) {
             {slots.length > 0 && <span className="fig">{cell(slots[0])}</span>}
             {slots.length > 0 && <span className="fig">{slots[1] !== undefined ? cell(slots[1]) : ''}</span>}
             {side.length > 0 && <span className="side">{side.map(cell).join('  ')}</span>}
+            {rowMarks.length > 0 && <span className="relm">{rowMarks.map((m, k) => <RelMark key={k} m={m} />)}</span>}
           </div>
         );
       })}
@@ -77,10 +79,12 @@ function ColLive({ x }) {
   if (!x) return null;
   const together = x.group ? ' (the columns of this group are compared together: they are shown under the first of them)' : '';
   if (x.status === 'OK') return <span className="tick" title={x.text ? 'Zoho gives the same text today' : `Zoho gives the same figure today${together}`}> ✓</span>;
-  if (x.text) { // a text column (the Vendor Code): Zoho's text, or that the vendor has none there
+  if (x.text) { // a text column (the Vendor Code, the MSME flag): Zoho's text, or that the vendor has none there; update-30: what the card holds in words, and the reason of a known difference
     return (
-      <div className="lvx" title={`Signed ${x.signed ? `"${x.signed}"` : 'nothing'}; Zoho today ${x.live ? `"${x.live}"` : 'no code on the vendor card'}`}>
+      <div className="lvx" title={`Signed ${x.signed ? `"${x.signed}"` : 'nothing'}; Zoho today ${x.live ? `"${x.live}"` : 'nothing on the vendor card'}${x.note ? ` (${x.note})` : ''}${x.explain ? `. ${x.explain}` : ''}`}>
         Zoho {x.live || 'has no code'}
+        {x.note && <span className="dim"> ({x.note})</span>}
+        {x.explain && <div className="dim">{x.explain}</div>}
       </div>
     );
   }
@@ -121,8 +125,166 @@ function LiveCells({ o }) {
   );
 }
 
+/**
+ * update-27: the result of one related-party check beside a signed figure. A tick when Zoho gives the same amount today; otherwise Zoho's amount (under the first of the cells that are
+ * compared together), marked Explained when the difference is exactly the amount named in the table above. Hover for the detail.
+ */
+function RelMark({ m }) {
+  if (!m) return null;
+  if (m.status === 'OK') return <span className="tick" title={m.tip ?? 'Zoho gives the same amount today'}> ✓</span>;
+  if (!m.first) return null;
+  if (m.zoho === null || m.zoho === undefined) return <div className="lvx" title={m.tip ?? m.note ?? ''}>{m.note ?? 'Zoho has nothing for it'}</div>; // update-28: Zoho has no such asset / entry
+  const f = (x) => cell(m.dp !== undefined ? x : round2(x)); // update-30: a rate or a number of years keeps its decimals
+  const tip0 = m.tip ?? `Signed ${f(m.signed)}${m.together ? ' (these cells together)' : ''}; Zoho today ${f(m.zoho)}; difference ${f(m.diff)}`;
+  const tip = m.status === 'EXPL' && m.note ? `${tip0} - ${m.note}` : tip0;
+  return (
+    <div className={`lvx ${m.status === 'EXPL' ? 'lvx-expl' : ''}`} title={tip}>
+      Zoho {f(m.zoho)}{m.together && <span className="dim"> (together)</span>}{m.status === 'EXPL' && <span className="dim"> (explained)</span>}
+      {m.status === 'DIFF' && m.note && <span className="dim"> · {m.note}</span>}
+    </div>
+  );
+}
+
+const cellClass = (m) => (m && m.status === 'DIFF' ? ' lvc-diff' : m && m.status === 'EXPL' ? ' lvc-expl' : '');
+
+/** Note 28(A): where the two related-party tables (A. transactions, B. outstandings) are: from the first "Nature of Transactions" heading to the next lettered note, or null. */
+function relatedRegion(rows) {
+  const start = rows.findIndex((r) => isText(r[1]) && r[1].trim() === 'Nature of Transactions');
+  if (start < 0) return null;
+  const end = rows.findIndex((r, i) => i > start && isText(r[0]) && /^\(xiii\)/.test(r[0].trim()));
+  return end > start ? { start, end } : null;
+}
+
+const FIGURE_COLS = [4, 5, 6, 7, 8, 9, 10, 11];
+
+/**
+ * The related-party tables of Note 28(A) as a table (the text layout of the other notes shows only two figures a line): the four kinds of related party, this year and last year,
+ * with the check against Zoho beside each figure it covers. Text outside the printed table (the auditors' side notes in columns M and N of the Excel file) follows in grey.
+ */
+function RelatedTable({ rows, start, end, marks }) {
+  const t = (v) => (isText(v) ? v.trim() : '');
+  const headFor = (j) => [rows[start + 1]?.[j], rows[start + 2]?.[j], rows[start + 3]?.[j]].filter(isText).join(' ');
+  const body = [];
+  for (let i = start; i < end; i += 1) {
+    const r = rows[i];
+    if (t(r[1]) === 'Nature of Transactions') { // a header block of four lines
+      body.push(
+        <tr key={i} className="rt-hdr">
+          <th scope="col">Nature of transactions</th>
+          {FIGURE_COLS.map((j) => <th key={j} scope="col" className="num">{headFor(j)}{[4, 8].includes(j) && r[j] ? <span className="detail">{cell(r[j])}</span> : null}</th>)}
+          <th scope="col" />
+        </tr>,
+      );
+      i += 3;
+      continue;
+    }
+    const filled = r.filter((c) => c !== null && c !== undefined);
+    if (!filled.length) continue;
+    const notes = [r[12], r[13]].filter((c) => c !== null && c !== undefined).map(cell).join('  ');
+    if (isNum(r[1]) && isText(r[2]) && !FIGURE_COLS.some((j) => isNum(r[j]))) { // 1  Purchase of Capital Goods/Services
+      body.push(<tr key={i} className="rt-sec"><th scope="row" colSpan={FIGURE_COLS.length + 1}>{r[1]}. {r[2]}</th><td className="side">{notes}</td></tr>);
+      continue;
+    }
+    if (isText(r[1]) && !isText(r[2]) && !FIGURE_COLS.some((j) => isNum(r[j]))) { // A. Transactions during the year
+      body.push(<tr key={i} className="rt-sub"><th scope="row" colSpan={FIGURE_COLS.length + 2}>{r[1]}</th></tr>);
+      continue;
+    }
+    body.push(
+      <tr key={i}>
+        <th scope="row">{r[2] ?? r[1]}</th>
+        {FIGURE_COLS.map((j) => {
+          const m = marks?.[`${i}:${j}`];
+          return <td key={j} className={`num${cellClass(m)}`}>{cell(r[j])}<RelMark m={m} /></td>;
+        })}
+        <td className="side">{notes}</td>
+      </tr>,
+    );
+  }
+  return (
+    <div className="grid-wrap">
+      <table className="grid reltable">
+        <tbody>{body}</tbody>
+      </table>
+    </div>
+  );
+}
+
+const REL_RESULT = {
+  OK: ['ok', 'Agrees'],
+  EXPL: ['info', 'Explained'],
+  DIFF: ['warn', 'Differs'],
+  NONE: ['mute', 'Not checked'],
+};
+
+/** update-27: every related-party figure that is checked against Zoho, group by group, what Zoho gave and how it came out; then what stays as signed. */
+function RelatedPanel({ rel, side }) {
+  const m = rel.summary;
+  const panel = rel.panel ?? null; // update-28: the fixed asset register and the subsidiaries' books bring their own title and footnote
+  const of = panel?.of ?? (side === 'rpt' ? 'this sheet' : 'this note');
+  const title = panel?.title ?? 'Related parties against Zoho';
+  return (
+    <section className="sheet" aria-label={title}>
+      <div className="sheet-title"><h2>{title}</h2><small>{m.lines.toLocaleString('en-IN')} figures checked</small></div>
+      <p className="proof">
+        <span className={m.diff === 0 && m.none === 0 ? 'ok' : ''}>{m.ok.toLocaleString('en-IN')} of {m.lines.toLocaleString('en-IN')} figures give the same amount in Zoho today</span>
+        {m.expl > 0 && <>; {m.expl === 1 ? '1 gives' : `${m.expl} give`} another amount, for a reason that is written below or under the figure (hover over it)</>}
+        {m.diff > 0 && <>; {m.diff === 1 ? '1 gives' : `${m.diff} give`} another amount</>}
+        {m.none > 0 && <>; {m.none} could not be checked</>}.
+        {' '}A tick beside a signed figure on {of} means the same; where Zoho gives another amount it is shown under the figure.
+      </p>
+      {rel.problems.length > 0 && <div className="notice bad live-problem"><b>Part of this check could not run.</b> {rel.problems.join(' · ')}</div>}
+      {rel.groups.map((g) => (
+        <div className="tablewrap" key={g.id}>
+          <table className="tbl-plain">
+            <thead>
+              <tr><th scope="col">{g.title}</th><th scope="col" className="num">As signed</th><th scope="col" className="num">Zoho today</th><th scope="col" className="num">Difference</th><th scope="col">Result</th></tr>
+            </thead>
+            <tbody>
+              {g.checks.map((c) => {
+                const [cls, word] = REL_RESULT[c.status] ?? ['mute', c.status];
+                return (
+                  <tr key={c.id}>
+                    <th scope="row">
+                      {c.title}
+                      {c.terms.length > 0 && <span style={SUB}>{c.terms.map((x) => `${x.sign < 0 ? '− ' : ''}${x.label}${x.absent ? ' (none)' : ` ${cell(round2(x.value))}`}`).join('  +  ')}</span>}
+                      {(c.status === 'EXPL' || c.status === 'DIFF') && c.text && <span style={SUB}>{c.text}</span>}
+                      {c.status === 'NONE' && c.why && <span style={SUB}>{c.why}</span>}
+                      {c.note && <span style={SUB}>{c.note}</span>}
+                    </th>
+                    <td className="num">{c.signed === null ? '–' : cell(round2(c.signed))}</td>
+                    <td className="num">{c.zoho === null ? '–' : cell(round2(c.zoho))}</td>
+                    <td className="num dim">{c.diff === null || Math.abs(c.diff) < 0.005 ? '' : cell(round2(c.diff))}</td>
+                    <td><span className={`chip ${cls}`}>{word}</span></td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      ))}
+      {panel?.foot ? <p className="tbl-note">{panel.foot}</p> : (
+      <p className="tbl-note">
+        A figure agrees when it is within ₹10 of Zoho's, because the auditors' sheets are rounded line by line. Where Zoho gives another amount that is information, not an error: the books are closed and audited, so the sheet is not changed.
+        Purchases are each vendor's own ledger in Zoho (its bills less its vendor credits, before GST, on the accounts of fixed assets, stock, cost of goods and expenses); sales are Zoho's Sales by Customer; what is owed either way is the balance on the party's card on 31 March 2026; loans are the bank entries on the old ledger account of each loan; the directors' remuneration is split by person in the narration of its journal.
+      </p>
+      )}
+      {rel.info?.length > 0 && (
+        <div className="tbl-note">
+          <ul className="stays">{rel.info.map((x) => <li key={x}>{x}</li>)}</ul>
+        </div>
+      )}
+      {rel.stays.length > 0 && (
+        <div className="tbl-note">
+          <b>As signed, because Zoho Books cannot give it:</b>
+          <ul className="stays">{rel.stays.map((x) => <li key={x}>{x}</li>)}</ul>
+        </div>
+      )}
+    </section>
+  );
+}
+
 /** Working sheets: a table, as in the workbook (empty rows and columns left out). Lines above the header are the sheet's title. With a live check, three columns follow the value column. */
-function Grid({ rows, columns, id, overlay = null, valueCol = null }) {
+function Grid({ rows, columns, id, overlay = null, valueCol = null, marks = null }) {
   const h = headerIndex(rows);
   const title = h > 0 ? rows.slice(0, h) : [];
   const head = h >= 0 ? rows[h] : null;
@@ -148,7 +310,7 @@ function Grid({ rows, columns, id, overlay = null, valueCol = null }) {
                   <Fragment key={j}>
                     <th scope="col" className={isNum(head[j]) ? 'num' : ''}>
                       {cell(head[j])}
-                      {colMap.has(j) && <div className="lvh" title={colMap.get(j).label}>Zoho: {colMap.get(j).ok} of {colMap.get(j).ok + colMap.get(j).diff} agree{colMap.get(j).group.length > 1 ? ` (this and the next ${colMap.get(j).group.length - 1} columns together)` : ''}</div>}
+                      {colMap.has(j) && <div className="lvh" title={colMap.get(j).label}>Zoho: {colMap.get(j).ok} of {colMap.get(j).ok + colMap.get(j).diff + (colMap.get(j).expl ?? 0)} agree{colMap.get(j).expl > 0 ? `, ${colMap.get(j).expl} differ for a reason written under the figure` : ''}{colMap.get(j).group.length > 1 ? ` (this and the next ${colMap.get(j).group.length - 1} columns together)` : ''}</div>}
                       {grouped.has(j) && <div className="lvh dim">checked together with the column to the left</div>}
                     </th>
                     {withLive && j === valueCol && <><th scope="col" className="num lv">Live (Zoho)</th><th scope="col" className="lv">Check</th><th scope="col" className="num lv">Difference</th></>}
@@ -165,9 +327,10 @@ function Grid({ rows, columns, id, overlay = null, valueCol = null }) {
                   {cols.map((j) => {
                     const c = r[j];
                     const x = o?.cols?.[j];
+                    const rm = marks?.[`${base + i}:${j}`];
                     return (
                       <Fragment key={j}>
-                        <td className={`${isNum(c) ? 'num' : isText(c) && c.length > 40 ? 'txt' : ''}${x?.status === 'DIFF' ? ' lvc-diff' : ''}`}>{cell(c)}<ColLive x={x} /></td>
+                        <td className={`${isNum(c) ? 'num' : isText(c) && c.length > 40 ? 'txt' : ''}${x?.status === 'DIFF' ? ' lvc-diff' : x?.status === 'EXPL' ? ' lvc-expl' : ''}${cellClass(rm)}`}>{cell(c)}<ColLive x={x} /><RelMark m={rm} /></td>
                         {withLive && j === valueCol && <LiveCells o={o} />}
                       </Fragment>
                     );
@@ -242,13 +405,14 @@ function LiveCheck({ overlay, keeps }) {
             <table className="tbl-plain">
               <caption className="sr-only">Columns worked out from Zoho</caption>
               <thead>
-                <tr><th scope="col">Column worked out from Zoho</th><th scope="col" className="num">Lines agree</th><th scope="col" className="num">Lines differ</th><th scope="col">Column total</th></tr>
+                <tr><th scope="col">Column worked out from Zoho</th><th scope="col" className="num">Lines agree</th><th scope="col" className="num">Differ, explained</th><th scope="col" className="num">Lines differ</th><th scope="col">Column total</th></tr>
               </thead>
               <tbody>
                 {overlay.columns.map((c) => (
                   <tr key={c.col}>
                     <th scope="row">{c.label}</th>
                     <td className="num">{c.ok}</td>
+                    <td className="num">{c.expl || '–'}</td>
                     <td className="num">{c.diff || '–'}</td>
                     <td>{c.totalOk + c.totalBad > 0 ? <span className={`chip ${c.totalBad === 0 ? 'ok' : 'warn'}`}>{c.totalBad === 0 ? 'Agrees' : 'Differs'}</span> : <span className="dim">–</span>}</td>
                   </tr>
@@ -450,6 +614,8 @@ function CwipPanel({ cwip }) {
   if (cwip.complete === false) return null; // still being read: the check above says so
   const sum = (f) => cwip.parks.reduce((t, p) => t + f(p), 0);
   const reclassNet = (key) => cwip.reclass.reduce((t, x) => t + (x.to === key ? x.amount : 0) - (x.from === key ? x.amount : 0), 0);
+  const billNamed = cwip.billNamed ?? [];
+  const billNamedBy = billNamed.reduce((m, b) => ({ ...m, [b.park]: (m[b.park] ?? 0) + 1 }), {});
   const unnamedNet = cwip.unnamedSum ?? 0;
   const allKept = cwip.unnamed.length === cwip.unnamedCount; // every unnamed line is listed, so the two columns can carry them too
   const unnamedIn = (key) => (allKept ? cwip.unnamed.filter((u) => u.account === key).reduce((t, u) => t + u.amount, 0) : 0);
@@ -499,6 +665,7 @@ function CwipPanel({ cwip }) {
                   <td className="num">{p.lines}</td>
                   <td>
                     {p.named > 0 && <span className="chip ok">{p.named} named by Zoho</span>}
+                    {(billNamedBy[p.name] ?? 0) > 0 && <> <span className="chip info">{billNamedBy[p.name]} of them from the bill itself</span></>}
                     {p.allocated > 0 && <> <span className="chip warn">{p.allocated} placed as signed</span></>}
                     {!p.onSheet && <> <span className="chip mute">Not on the sheet</span></>}
                   </td>
@@ -562,6 +729,67 @@ function CwipPanel({ cwip }) {
         <p className="tbl-note">The year-end clean-up journals (JN-Clean) emptied the old ledger accounts of each park into these two accounts on 31-Mar-2026; the old account's name is what says the park. The bills are the ones posted straight to these accounts, with the project and narration the staff entered; a bill counts one line for each of its lines to these accounts.</p>
       </section>
 
+      {billNamed.length > 0 && (
+        <section className="sheet" aria-label="Lines named by their own bill">
+          <div className="sheet-title"><h2>Lines the ledger does not name, but their own bill does</h2><small>{billNamed.length} {billNamed.length === 1 ? 'line' : 'lines'} · read from Zoho's bills</small></div>
+          <div className="tablewrap">
+            <table className="tbl-plain">
+              <thead><tr><th scope="col">Entry</th><th scope="col">Date</th><th scope="col">Account</th><th scope="col" className="num">Amount, ₹</th><th scope="col">Park</th><th scope="col">What the bill says</th><th scope="col">Signed sheet</th></tr></thead>
+              <tbody>
+                {billNamed.map((b, i) => (
+                  <tr key={`${b.txn}-${i}`}>
+                    <th scope="row">
+                      {b.entry}
+                      <span className="detail" style={SUB}>{[b.who, b.text].filter(Boolean).join(' · ')}</span>
+                    </th>
+                    <td style={{ whiteSpace: 'nowrap' }}>{day(b.date)}</td>
+                    <td>{ACCOUNT_WORD[b.account] ?? b.account}</td>
+                    <td className="num">{rs(b.amount)}</td>
+                    <td>{b.park}</td>
+                    <td>{b.source}: <q>{b.quote}</q></td>
+                    <td>{b.agrees === true ? <span className="chip ok">agrees</span> : b.agrees === false ? <span className="chip warn">places it in {b.sheet}</span> : <span className="detail">no entry to compare</span>}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <p className="tbl-note">The ledger line of these bills carries no park in its project, narration, location or vendor, but the bill behind it does: its Project Name field, the customer of the line or the narration of the line names exactly one park. This is looked at only when the ledger's own text names none, so it never changes a line that was already placed. The park comes from Zoho; where the configuration also holds the signed sheet's own placing of the same line, the last column says whether the sheet agrees. If the bill cannot be read, that placing is used instead, so the line is not lost.</p>
+        </section>
+      )}
+
+      {(cwip.oldSplits ?? []).length > 0 && (
+        <section className="sheet" aria-label="Clean-up journals opened into their original bills">
+          <div className="sheet-title"><h2>Clean-up journals opened into their original bills</h2><small>{cwip.oldSplits.length} {cwip.oldSplits.length === 1 ? 'journal' : 'journals'} · read from the old ledger accounts in Zoho</small></div>
+          <div className="tablewrap">
+            <table className="tbl-plain">
+              <thead><tr><th scope="col">Journal</th><th scope="col">Date</th><th scope="col" className="num">Amount, ₹</th><th scope="col">The original bills of its old ledger, and the park each one is in</th><th scope="col">Signed sheet</th></tr></thead>
+              <tbody>
+                {cwip.oldSplits.map((o) => (
+                  <tr key={o.txn}>
+                    <th scope="row">{o.entry}<span className="detail" style={SUB}>{o.old}</span></th>
+                    <td style={{ whiteSpace: 'nowrap' }}>{day(o.date)}</td>
+                    <td className="num">{rs(o.amount)}</td>
+                    <td>
+                      {o.pieces.map((p) => (
+                        <div key={p.txn}>
+                          {p.park ?? 'no park'}: {rs(p.amount)} {p.how === 'named' ? <span className="chip ok">named by Zoho</span> : <span className="chip warn">placed as signed</span>}
+                          <span className="detail" style={SUB}>{[`bill ${p.entry}`, day(p.date), p.who, p.text].filter(Boolean).join(' · ')}</span>
+                        </div>
+                      ))}
+                    </td>
+                    <td>
+                      {o.agrees === true ? <span className="chip ok">agrees</span> : o.agrees === false ? <span className="chip warn">places it differently</span> : <span className="detail">no entry to compare</span>}
+                      {o.sheet && <span className="detail" style={SUB}>{o.sheet.map((x) => `${x.park} ${rs(x.amount)}`).join(' · ')}</span>}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <p className="tbl-note">The year-end clean-up journal of these two lines emptied an old ledger account into this one, and that account's name names no park (or two). The old account is still in Zoho with the ORIGINAL bills the journal moved, and they add up to the journal to the paisa, so each bill is placed by its own project and narration. A bill that names no park of the sheet (a village, here) is placed where the signed sheet has it, and says so. The last column compares the park totals of the bills with the signed sheet's placing of the whole journal (the sheet rounds to the rupee).</p>
+        </section>
+      )}
+
       {cwip.allocations.length > 0 && (
         <section className="sheet" aria-label="Lines that Zoho does not place in a park">
           <div className="sheet-title"><h2>Lines whose own text names no park</h2><small>{cwip.allocations.length} placed as the signed sheet places them</small></div>
@@ -587,7 +815,7 @@ function CwipPanel({ cwip }) {
               </tbody>
             </table>
           </div>
-          <p className="tbl-note">Zoho's text for these lines names no park, so there is nothing in Zoho to read the park from. Each is placed where the signed sheet has it; the list is typed in the configuration (config/cwip.fyYY.json) and shown here so that nothing is hidden. If one of these lines changes in Zoho it no longer matches its entry and drops out of this list into the one below.</p>
+          <p className="tbl-note">Neither the text of these lines in Zoho's ledger nor, for a bill, the bill itself (nor, for a clean-up journal, the original bills of its old ledger account) names a park, so there is nothing in Zoho to read the park from. Each is placed where the signed sheet has it; the list is typed in the configuration (config/cwip.fyYY.json) and shown here so that nothing is hidden. If one of these lines changes in Zoho it no longer matches its entry and drops out of this list into the one below.</p>
         </section>
       )}
 
@@ -684,6 +912,10 @@ export default function SignedSheet({ view, id, withHead = true }) {
   const ties = entry.ties ?? [];
   let overlay = null;
   try { overlay = liveOverlay(view.snapshot, data); } catch { overlay = null; }
+  let rel = null; // update-27: the related parties of Note 28(A) and RPT Transaction, checked figure by figure
+  try { rel = liveRelated(view.snapshot, getContext().related(), data); } catch { rel = null; }
+  if (!rel) { try { rel = liveVerify(view.snapshot, getContext().verify(), data); } catch { rel = null; } } // update-28: FA Add, Dep.Calc. (the fixed asset register) and AOC-1 (the subsidiaries' books)
+  const region = rel && data.mode === 'doc' ? relatedRegion(data.rows) : null;
   const gridId = `grid-${id}`;
   return (
     <>
@@ -699,6 +931,7 @@ export default function SignedSheet({ view, id, withHead = true }) {
       {overlay && <LiveCheck overlay={overlay} keeps={entry.live?.keeps} />}
       {overlay && entry.live?.panel === 'stock' && <StockPanel stock={view.snapshot.stock} />}
       {overlay && entry.live?.panel === 'cwip' && <CwipPanel cwip={view.snapshot.cwip} />}
+      {rel && <RelatedPanel rel={rel} side={entry.related ?? entry.verify} />}
 
       {ties.length > 0 && (
         <section className="sheet" aria-label="Agreement with the live figures">
@@ -728,10 +961,16 @@ export default function SignedSheet({ view, id, withHead = true }) {
         {data.mode === 'grid' ? (
           <>
             <SheetFilter target={gridId} />
-            <Grid rows={data.rows} columns={data.columns} id={gridId} overlay={overlay} valueCol={overlay ? entry.live.value : null} />
+            <Grid rows={data.rows} columns={data.columns} id={gridId} overlay={overlay} valueCol={overlay ? entry.live.value : null} marks={rel?.marks ?? null} />
+          </>
+        ) : region ? (
+          <>
+            <DocRows rows={data.rows.slice(0, region.start)} marks={rel.marks} />
+            <RelatedTable rows={data.rows} start={region.start} end={region.end} marks={rel.marks} />
+            <DocRows rows={data.rows.slice(region.end)} marks={rel.marks} offset={region.end} />
           </>
         ) : (
-          <DocRows rows={data.rows} />
+          <DocRows rows={data.rows} marks={rel?.marks ?? null} />
         )}
       </section>
     </>

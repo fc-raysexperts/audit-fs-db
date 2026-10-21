@@ -23,6 +23,8 @@ function setup(extra = {}) {
   const ctx = createContext({
     env: { ...ENV, UPSTASH_REDIS_REST_TOKEN: f.token, ...(extra.env ?? {}) }, now: () => clock.t, fetchImpl: f.fetchImpl,
     zohoFactory: extra.zohoFactory ?? (() => { const z = replayZoho(); clients.push(z); return z; }),
+    // update-29: with Redis a run reads only `register_history_budget` (100) assets' entries; these tests are about other things, so they read all 483 at once (the chain of runs has its own test below)
+    configLoader: (fy) => { const c = loadConfig(fy); return { ...c, settings: { ...c.settings, register_history_budget: extra.historyBudget ?? 1000 } }; },
   });
   return { clock, f, ctx, clients };
 }
@@ -110,7 +112,7 @@ test('Refresh pressed twice: the second is refused; after 10 minutes it runs aga
   const later = await ctx.refresh({ manual: true });
   assert.equal(later.status, 'refreshed', later.message);
   assert.equal(later.continued, undefined);
-  assert.equal(clients[2].stats.calls, 27 + 5 + 4 + 5 + 40, '1 trial balance + 1 aging + 8 ledger pages + 1 ledger page of the advance account + 1 ledger page of the deposit / PF accounts (update-15) + 1 ledger page of the CWIP and IAUD accounts (update-20) + 5 pages of the stock summary (update-17) + 4 ledger pages of Inventory Asset (update-18) + 5 pages of the item list (update-19) + 1 staff list + 5 ageing reports + 8 vendor balance summaries (2 dates x 4 requests of 50 vendors) + 40 vendor cards (the next 40 Vendor Codes); every journal comes from Redis');
+  assert.equal(clients[2].stats.calls, 27 + 1 + 5 + 4 + 5 + 40 + 3 + 4 + 10 + 1, '(update-30: + 1 ledger page of the two advance tax accounts) (update-28: + the fixed asset register (3 pages) and the ledger of Land / Development Rights, and the trial balance and profit and loss of the five subsidiaries) (update-27: + the three reads of the related parties: their sales, the ledger of their vendor cards and of six accounts) (update-25: + 1 ledger page of the two old accounts of JN-Clean-112 / 225) 1 trial balance + 1 aging + 8 ledger pages + 1 ledger page of the advance account + 1 ledger page of the deposit / PF accounts (update-15) + 1 ledger page of the CWIP and IAUD accounts (update-20) + 5 pages of the stock summary (update-17) + 4 ledger pages of Inventory Asset (update-18) + 5 pages of the item list (update-19) + 1 staff list + 5 ageing reports + 8 vendor balance summaries (2 dates x 4 requests of 50 vendors) + 40 vendor cards (the next 40 Vendor Codes); every journal comes from Redis');
 });
 
 test('update-20: the continuation reads only the journals still missing, finishes the CWIP tab, and two at the same moment make one run', { skip }, async () => {
@@ -207,4 +209,28 @@ test('the view carries the whole booklet and the 34 sheets, and a single sheet c
   assert.equal(v.bookProblems, 0);
   assert.equal(ctx.sheet('closing-stock').entry.sheet, 'Closing Stock');
   assert.equal(ctx.sheet('../mapping'), null);
+});
+
+
+test('update-29: the entries of the 483 assets are read 100 at a time: the first load, then continuations (a minute apart) until Dep.Calc. is complete, then the ordinary rules', { skip }, async () => {
+  const { ctx, clock, clients } = setup({ historyBudget: 100 });
+  const known = async () => (await ctx.view()).snapshot.register.history;
+  await ctx.refresh({ manual: false });
+  assert.deepEqual([(await known()).known, (await known()).complete], [100, false]);
+  assert.equal((await ctx.view()).snapshot.cwip.complete, false, 'the CWIP tab is read in the same runs');
+  const seen = [];
+  for (let i = 0; i < 6; i += 1) {
+    clock.t += 61_000; // the lock of a continuation lasts 60 seconds
+    const r = await ctx.refresh({ manual: false });
+    if (r.status !== 'refreshed') { seen.push(r.status); break; }
+    assert.equal(r.continued, true, 'a continuation, not an ordinary refresh');
+    seen.push((await known()).known);
+  }
+  assert.deepEqual(seen, [200, 300, 400, 483, 'recent'], 'four continuations, then nothing left to continue');
+  const v = await ctx.view();
+  assert.deepEqual([v.snapshot.register.history.complete, v.snapshot.cwip.complete, v.bookProblems], [true, true, 0]);
+  assert.equal(clients.length, 5);
+  assert.deepEqual(clients.map((c) => c.historyCalls.length), [100, 100, 100, 100, 83]);
+  assert.equal(new Set(clients.flatMap((c) => c.historyCalls)).size, 483, 'no asset was read twice');
+  assert.ok(v.snapshot.alerts.every((a) => a.code !== 'REGISTER_HISTORY_PARTIAL'), 'the notice is gone when all are read');
 });

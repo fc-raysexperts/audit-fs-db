@@ -518,5 +518,59 @@
     "tolerance": 5
    }
   ]
+ },
+ "advance": {
+  "meaning": "The advance tax of the year, payment by payment, and the interest on tax (sections 234B and 234C) worked out again from the dates of the payments. Read from the ledger of the two advance tax accounts in Zoho Books.",
+  "accounts": [
+   {
+    "id": "2346113000013976613",
+    "name": "Advance Tax ( Ay 26-27 )"
+   },
+   {
+    "id": "2346113000026786252",
+    "name": "Advance Tax- F.Y. 2025-26"
+   }
+  ],
+  "tolerance": 25,
+  "months_234b": {
+   "value": 6,
+   "ref": "Computation!J53",
+   "meaning": "Months of section 234B interest, counted from 1 April 2026 to the month of the return. This is the one input Zoho cannot give (it depends on the day the return is filed); 6 months is the number with which the working agrees with the auditors' interest."
+  },
+  "threshold_234b": 0.9,
+  "instalments": [
+   {
+    "due": "2025-06-15",
+    "upto": 0.15,
+    "relief": 0.12,
+    "months": 3
+   },
+   {
+    "due": "2025-09-15",
+    "upto": 0.45,
+    "relief": 0.36,
+    "months": 3
+   },
+   {
+    "due": "2025-12-15",
+    "upto": 0.75,
+    "relief": null,
+    "months": 3
+   },
+   {
+    "due": "2026-03-15",
+    "upto": 1.0,
+    "relief": null,
+    "months": 1
+   }
+  ],
+  "stays": [
+   {
+    "text": "The number of months of section 234B interest (6 in the auditors' working) depends on the day the return is filed, which Zoho Books does not know: it is kept in this configuration."
+   },
+   {
+    "text": "Tax-law depreciation (₹4,78,54,719) and the written-down value as per the Income Tax Act come from the auditors' IT depreciation chart, which is not in Zoho Books."
+   }
+  ]
  }
 }

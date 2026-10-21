@@ -1,6 +1,6 @@
 {
  "version": 1,
- "note": "Capital work-in-progress (CWIP) and intangible assets under development (IAUD), park by park (the CWIP sheet of the signed workbook). Zoho Books keeps two ledger accounts for them, Capital Work in Progress and Intangible Asset Under Development; neither has a park column. Zoho's FY26 books were rebuilt at the year end, so almost all of the money arrived through clean-up journals dated 31-Mar-2026 (JN-Clean-n, 'Transfering ledger balance from old to new ledger') that empty an OLD ledger account into the new one - and the old account's NAME says the park ('Land Lease Dechu', 'Connectivity Charges Kolayat NPD', 'Civil Work Napasar'). The auditors' own journals (SJ-1121 ... SJ-1130, 289) say the park in their text. Bills carry a project ('NPD - Panchu - TL') and a narration. So every line of the two ledgers is given a park by the WORDS in its journal's notes and old-ledger name, or in the bill's project / narration / location. A line that names no park (or two) is allocated by an entry of `allocate` below, and said so on the tab. The total of each park (both accounts together, as booked) is what the CWIP tab compares with the sum of its three columns. The split of a park between the three columns (pure services, boundary wall and road, transmission line and MCR) is the auditors' own classification: Zoho only has the two accounts, and one journal (SJ-1130, 'adjustment made to boundary wall & road') moves Rs 12,01,37,795 from CWIP to IAUD without saying park by park where it comes from. That journal is shown separately and left out of the parks (it nets to nil).",
+ "note": "Capital work-in-progress (CWIP) and intangible assets under development (IAUD), park by park (the CWIP sheet of the signed workbook). Zoho Books keeps two ledger accounts for them, Capital Work in Progress and Intangible Asset Under Development; neither has a park column. Zoho's FY26 books were rebuilt at the year end, so almost all of the money arrived through clean-up journals dated 31-Mar-2026 (JN-Clean-n, 'Transfering ledger balance from old to new ledger') that empty an OLD ledger account into the new one - and the old account's NAME says the park ('Land Lease Dechu', 'Connectivity Charges Kolayat NPD', 'Civil Work Napasar'). The auditors' own journals (SJ-1121 ... SJ-1130, 289) say the park in their text. Bills carry a project ('NPD - Panchu - TL') and a narration. So every line of the two ledgers is given a park by the WORDS in its journal's notes and old-ledger name, or in the bill's project / narration / location. A line whose ledger text names no park is looked at once more with what its own bill says (the Project Name field of the bill, the customer of the line, the narration of the line): if that names exactly one park, Zoho has named it and the tab lists the evidence. A line that still names no park (or two) is allocated by an entry of `allocate` below, and said so on the tab. A clean-up journal whose old ledger account names no park (or two) is opened up: the old account is still in Zoho with the ORIGINAL bills the journal moved ('land lease registration NEW NPD' holds a bill for Thukariysar and one for a village; 'Brokerage & Commission Panchu FA SAYLA' holds one for 'Sayla Jalore'), they add up to the journal to the paisa, and each is placed by its own text; the journal's own entry of `allocate` is then only a cross-check, and is used as before if the old ledger cannot be read. An entry of `allocate` marked `piece` is for one such original bill. An entry of `allocate` is the signed sheet's own placement: it is used when neither the ledger nor the bill names the park, and when the bill does name it the entry is only a cross-check (the tab says whether the bill and the sheet agree). For a bill with several lines to one account the entry is for ONE LINE of the bill, as the bill itself gives it (bill 9/2025-26 has three such lines: 17,500, 45,500 and 30,000), because Zoho's ledger report adds the lines up and the tab puts them back from the bill. The total of each park (both accounts together, as booked) is what the CWIP tab compares with the sum of its three columns. The split of a park between the three columns (pure services, boundary wall and road, transmission line and MCR) is the auditors' own classification: Zoho only has the two accounts, and one journal (SJ-1130, 'adjustment made to boundary wall & road') moves Rs 12,01,37,795 from CWIP to IAUD without saying park by park where it comes from. That journal is shown separately and left out of the parks (it nets to nil).",
  "accounts": {
   "cwip": {
    "id": "2346113000027289098",
@@ -101,7 +101,8 @@
   {
    "name": "Thukariyasar",
    "words": [
-    "thukariyasar"
+    "thukariyasar",
+    "thukariysar"
    ]
   },
   {
@@ -133,7 +134,8 @@
    "name": "Lunkaransar",
    "words": [
     "lunkaransar",
-    "lunkarasar"
+    "lunkarasar",
+    "lunkansar"
    ],
    "onSheet": false,
    "why": "capitalised in full by SJ-1124, SJ-1125 and SJ-1127 (not on the CWIP sheet)"
@@ -197,9 +199,15 @@
   },
   {
    "entry": "9/2025-26",
-   "amount": 75500,
+   "amount": 45500,
    "park": "Panchu",
-   "why": "Line of the Jay Jeen Mata Construction bill whose project is 'LE0197_BOROSIL' (a customer's name, not a park); the other lines of the bill are Panchu transmission line"
+   "why": "Line of the Jay Jeen Mata Construction bill ('Borosil plant block 2 line PCC 13 PER POLE') whose project is 'LE0197_BOROSIL' (a customer's name, not a park); the other lines of the bill are Panchu transmission line. Zoho's ledger adds this line and the next one up as Rs 75,500; the bill itself gives them apart"
+  },
+  {
+   "entry": "9/2025-26",
+   "amount": 30000,
+   "park": "Panchu",
+   "why": "Line of the Jay Jeen Mata Construction bill ('I Beam pole installation work 4 PER POLE') whose project is 'LE0197_BOROSIL' (a customer's name, not a park); the other lines of the bill are Panchu transmission line"
   },
   {
    "txn": "2346113000035409294",
@@ -224,6 +232,13 @@
    "amount": 1193081.97,
    "park": "Lunkaransar",
    "why": "Credit note 'wrongly accounted, now rectified' (Erection & Installation Work-GM); no park of the sheet takes it, and with it Lunkaransar nets to nil once capitalised"
+  },
+  {
+   "entry": "VNM-01",
+   "amount": 102907.95,
+   "park": "Kuchaman",
+   "piece": true,
+   "why": "Chena Ram Godara bill, one of the two original bills of the old ledger 'land lease registration NEW NPD' moved by JN-Clean-225: '9 acre land lease at dindarpura UP-tahsil ... sudrsan village' names no park of the sheet; the signed sheet has Kuchaman at Rs 1,02,908 and this bill is Rs 1,02,907.95. The other bill of that old ledger says 'Thukariysar' and is placed by Zoho's own text"
   }
  ],
  "elsewhere": [
@@ -232,7 +247,7 @@
    "amount": 84000,
    "zoho": "Kolayat",
    "sheet": "Bhamatsar",
-   "why": "Zoho books bill ES2526893 of Electrico Services (Rs 81,000 + Rs 3,000) to Kolayat, and every field of the bill says Kolayat: its location, the project of both lines ('NPD-KOLAYAT- TL'), the customer (Kolayat Solar Park), the project name on the bill ('KOLAYAT') and its purchase order PO/25-26/00867 (no other park appears anywhere on the bill). The signed sheet has Rs 84,000 less under Kolayat and Rs 84,000 more under Bhamatsar, and these two lines are the ones that fit to the rupee."
+   "why": "Zoho books bill ES2526893 of Electrico Services (Rs 81,000 + Rs 3,000) to Kolayat, and every field of the bill says Kolayat: its location, the project of both lines ('NPD-KOLAYAT- TL'), the customer (Kolayat Solar Park), the project name on the bill ('KOLAYAT') and its purchase order PO/25-26/00867 ('Stay Set for Kolayat Line', delivery to the Kolayat park warehouse, project '33KV Kolayat T/L'). The bill is Kolayat's. The signed sheet counts it under Bhamatsar and nothing in Zoho supports that; the dashboard follows Zoho, so Kolayat is Rs 84,000 more here than on the sheet and Bhamatsar Rs 84,000 less, and these two lines are the only difference, to the rupee."
   }
  ]
 }

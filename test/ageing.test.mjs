@@ -7,7 +7,7 @@ import { buildSnapshot } from '../lib/snapshot.mjs';
 import { readSheet, liveOverlay } from '../lib/workbook.mjs';
 import { buildOverlay } from '../lib/overlay.mjs';
 import { addDays, addMonths, ageingDates, normalizeCustomerBalances, normalizeSalesByCustomer, normalizeVendorBalances, debtorsAgeing, creditorsAgeing } from '../lib/ageing.mjs';
-import { fetchCustomerBalances, fetchSalesByCustomer, fetchVendorBalances, fetchVendorCodes, vendorCodeOf, LoadError } from '../lib/zohoData.mjs';
+import { fetchCustomerBalances, fetchSalesByCustomer, fetchVendorBalances, fetchVendorCodes, vendorCodeOf, vendorMsmeOf, LoadError } from '../lib/zohoData.mjs';
 import { replayZoho, haveFixtures } from '../testing/fakes.mjs';
 
 const skip = !haveFixtures();
@@ -254,9 +254,10 @@ test('Creditors Ageing, FY26: every vendor agrees in every column, and so does e
   // what the real run of 17-Oct-2026 gave (165 of 165). Real run of that day: Less than 1 Yr 161 / older 163 of 165 before update-14, the 4 that differed are now agreed:
   // Cyrun-Infra and Gurukripa are retention money (no age bucket), Bsnl and Rajendra Prasad Gupta follow Zoho's Billed figure.
   // the Vendor Code (column 5) is read from each vendor's card in Zoho (the replay answers the signed codes: on 17-Oct-2026 Zoho's vendor list agreed with the sheet on every vendor of it that the list showed)
-  assert.deepEqual(cols, { 1: [164, 0], 2: [164, 0], 3: [164, 0], 5: [164, 0], 6: [164, 0], 7: [164, 0] });
+  assert.deepEqual(cols, { 1: [164, 0], 2: [164, 0], 3: [164, 0], 5: [164, 0], 6: [164, 0], 7: [164, 0], 10: [162, 0] }, 'MSME (column 10): update-30, 2 more are explained (see the MSME test below)');
   assert.ok(o.columns.filter((c) => !c.text).every((c) => c.totalBad === 0 && c.totalOk === 1), 'every column total agrees');
   assert.equal(o.columns.find((c) => c.col === 5).text, true, 'a text column has no total');
+  assert.equal(o.columns.find((c) => c.col === 10).text, true, 'so has the MSME flag');
   const vendors = Object.fromEntries(snapshot.ageing.creditors.vendors.map((v) => [v.id, v]));
   const row = (name) => Object.entries(o.byRow).find(([r]) => String(readSheet(config.workbook, 'creditors-ageing').rows[r][0]).startsWith(name));
   for (const name of ['Cyrun-Infra', 'Gurukripa']) {
@@ -375,7 +376,7 @@ test('Billed and Paid: a refused, misdated or filter-ignoring report leaves the 
     assert.equal(alert.level, 'warn');
     assert.match(alert.message, /Billed Amount and Paid Amount of the Creditors Ageing stay as signed/);
     const { o, cols } = stats(snapshot, 'creditors-ageing');
-    assert.deepEqual(cols, { 1: [164, 0], 5: [164, 0], 6: [162, 2], 7: [162, 2] }, 'Billed and Paid are not among the live columns, the others are (the ledger\'s own billed sum then: Bsnl and Rajendra Prasad Gupta differ again)');
+    assert.deepEqual(cols, { 1: [164, 0], 5: [164, 0], 6: [162, 2], 7: [162, 2], 10: [162, 0] }, 'Billed and Paid are not among the live columns, the others are (the ledger\'s own billed sum then: Bsnl and Rajendra Prasad Gupta differ again)');
     assert.equal(o.problems.length, 1);
     assert.match(o.problems[0], /Creditors ageing columns: Billed and Paid could not be .*Vendor Balance Summary.*stay as signed/);
     // the signed Billed and Paid are shown untouched
@@ -396,7 +397,7 @@ test('the two reports of the first half of the year are asked for: the balances 
   await buildSnapshot({ zoho, config, fy: '2025-26', now: () => NOW });
   const balances = zoho.calls.filter((c) => c.path === '/reports/customerbalancesummary').map((c) => c.query.to_date).sort();
   assert.deepEqual(balances, ['2025-03-31', '2025-09-30', '2026-03-31']);
-  const sales = zoho.calls.filter((c) => c.path === '/reports/salesbycustomer').map((c) => `${c.query.from_date}..${c.query.to_date}`).sort();
+  const sales = zoho.calls.filter((c) => c.path === '/reports/salesbycustomer' && !c.query.rule).map((c) => `${c.query.from_date}..${c.query.to_date}`).sort();
   assert.deepEqual(sales, ['2025-04-01..2025-09-30', '2025-10-01..2026-03-31']);
 });
 
@@ -516,4 +517,86 @@ test('a card that cannot be found (404) leaves that vendor out and tells the per
   const info = snap.alerts.find((x) => x.code === 'AGEING_VENDOR_CODES_PARTIAL');
   assert.equal(info.level, 'info');
   assert.match(info.message, /163 of 166/);
+});
+
+// ---------- update-30: the MSME flag from the vendor card (Udyam registration number) ----------
+
+test('the MSME facts of a vendor card: the Udyam number and the MSME type; a card without them is a vendor without a Udyam number; no card gives none', () => {
+  assert.deepEqual(vendorMsmeOf(card({ udyam_reg_no: ' UDYAM-RJ-00-0000001 ', msme_type: 'Small' })), { udyam: 'UDYAM-RJ-00-0000001', msme: 'Small' });
+  assert.deepEqual(vendorMsmeOf(card({ cf_vendor_code: 'X' })), { udyam: '', msme: '' }, 'no Udyam fields = no Udyam number');
+  assert.deepEqual(vendorMsmeOf(card({ udyam_reg_no: null, msme_type: null })), { udyam: '', msme: '' });
+  assert.deepEqual(vendorMsmeOf({ data: { contact: { udyam_reg_no: 'U-1' } } }), { udyam: 'U-1', msme: '' }, 'also when the connector wraps the answer');
+  assert.equal(vendorMsmeOf({ code: 0, message: 'success' }), null);
+  assert.equal(vendorMsmeOf(null), null);
+});
+
+test('vendor cards: a vendor kept by an older version (a code, no Udyam entry) is read once more; after that its card comes from Redis', async () => {
+  const asked = [];
+  const zoho = { get: async (p) => { asked.push(p); const id = p.split('/').pop(); return card({ cf_vendor_code: `C-${id}`, ...(id === '2' ? { udyam_reg_no: 'U-2', msme_type: 'Micro' } : {}) }); } };
+  const cache = memoryCodes();
+  const t = Date.parse('2026-10-22T06:00:00Z');
+  await cache.putVendorCodes({ 1: { code: 'C-1', at: t - 1000 }, 2: { code: 'C-2', at: t - 2000 } }); // the cache of update-14 .. update-29: no udyam
+  const first = await fetchVendorCodes(zoho, ['1', '2', '3'], { cache, budget: 2, concurrency: 1, now: () => t });
+  assert.equal(first.fetched, 2, 'the budget is 2: the vendor never read first (3), then the oldest entry (2)');
+  assert.deepEqual(first.pending, [], 'vendor 3 now has its code');
+  assert.deepEqual(first.unflagged, ['1'], 'vendor 1 has a code but no Udyam entry yet');
+  assert.deepEqual(first.flags['2'], { udyam: 'U-2', msme: 'Micro' });
+  assert.deepEqual(first.flags['3'], { udyam: '', msme: '' });
+  const second = await fetchVendorCodes(zoho, ['1', '2', '3'], { cache, budget: 2, concurrency: 1, now: () => t });
+  assert.deepEqual([second.fetched, second.fromCache, second.pending, second.unflagged], [1, 2, [], []], 'only vendor 1 is asked for; the other two come from Redis');
+  assert.deepEqual(second.flags['1'], { udyam: '', msme: '' });
+  assert.equal(asked.filter((p) => p === '/contacts/1').length, 1);
+  assert.deepEqual(cache.peek()['2'], { code: 'C-2', at: t, udyam: 'U-2', msme: 'Micro' });
+});
+
+test('MSME on the Creditors Ageing: Yes = the card carries a Udyam number; the sheet\'s Yes/No is compared, the number is shown under the figure, the two retention vendors are explained, nothing else differs', { skip }, async () => {
+  const snapshot = await build();
+  assert.deepEqual(snapshot.ageing.creditors.msme, { known: 166, total: 166, pending: 0 });
+  assert.equal(snapshot.ageing.problems.msme, undefined);
+  const nameOf = Object.fromEntries(snapshot.suppliers.parties.map((p) => [p.id, p.name]));
+  const byName = (n) => snapshot.ageing.creditors.vendors.find((v) => String(nameOf[v.id]).startsWith(n));
+  assert.deepEqual([byName('Bharat Prefab').msme, byName('Bharat Prefab').msmeNote], ['Yes', 'Udyam UDYAM-RJ-00-0000001, Small']);
+  assert.deepEqual([byName('Achyutam').msme, byName('Achyutam').msmeNote], ['No', 'no Udyam number on the vendor card']);
+  const { o } = stats(snapshot, 'creditors-ageing');
+  const sheetRows = readSheet(config.workbook, 'creditors-ageing').rows;
+  const line = (n) => o.byRow[sheetRows.findIndex((r) => String(r[0]).startsWith(n))];
+  for (const n of ['Bharat Prefab', 'Divya Associates', 'KG Solar']) assert.equal(line(n).cols[10].status, 'OK', `${n}: Yes on the sheet and a Udyam number on the card`);
+  for (const n of ['Cyrun-Infra', 'Gurukripa']) {
+    const x = line(n).cols[10];
+    assert.deepEqual([x.status, x.signed, x.live, x.note], ['EXPL', 'Yes', 'No', 'no Udyam number on the vendor card'], n);
+    assert.match(x.explain, /Retention money, shown as MSME by the auditors; Zoho's card has no Udyam number/);
+  }
+  assert.equal(line('Bharat Prefab').cols[10].note, 'Udyam UDYAM-RJ-00-0000001, Small');
+  const col = o.columns.find((c) => c.col === 10);
+  assert.deepEqual([col.ok, col.diff, col.expl, col.text], [162, 0, 2, true]);
+  assert.equal(snapshot.alerts.some((a) => a.code === 'AGEING_MSME_PENDING'), false);
+});
+
+test('MSME on the Creditors Ageing: a vendor whose card and sheet differ without a written reason is a difference, with the Udyam number in words', { skip }, async () => {
+  const probe = await build();
+  const some = probe.ageing.creditors.vendors.find((v) => String(probe.suppliers.parties.find((p) => p.id === v.id)?.name).startsWith('Achyutam'));
+  const snapshot = await build({ udyam: { [some.id]: 'UDYAM-RJ-09-0000099' } });
+  const { o } = stats(snapshot, 'creditors-ageing');
+  const rows = readSheet(config.workbook, 'creditors-ageing').rows;
+  const x = o.byRow[rows.findIndex((r) => String(r[0]).startsWith('Achyutam'))].cols[10];
+  assert.deepEqual([x.status, x.signed, x.live, x.note], ['DIFF', 'No', 'Yes', 'Udyam UDYAM-RJ-09-0000099, Small']);
+  const col = o.columns.find((c) => c.col === 10);
+  assert.deepEqual([col.ok, col.diff, col.expl], [161, 1, 2]);
+});
+
+test('MSME on the Creditors Ageing: a cache from before update-30 (codes only) gives no MSME column yet and says why; the codes are not affected', { skip }, async () => {
+  const probe = await build();
+  const kept = {};
+  for (const v of probe.ageing.creditors.vendors) kept[v.id] = { code: v.code ?? '', at: NOW }; // what update-14 .. update-29 kept: a code and the time, no Udyam entry
+  // a cache that knows only the vendor codes (every other key is empty and writes go nowhere); budget 0: nothing is read again in this run
+  const cache = new Proxy({}, { get: (_, k) => (k === 'getVendorCodes' ? async () => structuredClone(kept) : k === 'putVendorCodes' ? async () => {} : async () => null) });
+  const cfg0 = { ...config, settings: { ...config.settings, vendor_code_budget: 0 } };
+  const snapshot = await buildSnapshot({ zoho: replayZoho(), config: cfg0, fy: '2025-26', now: () => NOW, cache });
+  assert.equal(snapshot.ageing.creditors.msme, undefined);
+  assert.match(snapshot.ageing.problems.msme, /not been read yet/);
+  assert.equal(snapshot.alerts.find((a) => a.code === 'AGEING_MSME_PENDING').level, 'info');
+  assert.ok(snapshot.ageing.creditors.codes.known > 100, 'the codes come from the cache');
+  const { o, cols } = stats(snapshot, 'creditors-ageing');
+  assert.equal(cols[10], undefined);
+  assert.ok(o.problems.some((p) => /MSME flag is read from the same vendor cards/.test(p)));
 });

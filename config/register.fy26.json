@@ -1,0 +1,26 @@
+{
+  "_about": "update-28: the fixed asset register of Zoho Books (Fixed Assets module) against the sheets FA Add and Dep.Calc. Read by lib/register.mjs. A new year needs its own copy (register.fy27.json). 'types' turns the group named on a sheet into the asset type of Zoho; 'ledgerGroups' are the groups that are not in the register (their lines are looked for in the ledger of their own account, by amount); 'notInRegister' are the groups of Dep.Calc. that the register does not hold. Ids are Zoho's own (probe of 21-Oct-2026).",
+  "fy": "2025-26",
+  "tolerance": 1,
+  "totalTolerance": 10,
+  "types": {
+    "Office Building": "Building",
+    "Building": "Building",
+    "Furniture & Fixtures": "Furniture & Fixtures",
+    "Motor Vehicles": "Motor Vehicles",
+    "Plant & Machinery": "Plant & Machinery",
+    "Computer Equipment": "Computer Equipments",
+    "Computer Equipments": "Computer Equipments",
+    "Office Equipment": "Office Equipments",
+    "Office Equipments": "Office Equipments"
+  },
+  "ledgerAccounts": {
+    "land": { "name": "Land", "id": "2346113000000054793" },
+    "devrights": { "name": "Intangible Assets - Development Rights", "id": "2346113000026785958" }
+  },
+  "ledgerGroups": {
+    "Land": { "account": "land", "matchDate": false },
+    "Intangible Assets": { "account": "devrights", "matchDate": true }
+  },
+  "notInRegister": ["Land"]
+}

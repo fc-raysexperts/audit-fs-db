@@ -19,6 +19,59 @@ export const haveFixtures = () =>
 
 export const ADVANCE_ACCOUNT_ID = '2346113000000000617'; // "Advance from debtors"
 
+export const COMPANY_ORG = '60038956413';
+export const SPV_ORG = '60039002178'; // Rays Rooftop SPV: its Zoho user is disabled (code 6018), as on the real books on 21-Oct-2026
+
+/**
+ * update-28: a subsidiary's trial balance as Zoho's report sends it, made from the compact accounts of fixtures/subsidiaries_fy26.json
+ * ([type, id, name, code, closing (debit +, credit -), plkind]). Income and expense lines carry the movement of the whole life as their closing balance, like the real report.
+ */
+export function subTrialBalanceRaw(accounts, { from, to }) {
+  const groups = [['asset', 'Assets'], ['liability', 'Liabilities'], ['equity', 'Equities'], ['income', 'Income'], ['expense', 'Expense']];
+  const row = ([, id, name, code, closing]) => ({
+    account_id: id, name, account_code: code ?? '', depth: 0, is_child_present: false,
+    opening_balance: 0, debit_total: closing > 0 ? closing : 0, credit_total: closing < 0 ? -closing : 0, closing_balance: closing,
+  });
+  const debit = accounts.reduce((t, a) => t + (a[4] > 0 ? a[4] : 0), 0);
+  const credit = accounts.reduce((t, a) => t + (a[4] < 0 ? -a[4] : 0), 0);
+  return {
+    status: 'success',
+    data: {
+      code: 0, message: 'success',
+      trialbalance: [{
+        name: 'Total', debit_total: debit, credit_total: credit,
+        account_transactions: groups.map(([type, name]) => ({ account_type: type, name, account_transactions: accounts.filter((a) => a[0] === type).map(row) })),
+      }],
+      page_context: { report_basis: 'Accrual', from_date: from, to_date: to, show_rows: 'non_zero', is_inv_txn_job_in_progress: false },
+    },
+  };
+}
+
+/** update-28: a subsidiary's profit and loss as the new-flow report sends it (a tree of headings with the accounts under them). Income is shown positive, expense positive. */
+export function subProfitLossRaw(accounts, { from, to }) {
+  const kinds = { oi: 'operating_income', cogs: 'cost_of_goods_sold', oe: 'operating_expense', noi: 'non_operating_income', noe: 'non_operating_expense' };
+  const sign = { oi: -1, cogs: 1, oe: 1, noi: -1, noe: 1 };
+  const sum = {};
+  const node = (name, total, rows = []) => ({ node_name: name, name, type: 'group', values: [{ total, total_sub_account: total }], accounts: rows });
+  const tree = [];
+  for (const [kind, name] of Object.entries(kinds)) {
+    const mine = accounts.filter((a) => a[5] === kind);
+    const rows = mine.map((a) => ({ type: 'account', account_id: a[1], account_code: a[3] ?? '', name: a[2], values: [{ total: sign[kind] * a[4], total_sub_account: sign[kind] * a[4] }], accounts: [] }));
+    sum[kind] = rows.reduce((t, r) => t + r.values[0].total, 0);
+    tree.push(node(name, sum[kind], rows));
+  }
+  const gross = sum.oi - sum.cogs;
+  const operating = gross - sum.oe;
+  const net = operating + sum.noi - sum.noe;
+  const order = ['operating_income', 'cost_of_goods_sold', 'gross_profit', 'operating_expense', 'operating_profit', 'non_operating_income', 'non_operating_expense', 'net_profit_loss', 'other_comprehensive_income'];
+  const by = Object.fromEntries(tree.map((n) => [n.node_name, n]));
+  by.gross_profit = node('gross_profit', gross);
+  by.operating_profit = node('operating_profit', operating);
+  by.net_profit_loss = node('net_profit_loss', net);
+  by.other_comprehensive_income = node('other_comprehensive_income', 0);
+  return { code: 0, message: 'success', data: { profit_and_loss: { accounts: order.map((k) => by[k]) }, page_context: { report_basis: 'Accrual', from_date: from, to_date: to } } };
+}
+
 /**
  * An invented ledger of the account "Advance from debtors" for the replay (the real one is not among the saved files). It is made FROM the signed list of advances
  * (BS Grouping) and the hand-netting list, so that after the netting each customer comes out at its signed figure, and it ends with one line without a customer that
@@ -134,9 +187,13 @@ export function fakeUpstash({ token = 'secret-token', clock = { t: 1_800_000_000
  * options.cwipKeepBillLines -> true: the ledger of the two accounts gives every bill line on its own line (as the Zoho connector did when fixtures/cwip_fy26.json was saved). By default it answers
  *   like the REAL REST ledger report (checked on the user's connection, 17-Oct-2026): ONE line per bill and account - the lines of a bill that go to the same account are added up and the line
  *   keeps the project of only one of them (here the middle one: bill 482 of Anita Freight Carrier, three lines of 2,784 for Kolayat, Bhamatsar and Pugal, comes as 8,352 under Bhamatsar) (update-22)
+ * options.cwipOldFail    -> 'refused': the ledger of the OLD accounts behind two clean-up journals is refused (update-25); cwipOldRows(groups) edits it, cwipOldIgnoreRule: the account filter is ignored
  * options.cwipBillsFail -> 'all' | [ids]: those bills behind the two accounts are refused (HTTP 401, code 57)
  * options.cwipBillEdit  -> function(id, raw) -> raw: change a bill behind the two accounts before it is returned
  * (a bill behind the two accounts is answered from the saved ledger lines of that bill, with one more line of another account so that the account of each line has to be looked at)
+ * options.relatedSalesFail      -> 'refused': the sales by customer of the related customers is refused (HTTP 401, code 57) (update-27); relatedSalesIgnoreRule: it also lists a customer that was not asked for; relatedSalesRange: [from, to] it claims; relatedSales(sales) edits the lines
+ * options.relatedPurchasesFail   -> 'refused': the ledger of the related vendors' cards is refused (update-27); relatedPurchasesRows(id, rows) edits the compact lines [date, type, entry, account, account type, debit, credit] of a vendor card; relatedPurchasesIgnoreContact / relatedPurchasesIgnoreTypes: the filter is ignored
+ * options.relatedLedgersFail     -> 'refused': the ledgers of the loan, remuneration and foreign-supplier accounts are refused (update-27); relatedLedgersRows(id, rows) edits the compact lines of an account; relatedLedgersIgnoreRule: the filter is ignored
  * options.codesRateAfter  -> a vendor card is refused (HTTP 429) from this many cards on
  * options.codesMissing    -> ids of vendor cards that answer 404
  * options.codes           -> { id: code } to answer for a vendor card instead of the saved code
@@ -156,7 +213,13 @@ export function replayZoho(options = {}) {
   const stockFx = J('fixtures/inventory_valuation_fy26.json'); // update-17: Zoho's Inventory Valuation Summary at 31-Mar-2026 (real, 17-Oct-2026): 819 item lines
   const itemsFx = J('fixtures/item_list_fy26.json'); // update-19: Zoho's item list (the unit of each item), one record per SKU of the stock summary; made up for the replay (see its _about)
   const invLedgerFx = J('fixtures/inventory_asset_ledger_fy26.json'); // update-18: the real ledger of Inventory Asset (6,504 lines, closing 2,62,02,924.62), compact
+  const cwipBillsFx = J('fixtures/cwip_bills_fy26.json'); // update-23: the lines of the 12 bills with several lines to one account, as Zoho's own bills give them (the saved ledger is the connector's, which added up lines of one project)
+  const cwipOldFx = J('fixtures/cwip_old_ledgers_fy26.json'); // update-25: two OLD ledger accounts (the ones of JN-Clean-112 and JN-Clean-225) with their original bills, as Zoho gave them on 19-Oct-2026
   const cwipFx = J('fixtures/cwip_fy26.json'); // update-20: the real ledgers of Capital Work in Progress and Intangible Asset Under Development (102 + 82 lines) and the 137 journals behind them (17-Oct-2026)
+  const relFx = J('fixtures/related_fy26.json'); // update-27: what Zoho gave on 21-Oct-2026 for the related parties (sales of 4 customers, the purchase lines of 10 vendor cards, 6 account ledgers), cut down
+  const subsFx = J('fixtures/subsidiaries_fy26.json').subs; // update-28: the trial balances and profit and loss lines of four subsidiaries (real, 21-Oct-2026); the Rooftop SPV is not there
+  const taxFx = J('fixtures/advance_tax_fy26.json'); // update-30: the real ledger of the two advance tax accounts (seven payments and the journal JN-Clean-3 that moved the balance), 21-Oct-2026
+  const regFx = J('fixtures/register_fy26.json'); // update-28: Zoho's fixed asset register (502 assets) and the ledger lines of the Land and Development Rights accounts (real, 21-Oct-2026)
   const splitsFx = J('fixtures/splits_fy26.json'); // update-15: ledger rows of the four split accounts + the clean-up journals behind them (real, 17-Oct-2026)
   const dir = path.join(root, 'fixtures/gl/raw');
   const glPages = fs.readdirSync(dir).filter((f) => f.endsWith('.json')).sort((a, b) => a.localeCompare(b, undefined, { numeric: true })).map((f) => JSON.parse(fs.readFileSync(path.join(dir, f), 'utf8')));
@@ -165,6 +228,40 @@ export function replayZoho(options = {}) {
   let advanceRows = null;
   let cardCalls = 0;
   const billCalls = []; // the ids of the bills asked for (update-16)
+  const subCalls = []; // the reports asked of a subsidiary's organisation (update-28)
+  const historyCalls = []; // the assets whose entries were asked for (update-29)
+  let sheetHist = null;
+  const histMemo = new Map();
+  const rowMemo = new Map(); // update-30: the sheet line each asset was given (its Residual Value is the fake's salvage value)
+  const detailCalls = []; // the assets whose settings were asked for (update-30)
+  /** update-29: the entries of one asset, newest last: [type, date, depreciated, accumulated]. From the Dep.Calc. sheet: the line with the asset's code (the closest cost when a code is used twice). */
+  const historyOf = (id) => {
+    if (histMemo.has(id)) return histMemo.get(id);
+    const ent = historyMake(id);
+    histMemo.set(id, ent);
+    return ent;
+  };
+  const historyMake = (id) => {
+    if (!sheetHist) {
+      const rows = readSheet(loadConfig('2025-26').workbook, 'dep-calc').rows.filter((r) => typeof r[0] === 'number' && r[5] && typeof r[4] === 'number');
+      sheetHist = { rows, used: new Set() };
+    }
+    const a = regFx.assets.find((x) => x[0] === id);
+    if (!a) return [];
+    const [, code, , , , cost, value, date] = a;
+    const free = sheetHist.rows.filter((r) => !sheetHist.used.has(r));
+    let cands = free.filter((r) => String(r[5]).trim() === code).sort((x, y) => Math.abs(x[4] - cost) - Math.abs(y[4] - cost));
+    if (!cands.length) cands = free.filter((r) => r[3]?.d === date && Math.abs(r[4] - cost) <= 1 && Math.abs((typeof r[16] === 'number' ? r[16] : 0) - value) <= 1); // a code the sheet uses for another asset: by date, cost and book value
+    const row = cands[0];
+    if (!row) return [['acquisition', date, 0, 0]];
+    sheetHist.used.add(row);
+    rowMemo.set(id, row);
+    const n = (v) => (typeof v === 'number' ? v : 0);
+    const before = date < '2025-04-01' ? n(row[7]) : 0;
+    const ent = [['acquisition', date, 0, before]];
+    if (n(row[18]) !== 0 || n(row[17]) !== before) ent.push(['depreciation', '2026-03-31', n(row[18]), n(row[17])]);
+    return ent;
+  };
 
   let splitJournalCalls = 0;
   const cwipJournalCalls = []; // the ids of the CWIP / IAUD journals asked for (update-20)
@@ -172,9 +269,15 @@ export function replayZoho(options = {}) {
   const cwipBillRaw = (id) => { // a bill behind the CWIP / IAUD accounts, made from its lines in the saved ledger (update-22)
     const mine = cwipFx.groups.flatMap((g) => g.rows).filter((r) => r.transaction_id === id && r.transaction_type === 'bill');
     if (!mine.length) return null;
-    const lines = mine.map((r, i) => ({ line_item_id: `${id}-${i}`, account_id: r.account_id, item_total: Number(r.debit || 0) - Number(r.credit || 0), project_name: r.project_name, location_name: r.branch?.location_name ?? '', description: `line ${i + 1} of ${mine.length}` }));
+    let lines = mine.map((r, i) => ({ line_item_id: `${id}-${i}`, account_id: r.account_id, item_total: Number(r.debit || 0) - Number(r.credit || 0), project_name: r.project_name, location_name: r.branch?.location_name ?? '', description: `line ${i + 1} of ${mine.length}` }));
+    const real = cwipBillsFx[mine[0].entity_number]; // the bills the live tab showed with all their lines (update-23): the lines of Zoho's own bill, with the customer of each line and the Project Name field of the bill
+    if (real && Math.abs(real.lines.reduce((t, x) => t + x[0], 0) - lines.reduce((t, l) => t + l.item_total, 0)) < 0.01) {
+      const place = (project) => (mine.find((r) => r.project_name === project) ?? mine[0]).branch?.location_name ?? '';
+      lines = real.lines.map(([amount, project, text, customer], i) => ({ line_item_id: `${id}-${i}`, account_id: mine[0].account_id, item_total: amount, project_name: project, location_name: place(project), description: text, customer_name: customer ?? '' }));
+    }
     lines.push({ line_item_id: `${id}-x`, account_id: '2346113000004482477', item_total: 111, project_name: 'LE0188_UTTAM STRIPS', location_name: 'Head Office', description: 'freight to a customer (another account)' });
-    return { code: 0, message: 'success', bill: { bill_id: id, bill_number: mine[0].entity_number, notes: mine[0].description ?? '', location_name: mine[0].branch?.location_name ?? '', line_items: lines } };
+    const field = real?.project ? { custom_fields: [{ api_name: 'cf_project_name', label: 'Project Name :-', value: real.project }], custom_field_hash: { cf_project_name: real.project } } : {};
+    return { code: 0, message: 'success', bill: { bill_id: id, bill_number: mine[0].entity_number, notes: mine[0].description ?? '', location_name: mine[0].branch?.location_name ?? '', ...field, line_items: lines } };
   };
   const rawJournal = (id) => {
     if (cwipFx.journals[id]) { // a journal behind the CWIP / IAUD accounts (update-20)
@@ -201,6 +304,80 @@ export function replayZoho(options = {}) {
   async function get(p, query = {}) {
     calls.push({ path: p, query });
     stats.calls++;
+    if (query.organization_id && String(query.organization_id) !== COMPANY_ORG && (p === '/reports/trialbalance' || p === '/reports/profitandloss')) { // update-28: the books of a subsidiary
+      const org = String(query.organization_id);
+      const key = Object.keys(subsFx).find((k) => subsFx[k].org === org);
+      subCalls.push({ org, path: p, from: query.from_date, to: query.to_date });
+      if (org === SPV_ORG) throw new ZohoError(`Zoho ${p} failed: Your account is disabled in this organisation (HTTP 401)`, { status: 401, code: 6018, path: p });
+      if (options.subsFail === 'refused' || (Array.isArray(options.subsFail) && options.subsFail.includes(key))) throw new ZohoError(`Zoho ${p} failed: You are not authorized to perform this operation (HTTP 401)`, { status: 401, code: 57, path: p });
+      if (!key) throw new Error(`replayZoho: unknown organisation ${org}`);
+      let accounts = structuredClone(subsFx[key].accounts);
+      if (options.subsAccounts) accounts = options.subsAccounts(key, accounts);
+      const range = { from: options.subsDates?.[0] ?? query.from_date, to: options.subsDates?.[1] ?? query.to_date };
+      const raw = p === '/reports/trialbalance' ? subTrialBalanceRaw(accounts, range) : subProfitLossRaw(accounts, range);
+      return options.subsEdit ? options.subsEdit(key, p, raw) : raw;
+    }
+    if (p === '/fixedassets') { // update-28: the fixed asset register, in pages like the real answer (every status when asked for)
+      if (options.registerFail === 'refused') throw new ZohoError('Zoho /fixedassets failed: You are not authorized to perform this operation (HTTP 401)', { status: 401, code: 57, path: p });
+      let list = regFx.assets.map(([fixed_asset_id, asset_number, asset_name, fixed_asset_type_name, status, asset_cost, current_asset_value, asset_purchase_date, total_life, depreciation_start_date]) => ({ fixed_asset_id, asset_number, asset_name, fixed_asset_type_name, status, asset_cost, current_asset_value, asset_purchase_date, ...(total_life === null || total_life === undefined ? {} : { total_life }), depreciation_start_date }));
+      if (options.registerAssets) list = options.registerAssets(structuredClone(list));
+      const perPage = Number(query.per_page ?? 200);
+      const page = Number(query.page ?? 1);
+      return { code: 0, message: 'success', [options.registerOldKey ? 'fixed_assets' : 'fixedassets']: list.slice((page - 1) * perPage, page * perPage), page_context: { page, per_page: perPage, has_more_page: page * perPage < list.length, applied_filter: query.filter_by ?? 'Status.Active' } };
+    }
+    const dm = /^\/fixedassets\/([^/]+)$/.exec(p);
+    if (dm) { // update-30: the settings of one asset. MADE UP for the replay from five real answers of 21-Oct-2026: salvage_value = the Residual Value of the sheet line, depreciation_percentage = 100 x (1 - (salvage / cost) ^ (12 / life in months)), two decimals (the five real answers all follow that rule)
+      detailCalls.push(dm[1]);
+      if (options.detailFail === 'refused') throw new ZohoError('Zoho /fixedassets failed: You are not authorized to perform this operation (HTTP 401)', { status: 401, code: 57, path: p });
+      if (options.detailRateLimit && detailCalls.length > options.detailRateLimit) throw new ZohoError('Zoho /fixedassets failed: too many requests (HTTP 429)', { status: 429, code: 45, path: p });
+      if ((options.detailBroken ?? []).includes(dm[1])) throw new ZohoError('Zoho /fixedassets failed: not found (HTTP 404)', { status: 404, code: 1002, path: p });
+      const a = regFx.assets.find((x) => x[0] === dm[1]);
+      if (!a) throw new ZohoError('Zoho /fixedassets failed: not found (HTTP 404)', { status: 404, code: 1002, path: p });
+      historyOf(dm[1]); // gives the asset its sheet line
+      const row = rowMemo.get(dm[1]);
+      const life = a[8] ?? 60;
+      const salvage = row && typeof row[6] === 'number' ? row[6] : Math.round(a[5] * 0.05);
+      let fixed_asset = { fixed_asset_id: dm[1], asset_number: a[1], asset_name: a[2], total_life: life, total_life_basis: 'months', depreciation_method: 'declining_method', depreciation_percentage: a[5] > 0 && salvage > 0 ? Math.round(100 * (1 - (salvage / a[5]) ** (12 / life)) * 100) / 100 : 0, asset_cost: a[5], salvage_value: salvage, depreciation_start_date: a[9] };
+      if (options.detailEdit) fixed_asset = options.detailEdit(dm[1], structuredClone(fixed_asset));
+      return { code: 0, message: 'success', fixed_asset };
+    }
+    const hm = /^\/fixedassets\/([^/]+)\/history$/.exec(p);
+    if (hm) { // update-29: the entries of one asset, as Zoho sends them (14 real ones were compared with the sheet on 21-Oct-2026: acquisition + the depreciation entry of 31-03-2026); made from the Dep.Calc. sheet
+      historyCalls.push(hm[1]);
+      if (options.historyFail === 'refused') throw new ZohoError('Zoho /fixedassets history failed: You are not authorized to perform this operation (HTTP 401)', { status: 401, code: 57, path: p });
+      if (options.historyRateLimit && historyCalls.length > options.historyRateLimit) throw new ZohoError('Zoho /fixedassets history failed: too many requests (HTTP 429)', { status: 429, code: 45, path: p });
+      if ((options.historyBroken ?? []).includes(hm[1])) throw new ZohoError('Zoho /fixedassets history failed: not found (HTTP 404)', { status: 404, code: 1002, path: p });
+      let ent = historyOf(hm[1]);
+      if (options.historyEdit) ent = options.historyEdit(hm[1], structuredClone(ent));
+      const asset_history = ent.map(([type, valuation_date, depreciated_value, accumulated_value], i) => ({ valuation_id: `${hm[1]}-${i}`, description: '', current_quantity: 1, valuation_date, depreciated_value, revise_value: type === 'depreciation' ? -depreciated_value : 0, current_value: 0, accumulated_value, type, is_journal_posted: type === 'depreciation' }));
+      return { code: 0, message: 'success', asset_history, page_context: { page: 1, per_page: Number(query.per_page ?? 10), has_more_page: false } };
+    }
+    if (p === '/reports/generalledgerdetails' && query.rule?.columns?.[0]?.field === 'account_id' && (query.rule.columns[0].value ?? []).length && query.rule.columns[0].value.every((id) => taxFx.accounts[id])) { // update-30: the advance tax accounts
+      if (options.taxFail === 'refused') throw new ZohoError('Zoho /reports/generalledgerdetails failed: You are not authorized to perform this operation (HTTP 401)', { status: 401, code: 57, path: p });
+      const ids = (query.rule.columns[0].value ?? []).map(String);
+      let groups = taxFx.groups.filter((g) => ids.includes(g.group_name)).map((g) => structuredClone(g));
+      if (options.taxGroups) groups = options.taxGroups(groups);
+      if (options.taxIgnoreRule) groups[0].account_transactions[0].account_id = '999';
+      const total = groups.reduce((t, g) => t + g.account_transactions.length, 0);
+      return { data: { account_transactions: groups, page_context: { page: 1, per_page: Number(query.per_page ?? 2000), total, total_pages: 1, has_more_page: false, from_date: query.from_date, to_date: query.to_date } } };
+    }
+    if (p === '/reports/generalledgerdetails' && query.rule?.columns?.[0]?.field === 'account_id' && (query.rule.columns[0].value ?? []).length && query.rule.columns[0].value.every((id) => regFx.ledger[id])) { // update-28: the Land and Development Rights accounts
+      if (options.registerLedgerFail === 'refused') throw new ZohoError('Zoho /reports/generalledgerdetails failed: You are not authorized to perform this operation (HTTP 401)', { status: 401, code: 57, path: p });
+      const ids = (query.rule.columns[0].value ?? []).map(String);
+      const groups = ids.map((id) => {
+        let rows = regFx.ledger[id].rows;
+        if (options.registerLedgerRows) rows = options.registerLedgerRows(id, structuredClone(rows));
+        return {
+          group_name: id,
+          account_transactions: rows.map(([date, type, entry, debit, credit, details], i) => ({
+            date, account_name: regFx.ledger[id].name, transaction_details: details, transaction_id: `${id}-${i}`, transaction_type: type, entity_number: entry, debit: debit || '', credit: credit || '',
+            contact_id: '-1', contact_name: 'Unassociated Transactions', account_id: options.registerLedgerIgnoreRule && i === 0 ? '999' : id, currency_code: 'INR', account: { account_group: 'asset', account_type: regFx.ledger[id].type },
+          })),
+        };
+      });
+      const total = groups.reduce((t, g) => t + g.account_transactions.length, 0);
+      return { data: { account_transactions: groups, page_context: { page: 1, per_page: Number(query.per_page ?? 2000), total, total_pages: 1, has_more_page: false, from_date: query.from_date, to_date: query.to_date } } };
+    }
     if (p === '/reports/trialbalance') {
       const raw = structuredClone(tb);
       if (!(query.select_columns ?? []).some((c) => c.field === 'closing_balance')) {
@@ -230,6 +407,61 @@ export function replayZoho(options = {}) {
       }
       return root_;
     }
+    if (p === '/reports/salesbycustomer' && query.rule?.columns?.[0]?.field === 'customer_id') { // update-27: the related customers
+      if (options.relatedSalesFail === 'refused') throw new ZohoError('Zoho /reports/salesbycustomer failed: You are not authorized to perform this operation (HTTP 401)', { status: 401, code: 57, path: p });
+      const ids = (query.rule.columns[0].value ?? []).map(String);
+      let sales = relFx.sales.filter(([id]) => ids.includes(id)).map(([customer_id, customer_name, sold, withTax]) => ({ customer_name, customer_id, count: 1, sales: sold, sales_with_tax: withTax, currency_code: 'INR' }));
+      if (options.relatedSalesIgnoreRule) sales.push({ customer_name: 'Somebody else', customer_id: '1', count: 1, sales: 1, sales_with_tax: 1, currency_code: 'INR' });
+      if (options.relatedSales) sales = options.relatedSales(sales);
+      const [from, to] = options.relatedSalesRange ?? [query.from_date, query.to_date];
+      return { code: 0, message: 'success', sales, page_context: { page: 1, per_page: 500, total: sales.length, total_pages: 1, has_more_page: false, from_date: from, to_date: to } };
+    }
+    if (p === '/reports/generalledgerdetails' && query.rule?.columns?.[0]?.field === 'contact_id') { // update-27: the ledger of the related vendors' cards, bills and vendor credits
+      if (options.relatedPurchasesFail === 'refused') throw new ZohoError('Zoho /reports/generalledgerdetails failed: You are not authorized to perform this operation (HTTP 401)', { status: 401, code: 57, path: p });
+      const ids = (query.rule.columns[0].value ?? []).map(String);
+      const types = query.rule.columns.find((c) => c.field === 'transaction_type')?.value ?? null;
+      const lines = [];
+      const line = (cid, date, type, entry, account, at, debit, credit) => ({
+        date, account_name: account, account_id: `acct-${normName(account)}`, transaction_details: '', transaction_id: `${cid}-${entry}-${lines.length}`, transaction_type: type, entity_number: entry,
+        debit: debit || '', credit: credit || '', contact_id: cid, currency_code: 'INR', account: { account_group: at === 'accounts_payable' ? 'liability' : 'expense', account_type: at },
+      });
+      for (const id of ids) {
+        let rows = relFx.purchases[id] ?? [];
+        if (options.relatedPurchasesRows) rows = options.relatedPurchasesRows(id, structuredClone(rows));
+        const seen = new Set();
+        for (const [date, type, entry, account, at, debit, credit] of rows) {
+          if (types && !types.includes(type)) continue;
+          lines.push(line(id, date, type, entry, account, at, debit, credit));
+          const key = `${type}|${entry}`;
+          if (!seen.has(key)) { // beside the purchase lines Zoho sends the payable and the GST of the same bill, which are not purchases
+            seen.add(key);
+            const net = rows.filter((x) => x[1] === type && x[2] === entry).reduce((t, x) => t + (x[5] ?? 0) - (x[6] ?? 0), 0);
+            lines.push(line(id, date, type, entry, 'Accounts Payable', 'accounts_payable', net < 0 ? -net : 0, net > 0 ? net : 0));
+            lines.push(line(id, date, type, entry, 'Input CGST', 'other_current_asset', net > 0 ? 1 : 0, net < 0 ? 1 : 0));
+          }
+        }
+      }
+      if (options.relatedPurchasesIgnoreContact) lines.push(line('1', '2025-05-01', 'bill', 'X-1', 'Office Expenses', 'expense', 5, 0));
+      if (options.relatedPurchasesIgnoreTypes) lines.push(line(ids[0], '2025-05-01', 'journal', 'J-1', 'Office Expenses', 'expense', 5, 0));
+      return { data: { account_transactions: [{ account_transactions: lines }], page_context: { page: 1, per_page: Number(query.per_page ?? 2000), total: lines.length, total_pages: 1, has_more_page: false, from_date: query.from_date, to_date: query.to_date } } };
+    }
+    if (p === '/reports/generalledgerdetails' && query.rule?.columns?.[0]?.field === 'account_id' && (query.rule.columns[0].value ?? []).length && query.rule.columns[0].value.every((id) => relFx.ledgers[id])) { // update-27: the loan, remuneration and foreign-supplier accounts (and only these: the party ledger asks for these among a thousand others)
+      if (options.relatedLedgersFail === 'refused') throw new ZohoError('Zoho /reports/generalledgerdetails failed: You are not authorized to perform this operation (HTTP 401)', { status: 401, code: 57, path: p });
+      const ids = (query.rule.columns[0].value ?? []).map(String).filter((id) => relFx.ledgers[id]);
+      const groups = ids.map((id) => {
+        let rows = relFx.ledgers[id].rows;
+        if (options.relatedLedgersRows) rows = options.relatedLedgersRows(id, structuredClone(rows));
+        return {
+          group_name: id,
+          account_transactions: rows.map(([date, type, entry, debit, credit, details, cid, cname], i) => ({
+            date, account_name: relFx.ledgers[id].name, transaction_details: details, transaction_id: `${id}-${i}`, transaction_type: type, entity_number: entry, debit: debit || '', credit: credit || '',
+            contact_id: cid, contact_name: cname, account_id: options.relatedLedgersIgnoreRule && i === 0 ? '999' : id, currency_code: 'INR', account: { account_group: 'asset', account_type: relFx.ledgers[id].type },
+          })),
+        };
+      });
+      const total = groups.reduce((t, g) => t + g.account_transactions.length, 0);
+      return { data: { account_transactions: groups, page_context: { page: 1, per_page: Number(query.per_page ?? 2000), total, total_pages: 1, has_more_page: false, from_date: query.from_date, to_date: query.to_date } } };
+    }
     if (p === '/reports/generalledgerdetails' && (query.rule?.columns?.[0]?.value ?? []).includes(ADVANCE_ACCOUNT_ID)) {
       advanceRows ??= options.advanceRows ?? syntheticAdvanceRows();
       const rows = advanceRows.map((r) => ({ ...r, account_id: options.advanceIgnoreRule ? '999' : r.account_id }));
@@ -250,6 +482,18 @@ export function replayZoho(options = {}) {
         data: {
           account_transactions: [{ group_name: invLedgerFx.account_id, account_transactions: lines }],
           page_context: { page, per_page: perPage, total: rows.length, total_pages: Math.ceil(rows.length / perPage), has_more_page: page * perPage < rows.length, from_date: query.from_date, to_date: query.to_date },
+        },
+      };
+    }
+    if (p === '/reports/generalledgerdetails' && (query.rule?.columns?.[0]?.value ?? []).some((id) => cwipOldFx.groups.some((g) => g.group_name === id))) { // update-25: the ledger of old accounts emptied by clean-up journals
+      if (options.cwipOldFail === 'refused') throw new ZohoError('Zoho /reports/generalledgerdetails failed: You are not authorized to perform this operation (HTTP 401)', { status: 401, code: 57, path: p });
+      const ids = (query.rule.columns[0].value ?? []).map(String);
+      let groups = cwipOldFx.groups.filter((g) => ids.includes(g.group_name)).map((g) => ({ group_name: g.group_name, rows: structuredClone(g.rows) }));
+      if (options.cwipOldRows) groups = options.cwipOldRows(groups);
+      return {
+        data: {
+          account_transactions: groups.map((g) => ({ group_name: g.group_name, account_transactions: g.rows.map((r) => ({ ...r, ...(options.cwipOldIgnoreRule ? { account_id: '999' } : {}) })) })),
+          page_context: { page: 1, has_more_page: false, from_date: query.from_date, to_date: query.to_date },
         },
       };
     }
@@ -385,7 +629,9 @@ export function replayZoho(options = {}) {
       const code = options.codes?.[id] ?? f.code ?? '';
       const hash = code ? { cf_vendor_code: code, cf_vendor_code_formatted: code, cf_vendor_code_unformatted: code } : {};
       const fields = code ? [{ api_name: 'cf_vendor_code', label: 'Vendor Code', value: code }] : [];
-      return { code: 0, message: 'success', contact: { contact_id: id, contact_name: f.name, contact_type: 'vendor', custom_fields: fields, custom_field_hash: hash } };
+      const udyam = options.udyam && id in options.udyam ? options.udyam[id] : (f.udyam ?? ''); // update-30: the Udyam number of the card (only some cards have one)
+      const msmeType = udyam ? (f.msmeType ?? 'Small') : '';
+      return { code: 0, message: 'success', contact: { contact_id: id, contact_name: f.name, contact_type: 'vendor', custom_fields: fields, custom_field_hash: hash, ...(udyam ? { udyam_reg_no: udyam, msme_type: msmeType, is_valid_udyam_no: true } : {}) } };
     }
     if (p === '/reports/customerbalancesummary') {
       if (options.ageingFail === 'balances') throw new ZohoError('Zoho /reports/customerbalancesummary failed: You are not authorized to perform this operation (HTTP 401)', { status: 401, code: 57, path: p });
@@ -427,5 +673,5 @@ export function replayZoho(options = {}) {
     }
     throw new Error(`replayZoho: unexpected request ${p}`);
   }
-  return { get, stats, calls, billCalls, cwipJournalCalls, cwipBillCalls, orgId: '60038956413', dc: 'in' };
+  return { get, stats, calls, billCalls, cwipJournalCalls, cwipBillCalls, subCalls, historyCalls, detailCalls, orgId: COMPANY_ORG, dc: 'in' };
 }

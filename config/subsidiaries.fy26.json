@@ -1,0 +1,122 @@
+{
+  "_about": "update-28: the subsidiaries' own books in Zoho Books against Form AOC-1 (sheet AOC-1) and against the loans of Note 28(A). Read by lib/subsidiaries.mjs. A new year needs its own copy (subsidiaries.fy27.json). 'org' is the Zoho organisation id of the subsidiary, 'from' the day its books begin (the reports are asked from that day, so every balance is the whole of its life), 'col' the column of the subsidiary on AOC-1 (0 = column A), 'capital' the Zoho account ids that are its share capital, 'loan' the account that holds the loan from the company. taxCode is the account code of the tax line (Deferred Tax Expense). Ids are Zoho's own (probe of 21-Oct-2026). The dashboard can read a subsidiary only when the Zoho login it uses is an active user of that organisation.",
+  "fy": "2025-26",
+  "tolerance": 10,
+  "taxCode": "4-07-003",
+  "subs": {
+    "om": {
+      "name": "Rays O&M Experts Private Limited",
+      "org": "60040067911",
+      "from": "2025-01-23",
+      "col": 2,
+      "capital": [
+        "2513965000000857001"
+      ],
+      "loan": "2513965000000528011"
+    },
+    "spv": {
+      "name": "Rays Rooftop SPV Private Limited",
+      "org": "60039002178",
+      "from": "2025-01-24",
+      "col": 3,
+      "capital": [],
+      "loan": null
+    },
+    "rper": {
+      "name": "RPE Energy Reserve Private Limited",
+      "org": "60045349059",
+      "from": "2025-02-24",
+      "col": 4,
+      "capital": [
+        "2817735000000296051"
+      ],
+      "loan": "2817735000000317009"
+    },
+    "rpetech": {
+      "name": "RPE Technologies Private Limited",
+      "org": "60052617054",
+      "from": "2025-07-17",
+      "col": 5,
+      "capital": [
+        "3060990000000161005"
+      ],
+      "loan": "3060990000000409002"
+    },
+    "foundation": {
+      "name": "Rays Experts Foundation",
+      "org": "60073283002",
+      "from": "2025-09-09",
+      "col": 6,
+      "capital": [
+        "3807027000000072003"
+      ],
+      "loan": null
+    }
+  },
+  "figures": [
+    {
+      "id": "capital",
+      "label": "Share capital",
+      "title": "Share capital",
+      "layer": "balance",
+      "field": "shareCapital"
+    },
+    {
+      "id": "reserves",
+      "label": "Reserves and surplus",
+      "title": "Reserves and surplus",
+      "layer": "balance",
+      "field": "reserves"
+    },
+    {
+      "id": "assets",
+      "label": "Total assets",
+      "title": "Total assets",
+      "layer": "balance",
+      "field": "totalAssets"
+    },
+    {
+      "id": "liabilities",
+      "label": "Total Liabilities",
+      "title": "Total liabilities",
+      "layer": "balance",
+      "field": "totalLiabilities"
+    },
+    {
+      "id": "turnover",
+      "label": "Turnover",
+      "title": "Turnover",
+      "layer": "profit",
+      "field": "turnover"
+    },
+    {
+      "id": "pbt",
+      "label": "Profit before taxation",
+      "title": "Profit before taxation",
+      "layer": "profit",
+      "field": "pbt"
+    },
+    {
+      "id": "tax",
+      "label": "Provision for taxation",
+      "title": "Provision for taxation",
+      "layer": "profit",
+      "field": "tax"
+    },
+    {
+      "id": "pat",
+      "label": "Profit after taxation",
+      "title": "Profit after taxation",
+      "layer": "profit",
+      "field": "pat"
+    }
+  ],
+  "stays": [
+    {
+      "text": "The date each subsidiary was acquired, its reporting period, the reporting currency, the investments, the proposed dividend and the extent of shareholding are as signed."
+    },
+    {
+      "text": "Where a subsidiary's own books cannot be read (Rays Rooftop SPV: the Zoho user of that organisation is disabled) its column is as signed."
+    }
+  ]
+}

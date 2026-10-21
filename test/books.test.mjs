@@ -27,7 +27,7 @@ async function world() {
     const snapshot = await buildSnapshot({ zoho: replayZoho(), config, fy: '2025-26', now: () => NOW });
     const statements = buildView(snapshot, config.audited);
     const books = buildBooks(snapshot, config, statements);
-    const workbook = buildWorkbook(snapshot, books, config.workbook, config.books);
+    const workbook = buildWorkbook(snapshot, books, config.workbook, { ...config.books, related: config.related, register: config.register, subsidiaries: config.subsidiaries });
     memo = { snapshot, statements, books, workbook };
   }
   return memo;
@@ -71,7 +71,7 @@ test('a wrong figure is caught: change the stock by ₹1,000 and the notes, cash
   assert.ok(b2.notes.summary.check >= 1, 'Note 15 should differ');
   assert.equal(b2.notes.notes.find((q) => q.no === '15').status, 'CHECK');
   assert.ok(b2.summary.check > books.summary.check);
-  const w2 = buildWorkbook(bad, b2, config.workbook, config.books);
+  const w2 = buildWorkbook(bad, b2, config.workbook, { ...config.books, related: config.related, register: config.register, subsidiaries: config.subsidiaries });
   assert.ok(w2.summary.tiesBad >= 1, 'the closing-stock working should no longer agree');
   assert.equal(workbook.summary.tiesBad, 0);
 });

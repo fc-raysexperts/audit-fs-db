@@ -2,7 +2,7 @@
 // Made-up ledgers for the rules; the real FY26 ledgers (fixtures/cwip_fy26.json) for the figures. The real ones are skipped without fixtures/.
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { buildCwip, cwipBillsNeeded, cwipJournalsNeeded, cwipLedgerRows, expandBills, normalizeCwipBill, parksIn } from '../lib/cwip.mjs';
+import { buildCwip, cwipBillsNeeded, cwipJournalsNeeded, cwipLedgerRows, cwipOldAccountsNeeded, expandBills, normalizeCwipBill, parksIn } from '../lib/cwip.mjs';
 import { loadConfig } from '../lib/config.mjs';
 import { buildSnapshot } from '../lib/snapshot.mjs';
 import { replayZoho, haveFixtures } from '../testing/fakes.mjs';
@@ -199,10 +199,10 @@ test('the real FY26 ledgers: both accounts add up to the Trial Balance, every li
   const snap = await buildSnapshot({ zoho: replayZoho(), config, fy: '2025-26', now: () => NOW });
   const c = snap.cwip;
   assert.equal(c.error, undefined);
-  // update-22: the ledger report of the real connection gives 175 lines (one per bill and account); the 6 bills with several lines are put back into their own lines: 184 postings
-  assert.deepEqual([c.complete, c.pending, c.rows, c.lines, c.unnamedCount, c.pinsMissing, c.stale, c.billsUnfit, c.billsUnread], [true, 0, 175, 184, 0, [], [], [], 0]);
+  // update-22/23: the ledger report of the real connection gives 175 lines (one per bill and account); the 12 bills with several lines are put back into their own lines (read from the bills): 202 postings, as the tab showed
+  assert.deepEqual([c.complete, c.pending, c.rows, c.lines, c.unnamedCount, c.pinsMissing, c.stale, c.billsUnfit, c.billsUnread], [true, 0, 175, 203, 0, [], [], [], 0]); // update-25: 203 postings - JN-Clean-225 is opened into its two original bills
   assert.deepEqual(c.accounts.map((a) => [a.key, a.lines, a.ledger, a.tb]), [['cwip', 93, 154285531.55, 154285531.55], ['iaud', 82, 254822808.18, 254822808.18]]);
-  assert.deepEqual(c.kinds.map((k) => [k.key, k.count]), [['bill', 44], ['journal', 11], ['cleanup', 127], ['other', 2]]);
+  assert.deepEqual(c.kinds.map((k) => [k.key, k.count]), [['bill', 62], ['journal', 11], ['cleanup', 127], ['other', 2]]);
   assert.deepEqual(c.reclass.map((x) => [x.entry, x.amount, x.from, x.to, x.lines]), [['SJ-1130', 120137795, 'cwip', 'iaud', 2]]);
   // the parks add up to the two ledgers (the reclass moves money between the accounts, so it does not change the sum)
   const sum = c.parks.reduce((t, p) => t + p.total, 0);
@@ -211,8 +211,11 @@ test('the real FY26 ledgers: both accounts add up to the Trial Balance, every li
   assert.equal(c.parks.length, 21, '18 parks of the sheet + the 3 that are not on it');
   assert.deepEqual(c.parks.filter((p) => !p.onSheet).map((p) => p.name), ['Lunkaransar', 'Siwani', 'Ramgarh']);
   for (const p of c.parks.filter((x) => !x.onSheet)) assert.ok(Math.abs(p.total) < 0.5, `${p.name} is capitalised or charged off in full (${p.total})`);
-  assert.equal(c.allocations.length, 10, 'the lines of the configuration (pins) that found their ledger line');
-  assert.equal(c.allocations.reduce((t, a) => t + a.parts.length, 0), 11, 'one of them is shared by two parks');
+  // update-24: 7 of the 11 typed placings of the configuration are now named by Zoho's own bill (billNamed; the entry only cross-checks it);
+  // update-25: two more (JN-Clean-112, JN-Clean-225) by the original bills of their old ledger accounts (oldSplits); 3 lines are still placed as the signed sheet places them
+  assert.deepEqual(c.allocations.map((a) => [a.entry, a.amount]).sort(), [['', 210000], ['SJ-1072', -1193081.97], ['VNM-01', 102907.95]]);
+  assert.equal(c.allocations.reduce((t, a) => t + a.parts.length, 0), 3);
+  assert.equal(c.billNamed.length + c.oldSplits.filter((x) => x.sheet).length + c.allocations.length, 12, 'every entry of the configuration found its ledger line (pinsMissing is empty)');
   assert.ok(Math.abs(by.Dechu.total - 220744623.15) < 0.01);
   assert.ok(Math.abs(by.Panchu.total - 1263672) < 1);
   assert.deepEqual(c.elsewhere.map((e) => [e.entry, e.amount, e.found]), [['ES2526893', 84000, true]]);
@@ -220,19 +223,29 @@ test('the real FY26 ledgers: both accounts add up to the Trial Balance, every li
   assert.ok(Math.abs(by.Pugal.total - 27637835.58) < 0.01);
   assert.ok(Math.abs(by.Bhamatsar.total - 13789139) < 0.01);
   assert.ok(Math.abs(by.Kolayat.total - 42812200.14) < 0.01);
-  assert.deepEqual([by.Pugal.lines, by.Bhamatsar.lines, by.Kolayat.lines], [8, 7, 15]);
+  assert.deepEqual([by.Pugal.lines, by.Bhamatsar.lines, by.Kolayat.lines, by.Panchu.lines], [8, 8, 15, 44]);
+  // update-23: the two 'LE0197_BOROSIL' lines of bill 9/2025-26 (45,500 + 30,000) are placed one by one: Panchu is the signed 12,63,672 (the 75,500 the tab missed on 17-Oct-2026)
+  // update-24: and they (with the 17,500 line) are named by the bill's own Project Name field 'Panchu Parks', not by a typed entry
+  assert.deepEqual(c.billNamed.filter((a) => a.entry === '9/2025-26').map((a) => [a.amount, a.park, a.source, a.quote]).sort((x, y) => x[0] - y[0]), [[17500, 'Panchu', 'the Project Name field of the bill', 'Panchu Parks'], [30000, 'Panchu', 'the Project Name field of the bill', 'Panchu Parks'], [45500, 'Panchu', 'the Project Name field of the bill', 'Panchu Parks']]);
+  // the seven lines the ledger does not name but their own bill does, with where Zoho says it, and the signed sheet agrees with every one
+  assert.deepEqual(c.billNamed.map((b) => [b.entry, b.amount, b.park, b.source]).sort(), [
+    ['9/2025-26', 17500, 'Panchu', 'the Project Name field of the bill'], ['9/2025-26', 30000, 'Panchu', 'the Project Name field of the bill'], ['9/2025-26', 45500, 'Panchu', 'the Project Name field of the bill'],
+    ['CY/25-26/147', 1125000, 'Napasar', 'the text of the line'], ['CY/25-26/149', 5747347.85, 'Lunkaransar', 'the customer of the line'],
+    ['RR/25-26/2314', 2500000, 'Churu', 'the text of the line'], ['U225/DS/00734', 480000, 'Lunkaransar', 'the Project Name field of the bill']]);
+  assert.ok(c.billNamed.every((b) => b.agrees === true && b.sheet === b.park), 'the signed sheet places each of them where the bill does');
   assert.deepEqual(Object.fromEntries(c.parks.filter((p) => p.explain).map((p) => [p.name, p.explain])), { Kolayat: { diff: 84000, entries: ['ES2526893'] }, Bhamatsar: { diff: -84000, entries: ['ES2526893'] } });
 });
 
 test('the real FY26 ledgers: the same parks whether the ledger gives every bill line or (as the real connection does) one line per bill and account', { skip }, async () => {
   const rest = await buildSnapshot({ zoho: replayZoho(), config, fy: '2025-26', now: () => NOW });
   const conn = await buildSnapshot({ zoho: replayZoho({ cwipKeepBillLines: true }), config, fy: '2025-26', now: () => NOW });
-  assert.deepEqual([rest.cwip.rows, conn.cwip.rows, rest.cwip.lines, conn.cwip.lines], [175, 184, 184, 184]);
+  assert.deepEqual([rest.cwip.rows, conn.cwip.rows, rest.cwip.lines, conn.cwip.lines], [175, 184, 203, 203]);
   const shape = (c) => c.parks.map((p) => [p.name, p.iaud, p.cwip, p.total, p.lines, p.named, p.allocated]);
   assert.deepEqual(shape(rest.cwip), shape(conn.cwip), 'every park has the same lines and the same money');
-  assert.deepEqual(conn.cwip.billSplits, [], 'a ledger that already has every line needs no splitting');
-  // the six bills that have several lines for one account, put back into their lines
-  assert.deepEqual(rest.cwip.billSplits.map((b) => [b.entry, b.from, b.pieces, b.amount]).sort(), [['182', 1, 2, 20000], ['28', 1, 2, 236000], ['482', 1, 3, 8352], ['9/2025-26', 1, 4, 156000], ['ES2526893', 1, 2, 84000], ['TI/78', 1, 2, 66950]]);
+  // the connector (saved ledger) had already added up the lines of one project: its three-line bills 482 / 182 / ES2526893 need no splitting, the others still do
+  assert.deepEqual(conn.cwip.billSplits.map((b) => b.entry).sort(), ['2025/05', '28', '9/2025-26', 'ADI/25-26/973', 'Dechu/NPD/02', 'IPRT/146/2025-26', 'PP/25-26/976', 'SM95', 'TI/78']);
+  // the twelve bills that have several lines for one account (as the tab listed them on 17-Oct-2026), put back into their lines
+  assert.deepEqual(rest.cwip.billSplits.map((b) => [b.entry, b.from, b.pieces, b.amount]).sort(), [['182', 1, 2, 20000], ['2025/05', 1, 2, 41000], ['28', 1, 3, 236000], ['482', 1, 3, 8352], ['9/2025-26', 1, 5, 156000], ['ADI/25-26/973', 1, 2, 270550], ['Dechu/NPD/02', 1, 2, 268200], ['ES2526893', 1, 2, 84000], ['IPRT/146/2025-26', 1, 3, 550000], ['PP/25-26/976', 1, 5, 704000], ['SM95', 1, 2, 139955], ['TI/78', 1, 8, 66950]]);
   const b482 = rest.cwip.billSplits.find((b) => b.entry === '482');
   assert.deepEqual(b482.lines.map((l) => [l.park, l.amount]).sort(), [['Bhamatsar', 2784], ['Kolayat', 2784], ['Pugal', 2784]]);
 });
@@ -241,7 +254,7 @@ test('the real FY26 ledgers: if the bills cannot be read the ledger lines stay a
   const snap = await buildSnapshot({ zoho: replayZoho({ cwipBillsFail: 'all' }), config, fy: '2025-26', now: () => NOW });
   const c = snap.cwip;
   assert.equal(c.error, undefined);
-  assert.deepEqual([c.complete, c.rows, c.lines, c.billsUnread, c.billSplits.length], [true, 175, 175, 35, 0]);
+  assert.deepEqual([c.complete, c.rows, c.lines, c.billsUnread, c.billSplits.length], [true, 175, 176, 35, 0]); // 176: the old ledger of JN-Clean-225 is read apart from the bills and opens it into its two original bills (update-25)
   const by = Object.fromEntries(c.parks.map((p) => [p.name, p]));
   // what the user saw on the real connection before update-22 (CWIP - RPEL.pdf of 17-Oct-2026)
   assert.ok(Math.abs(by.Pugal.total - 27635051.58) < 0.01, 'Pugal: 2,784 less');
@@ -294,4 +307,144 @@ test('a bill with several lines for one account: the ledger gives one line with 
   const same = expandBills(all, { b3: normalizeCwipBill({ bill: { line_items: [{ account_id: C, item_total: 100, project_name: 'NPD Alpha' }, { account_id: C, item_total: 100, project_name: 'NPD Beta Nagar' }] } }) });
   assert.deepEqual([same.rows.length, same.split], [2, []]);
   assert.throws(() => normalizeCwipBill({ data: { code: 0 } }), /without a bill/);
+});
+
+// ---------- update-24: the bill itself as the third source of a park ----------
+
+const billOf = (project, lines) => normalizeCwipBill({ bill: { bill_number: 'B1', custom_fields: [{ api_name: 'cf_project_name', value: project }], line_items: lines.map(([amount, customer, text, projectName]) => ({ account_id: C, item_total: amount, customer_name: customer, description: text, project_name: projectName ?? '' })) } });
+
+test('update-24: a line whose ledger text names no park is named by its own bill - the Project Name field, the customer of the line or its narration - and says where', () => {
+  const rows = rowsOf(
+    line({ id: 'b1', entry: 'B-field', debit: 100, project: 'Hind Chemisales' }),
+    line({ id: 'b2', entry: 'B-customer', debit: 200 }),
+    line({ id: 'b3', entry: 'B-text', debit: 300 }),
+    line({ id: 'b4', entry: 'B-ledger', debit: 400, project: 'Alpha' }),
+    line({ id: 'b5', entry: 'B-two', debit: 500 }),
+  );
+  const bills = {
+    b1: billOf('Alpha Parks', [[100, 'Hind Chemisales', 'pole work']]),
+    b2: billOf('', [[200, 'Gamma Solar Park', '']]),
+    b3: billOf('', [[300, '', 'Land brokerage at Beta Nagar (25 acre)']]),
+    b4: billOf('Gamma', [[400, 'Gamma Solar Park', 'Gamma']]), // the ledger's own text (project Alpha) comes first and is never overruled
+    b5: billOf('', [[500, 'Alpha Solar Park', 'for Gamma']]), // names two parks: not named
+  };
+  const r = buildCwip(spec, rows, {}, tbOf(1500, 0), { bills });
+  assert.deepEqual(r.billNamed.map((b) => [b.entry, b.park, b.source, b.quote, b.sheet, b.agrees]), [
+    ['B-field', 'Alpha', 'the Project Name field of the bill', 'Alpha Parks', null, null],
+    ['B-customer', 'Gamma', 'the customer of the line', 'Gamma Solar Park', null, null],
+    ['B-text', 'Beta Nagar', 'the text of the line', 'Land brokerage at Beta Nagar (25 acre)', null, null],
+  ]);
+  assert.deepEqual(r.parks.map((p) => [p.name, p.total, p.named]), [['Alpha', 500, 2], ['Beta Nagar', 300, 1], ['Gamma', 200, 1]]);
+  assert.deepEqual([r.unnamedCount, r.unnamed[0].entry, r.unnamed[0].ambiguous], [1, 'B-two', ['Alpha', 'Gamma']], 'two parks in the bill: left unnamed, as before');
+  // the bills are not at hand (refused, not read): the ledger gives only its own text, so the lines name no park
+  const without = buildCwip(spec, rows, {}, tbOf(1500, 0));
+  assert.deepEqual([without.billNamed.length, without.unnamedCount], [0, 4]);
+});
+
+test('update-24: an entry of `allocate` for a line the bill names is a cross-check (the sheet agrees or differs); with no bill at hand it places the line as before', () => {
+  const rows = rowsOf(line({ id: 'b1', entry: 'X1', debit: 100, project: 'Hind Chemisales' }), line({ id: 'b2', entry: 'X2', debit: 50 }));
+  const bills = { b1: billOf('Alpha Parks', [[100, '', '']]), b2: billOf('Alpha Parks', [[50, '', '']]) };
+  const withPins = { ...spec, allocate: [{ entry: 'X1', amount: 100, park: 'Alpha', why: 'sheet' }, { entry: 'X2', amount: 50, park: 'Gamma', why: 'sheet' }] };
+  const r = buildCwip(withPins, rows, {}, tbOf(150, 0), { bills });
+  assert.deepEqual(r.billNamed.map((b) => [b.entry, b.park, b.sheet, b.agrees]), [['X1', 'Alpha', 'Alpha', true], ['X2', 'Alpha', 'Gamma', false]], 'the bill wins; the sheet is shown beside it');
+  assert.deepEqual([r.allocations.length, r.pinsMissing, r.parks.map((p) => [p.name, p.total])], [0, [], [['Alpha', 150]]]);
+  const blind = buildCwip(withPins, rows, {}, tbOf(150, 0));
+  assert.deepEqual([blind.billNamed.length, blind.allocations.map((a) => [a.entry, a.parts[0].park]), blind.parks.map((p) => [p.name, p.total])], [0, [['X1', 'Alpha'], ['X2', 'Gamma']], [['Alpha', 100], ['Gamma', 50]]]);
+});
+
+// ---------- update-25: a clean-up journal opened into the original bills of its old ledger account ----------
+
+const CLEAN = 'Transfering ledger balance from old to new ledger';
+const cleanJournal = (oldId, oldName, amount) => journal(`J-${oldId}`, CLEAN, [[C, 'Capital Work in Progress', amount, 0], [oldId, oldName, 0, amount]]);
+/** the old account's own ledger: its original bills (and the clean-up journal that emptied it, which is never one of the pieces) */
+const oldRows = (oldId, ...bills) => rowsOf(...bills.map(([entry, amount, description]) => line({ id: `b-${entry}`, acc: oldId, entry, debit: amount, description, contact: `Vendor ${entry}` })), line({ id: `J-${oldId}`, acc: oldId, type: 'journal', entry: 'JN-x', credit: bills.reduce((t, b) => t + b[1], 0) }));
+const oldLedgerOf = (...rs) => rs.flat().reduce((m, r) => ({ ...m, [r.accountId]: [...(m[r.accountId] ?? []), r] }), {});
+
+test('update-25: only a clean-up journal whose old account names no park (or two) needs the old ledger', () => {
+  const rows = rowsOf(
+    line({ id: 'J-old1', type: 'journal', entry: 'JN-Clean-1', debit: 500 }), // 'Brokerage Alpha Beta Nagar': two parks
+    line({ id: 'J-old2', type: 'journal', entry: 'JN-Clean-2', debit: 300 }), // 'Land Lease Alpha': one park
+    line({ id: 'J-old3', type: 'journal', entry: 'JN-Clean-3', debit: 200 }), // 'Misc': none
+    line({ id: 'S1', type: 'journal', entry: 'SJ-1', debit: 70 }), // an auditors' journal, not a clean-up
+  );
+  const js = { 'J-old1': cleanJournal('old1', 'Brokerage Alpha Beta Nagar', 500), 'J-old2': cleanJournal('old2', 'Land Lease Alpha', 300), 'J-old3': cleanJournal('old3', 'Misc', 200), S1: journal('SJ-1', 'Capitalised of Gamma', [[C, 'CWIP', 70, 0], ['x', 'Plant', 0, 70]]) };
+  assert.deepEqual(cwipOldAccountsNeeded(spec, rows, js), ['old1', 'old3']);
+  assert.deepEqual(cwipOldAccountsNeeded(spec, rows, {}), [], 'journals not read yet: nothing to ask for');
+});
+
+test('update-25: the journal is opened into the original bills of its old account, each placed by its own text; the typed entry of the journal is only a cross-check', () => {
+  const rows = rowsOf(line({ id: 'J-old1', type: 'journal', entry: 'JN-Clean-1', debit: 500 }), line({ id: 'J-old2', type: 'journal', entry: 'JN-Clean-2', debit: 300 }));
+  const js = { 'J-old1': cleanJournal('old1', 'Brokerage Alpha Beta Nagar', 500), 'J-old2': cleanJournal('old2', 'Land Lease Alpha', 300) };
+  const oldLedger = oldLedgerOf(oldRows('old1', ['B1', 300, 'lease deed charges for Beta Nagar'], ['B2', 200, 'deed for Alpha']), oldRows('old2', ['B3', 300, 'Gamma land']));
+  const tb = tbOf(800, 0);
+  const without = buildCwip(spec, rows, js, tb);
+  assert.deepEqual([without.unnamedCount, without.unnamed[0].ambiguous, without.oldSplits, without.lines], [1, ['Alpha', 'Beta Nagar'], [], 2], 'the old ledger is not at hand: as before');
+
+  const r = buildCwip({ ...spec, allocate: [{ entry: 'JN-Clean-1', amount: 500, park: 'Alpha', why: 'sheet' }] }, rows, js, tb, { oldLedger });
+  assert.equal(r.error, undefined);
+  assert.deepEqual(r.oldSplits.map((x) => [x.entry, x.old, x.amount, x.pieces.map((p) => [p.entry, p.amount, p.park, p.how]), x.sheet, x.agrees]), [
+    ['JN-Clean-1', 'Brokerage Alpha Beta Nagar', 500, [['B1', 300, 'Beta Nagar', 'named'], ['B2', 200, 'Alpha', 'named']], [{ park: 'Alpha', amount: 500 }], false],
+  ], 'the bills say Beta Nagar 300 and Alpha 200; the sheet entry (all Alpha) differs and is shown, not obeyed');
+  // 'Land Lease Alpha' names one park by itself: it is not opened (its bill says Gamma, which does not overrule the ledger's own name)
+  assert.deepEqual(r.parks.map((p) => [p.name, p.total, p.lines, p.named]), [['Alpha', 500, 2, 2], ['Beta Nagar', 300, 1, 1]]);
+  assert.deepEqual([r.lines, r.rows, r.unnamedCount, r.pinsMissing, r.allocations.length], [3, 2, 0, [], 0]);
+  // the same, with the sheet's entry agreeing
+  const same = buildCwip({ ...spec, allocate: [{ entry: 'JN-Clean-1', amount: 500, parts: [{ park: 'Beta Nagar', amount: 300 }, { park: 'Alpha', rest: true }], why: 'sheet' }] }, rows, js, tb, { oldLedger });
+  assert.equal(same.oldSplits[0].agrees, true);
+  assert.deepEqual(same.pinsMissing, []);
+});
+
+test('update-25: a bill of the old account that names no park needs an entry marked "piece"; with none the journal is left as before, and the bills must add up to it', () => {
+  const rows = rowsOf(line({ id: 'J-old3', type: 'journal', entry: 'JN-Clean-3', debit: 200 }));
+  const js = { 'J-old3': cleanJournal('old3', 'Misc land', 200) };
+  const oldLedger = oldLedgerOf(oldRows('old3', ['B4', 120, 'Gamma stamp duty'], ['B5', 80, 'village land lease']));
+  const tb = tbOf(200, 0);
+  const stuck = buildCwip(spec, rows, js, tb, { oldLedger });
+  assert.deepEqual([stuck.oldSplits.length, stuck.unnamedCount, stuck.unnamed[0].entry], [0, 1, 'JN-Clean-3'], 'B5 names no park and has no entry: the journal stays as it was (unnamed)');
+  const piece = { entry: 'B5', amount: 80, park: 'Beta Nagar', piece: true, why: 'the sheet has it there' };
+  const done = buildCwip({ ...spec, allocate: [piece] }, rows, js, tb, { oldLedger });
+  assert.deepEqual(done.oldSplits[0].pieces.map((p) => [p.entry, p.park, p.how]), [['B4', 'Gamma', 'named'], ['B5', 'Beta Nagar', 'allocated']]);
+  assert.deepEqual([done.unnamedCount, done.allocations.map((a) => [a.entry, a.amount]), done.pinsMissing], [0, [['B5', 80]], []]);
+  assert.deepEqual(done.parks.map((p) => [p.name, p.total]), [['Beta Nagar', 80], ['Gamma', 120]]);
+  // a "piece" entry that found no bill is not reported missing: it only applies when its journal is opened (else the journal's own entry, or nothing, places the line)
+  assert.deepEqual(buildCwip({ ...spec, allocate: [piece] }, rows, js, tb).pinsMissing, []);
+  assert.deepEqual(buildCwip({ ...spec, allocate: [{ ...piece, entry: 'ZZ' }] }, rows, js, tb, { oldLedger }).pinsMissing, []);
+  // bills that no longer add up to the journal (a bill edited since the clean-up): not opened
+  const edited = oldLedgerOf(oldRows('old3', ['B4', 119, 'Gamma stamp duty'], ['B5', 80, 'Beta Nagar']));
+  assert.equal(buildCwip({ ...spec, allocate: [piece] }, rows, js, tb, { oldLedger: edited }).oldSplits.length, 0);
+});
+
+test('update-25: the real FY26 books - JN-Clean-112 and JN-Clean-225 are placed from the original bills of their old accounts, to the paisa', { skip }, async () => {
+  const snap = await buildSnapshot({ zoho: replayZoho(), config, fy: '2025-26', now: () => NOW });
+  const c = snap.cwip;
+  assert.deepEqual(c.oldSplits.map((x) => [x.entry, x.old, x.amount, x.agrees, x.pieces.map((p) => [p.entry, p.who, p.amount, p.park, p.how])]), [
+    ['JN-Clean-112', 'Brokerage & Commission Panchu FA SAYLA', 446600, true, [['25-26/001', 'STELLAR GREEN INFRA', 446600, 'Sayla', 'named']]],
+    ['JN-Clean-225', 'land lease registration NEW NPD', 525223.84, true, [['VNM-01', 'Chena Ram Godara', 102907.95, 'Kuchaman', 'allocated'], ['01', 'Devi Dat (E-mitra)', 422315.89, 'Thukariyasar', 'named']]],
+  ]);
+  const by = Object.fromEntries(c.parks.map((p) => [p.name, p]));
+  // Zoho's own figures: 5 paise from the rounded Rs 1,02,908 / Rs 4,22,315.84 the sheet's entry had (Zoho: 1,02,907.95 + 4,22,315.89 = 5,25,223.84 exactly)
+  assert.ok(Math.abs(by.Kuchaman.total - 372894.87) < 0.001 && Math.abs(by.Thukariyasar.total - 1022315.89) < 0.001 && Math.abs(by.Sayla.total - 6241115.24) < 0.001);
+  assert.deepEqual(snap.meta.cwip.oldLedgers + '/' + snap.meta.cwip.oldOpened, '2/2');
+  assert.equal(snap.alerts.some((a) => /^CWIP_OLD/.test(a.code)), false);
+});
+
+test('update-25: if the old ledger cannot be read, is edited, or the filter is ignored, the two journals are placed as the signed sheet places them and an alert says why', { skip }, async () => {
+  const ok = await buildSnapshot({ zoho: replayZoho(), config, fy: '2025-26', now: () => NOW });
+  const total = (c) => Object.fromEntries(c.parks.map((p) => [p.name, p.total]));
+  const cases = [
+    ['refused', { cwipOldFail: 'refused' }, 'CWIP_OLD_LEDGER_UNREAD', /not authorized/, 0, ['', 'JN-Clean-112', 'JN-Clean-225', 'SJ-1072']],
+    ['filter ignored', { cwipOldIgnoreRule: true }, 'CWIP_OLD_LEDGER_UNREAD', /ignored the account filter/, 0, ['', 'JN-Clean-112', 'JN-Clean-225', 'SJ-1072']],
+    ['edited', { cwipOldRows: (gs) => { gs[1].rows[1].debit = 422330; return gs; } }, 'CWIP_OLD_LEDGER_NOT_USED', /no longer add up/, 1, ['', 'JN-Clean-225', 'SJ-1072']], // JN-Clean-112 is still opened
+  ];
+  for (const [what, opt, code, text, opened, typed] of cases) {
+    const snap = await buildSnapshot({ zoho: replayZoho(opt), config, fy: '2025-26', now: () => NOW });
+    const c = snap.cwip;
+    assert.equal(c.error, undefined, what);
+    assert.deepEqual([c.oldSplits.length, c.unnamedCount, c.pinsMissing, c.lines, c.allocations.map((a) => a.entry).sort()], [opened, 0, [], 202, typed], what);
+    const t = total(c);
+    for (const [park, v] of Object.entries(total(ok.cwip))) assert.ok(Math.abs(t[park] - v) < 0.1, `${what}: ${park} within 5 paise of the figure from the old bills (${t[park]} / ${v})`);
+    const alert = snap.alerts.find((a) => a.code === code);
+    assert.equal(alert?.level, 'info', what);
+    assert.match(alert.message, text, what);
+  }
 });

@@ -49,7 +49,7 @@ export default async function Workbook() {
           ? <span className="ok">All {s.ties} totals in the signed workings agree with the live figures, the largest gap being ₹{s.maxDiff.toFixed(2)}.</span>
           : <span style={{ color: 'var(--bad)' }}>{s.tiesBad} of {s.ties} totals in the signed workings do not agree with the live figures.</span>}
         {s.liveSheets > 0 && (
-          <> On the {s.liveSheets} customer, vendor and account lists, {(s.liveOk + s.liveName + s.liveLump).toLocaleString('en-IN')} of {s.liveLines.toLocaleString('en-IN')} lines give the same figure in Zoho today
+          <> On the {s.liveSheets} sheets checked line by line (the customer, vendor and account lists, stock, CWIP and the related parties), {(s.liveOk + s.liveName + s.liveLump).toLocaleString('en-IN')} of {s.liveLines.toLocaleString('en-IN')} lines or figures give the same amount in Zoho today
             {s.liveDiff + s.liveNone > 0 && <>; the other {(s.liveDiff + s.liveNone).toLocaleString('en-IN')} are listed on each sheet</>}.</>
         )}
       </p>
@@ -71,9 +71,9 @@ export default async function Workbook() {
                         {x.note}
                         {x.liveCheck && !x.liveCheck.error && (
                           <div style={{ marginTop: 4 }}>
-                            <span className={`chip ${x.liveCheck.diff === 0 && x.liveCheck.none === 0 ? 'ok' : 'info'}`}>Checked line by line</span>
-                            <span className="dim small"> {(x.liveCheck.ok + x.liveCheck.name + x.liveCheck.lump).toLocaleString('en-IN')} of {x.liveCheck.lines.toLocaleString('en-IN')} lines agree{x.liveCheck.diff + x.liveCheck.none > 0 && <>, {x.liveCheck.diff + x.liveCheck.none} to look at</>}</span>
-                            {x.liveCheck.columns?.length > 0 && <div className="dim small" style={{ marginTop: 2 }}>{x.liveCheck.columns.length} more columns checked: {x.liveCheck.columns.map((c) => `${c.label.replace(/ \(.*\)$/, '')} ${c.ok} of ${c.ok + c.diff}`).join(' · ')}</div>}
+                            <span className={`chip ${x.liveCheck.diff === 0 && x.liveCheck.none === 0 ? 'ok' : 'info'}`}>{x.liveCheck.related && !x.liveCheck.columns?.length && x.liveCheck.lines === x.liveCheck.related.lines ? 'Checked figure by figure' : 'Checked line by line'}</span>
+                            <span className="dim small"> {(x.liveCheck.ok + x.liveCheck.name + x.liveCheck.lump).toLocaleString('en-IN')} of {x.liveCheck.lines.toLocaleString('en-IN')} {x.liveCheck.related ? 'figures' : 'lines'} agree{x.liveCheck.expl > 0 && <>, {x.liveCheck.expl} explained</>}{x.liveCheck.diff + x.liveCheck.none > 0 && <>, {x.liveCheck.diff + x.liveCheck.none} to look at</>}</span>
+                            {x.liveCheck.columns?.length > 0 && <div className="dim small" style={{ marginTop: 2 }}>{x.liveCheck.columns.length} more columns checked: {x.liveCheck.columns.map((c) => `${c.label.replace(/ \(.*\)$/, '')} ${c.ok} of ${c.ok + c.diff + (c.expl ?? 0)}`).join(' · ')}</div>}
                           </div>
                         )}
                         {x.liveCheck?.error && <div style={{ marginTop: 4 }}><span className="chip bad">Line check failed</span> <span className="dim small">{x.liveCheck.error}</span></div>}

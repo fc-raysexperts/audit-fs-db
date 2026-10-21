@@ -5,6 +5,7 @@ import NoteTables from '../components/NoteTables';
 import StatementTable from '../components/StatementTable';
 import Amt, { UnitName } from '../components/Amt';
 import Tie from '../components/Tie';
+import AdvanceTaxPanel from '../components/AdvanceTaxPanel';
 import { longDate, previousFy, gap } from '../../lib/format.mjs';
 import { noteRows } from '../../lib/rows.mjs';
 
@@ -368,7 +369,7 @@ export function Note28ATab({ view }) {
   return (
     <>
       <PageHead title="Other notes (Note 28(A))">
-        Earnings per share and the amounts due to micro and small enterprises are rebuilt from the live figures; the other items of the note (contingent liabilities, CSR, foreign currency, related parties) are as signed, below. Amounts in <UnitName />.
+        Earnings per share and the amounts due to micro and small enterprises are rebuilt from the live figures. Below them the related-party tables, the CSR payment and the foreign-currency payable of the signed note are checked against Zoho Books, figure by figure; the contingent liabilities and what Zoho cannot give stay as signed. Amounts in <UnitName />.
       </PageHead>
       <TieProof rows={rows} what="figures" hasTie={r.hasTie} />
       <section className="sheet" aria-label="Earnings per share and MSME">
@@ -407,6 +408,7 @@ export function ComputationTab({ view }) {
         <LedgerTable rows={c.rows} fy={view.fy} prevFy={previousFy(view.fy)} showPrev={showPrev(c)} showTie={c.hasTie} />
         <Checks list={c.checks} />
       </section>
+      <AdvanceTaxPanel advance={t.advance} />
     </>
   );
 }
