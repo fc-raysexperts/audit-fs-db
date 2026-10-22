@@ -14,7 +14,7 @@ import { ZohoError } from '../lib/zoho.mjs';
 export const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 export const J = (p) => JSON.parse(fs.readFileSync(path.join(root, p), 'utf8'));
 export const haveFixtures = () =>
-  ['fixtures/tb_fy26_nonzero.raw.json', 'fixtures/ar_aging_2026-03-31.raw.json', 'fixtures/gl/raw/gl_party_p1.json', 'fixtures/gl/journals_merged.json', 'fixtures/vendors_imprest_staff.raw.json', 'fixtures/cbs_2026-03-31.raw.json', 'fixtures/cbs_2025-03-31.raw.json', 'fixtures/cbs_2025-09-30.raw.json', 'fixtures/sbc_2025-10-01_2026-03-31.raw.json', 'fixtures/sbc_2025-04-01_2025-09-30.raw.json', 'fixtures/vbs_fy26.json', 'fixtures/inventory_valuation_fy26.json', 'fixtures/cwip_fy26.json']
+  ['fixtures/tb_fy26_nonzero.raw.json', 'fixtures/tb_fy25_nonzero.raw.json', 'fixtures/tb_fy25_nonzero.raw.json', 'fixtures/ar_aging_2026-03-31.raw.json', 'fixtures/gl/raw/gl_party_p1.json', 'fixtures/gl/journals_merged.json', 'fixtures/vendors_imprest_staff.raw.json', 'fixtures/cbs_2026-03-31.raw.json', 'fixtures/cbs_2025-03-31.raw.json', 'fixtures/cbs_2025-09-30.raw.json', 'fixtures/sbc_2025-10-01_2026-03-31.raw.json', 'fixtures/sbc_2025-04-01_2025-09-30.raw.json', 'fixtures/vbs_fy26.json', 'fixtures/inventory_valuation_fy26.json', 'fixtures/cwip_fy26.json']
     .every((f) => fs.existsSync(path.join(root, f)));
 
 export const ADVANCE_ACCOUNT_ID = '2346113000000000617'; // "Advance from debtors"
@@ -194,6 +194,7 @@ export function fakeUpstash({ token = 'secret-token', clock = { t: 1_800_000_000
  * options.relatedSalesFail      -> 'refused': the sales by customer of the related customers is refused (HTTP 401, code 57) (update-27); relatedSalesIgnoreRule: it also lists a customer that was not asked for; relatedSalesRange: [from, to] it claims; relatedSales(sales) edits the lines
  * options.relatedPurchasesFail   -> 'refused': the ledger of the related vendors' cards is refused (update-27); relatedPurchasesRows(id, rows) edits the compact lines [date, type, entry, account, account type, debit, credit] of a vendor card; relatedPurchasesIgnoreContact / relatedPurchasesIgnoreTypes: the filter is ignored
  * options.relatedLedgersFail     -> 'refused': the ledgers of the loan, remuneration and foreign-supplier accounts are refused (update-27); relatedLedgersRows(id, rows) edits the compact lines of an account; relatedLedgersIgnoreRule: the filter is ignored
+ * options.priorFail      -> 'refused': last year's Trial Balance (from 1-Apr-2024) is refused (HTTP 401, code 57) (update-31); priorDate: it claims to end on this date; priorEdit(raw) edits the raw answer
  * options.codesRateAfter  -> a vendor card is refused (HTTP 429) from this many cards on
  * options.codesMissing    -> ids of vendor cards that answer 404
  * options.codes           -> { id: code } to answer for a vendor card instead of the saved code
@@ -205,6 +206,7 @@ export function fakeUpstash({ token = 'secret-token', clock = { t: 1_800_000_000
  */
 export function replayZoho(options = {}) {
   const tb = J('fixtures/tb_fy26_nonzero.raw.json');
+  const tb25 = J('fixtures/tb_fy25_nonzero.raw.json');
   const ar = J('fixtures/ar_aging_2026-03-31.raw.json');
   const vendors = J('fixtures/vendors_imprest_staff.raw.json');
   const vbsFixture = J('fixtures/vbs_fy26.json').vendors;
@@ -379,7 +381,11 @@ export function replayZoho(options = {}) {
       return { data: { account_transactions: groups, page_context: { page: 1, per_page: Number(query.per_page ?? 2000), total, total_pages: 1, has_more_page: false, from_date: query.from_date, to_date: query.to_date } } };
     }
     if (p === '/reports/trialbalance') {
-      const raw = structuredClone(tb);
+      const lastYear = query.from_date === '2024-04-01'; // update-31: the year before (the real Trial Balance of 31-Mar-2025, saved 21-Oct-2026)
+      if (lastYear && options.priorFail === 'refused') throw new ZohoError('Zoho /reports/trialbalance failed: You are not authorized to perform this operation (HTTP 401)', { status: 401, code: 57, path: p });
+      const raw = structuredClone(lastYear ? tb25 : tb);
+      if (lastYear && options.priorDate) (raw.data ?? raw).page_context.to_date = options.priorDate;
+      if (lastYear && options.priorEdit) return options.priorEdit(raw);
       if (!(query.select_columns ?? []).some((c) => c.field === 'closing_balance')) {
         const body = raw.data ?? raw;
         for (const g of body.trialbalance[0].account_transactions) {
@@ -451,8 +457,14 @@ export function replayZoho(options = {}) {
       const groups = ids.map((id) => {
         let rows = relFx.ledgers[id].rows;
         if (options.relatedLedgersRows) rows = options.relatedLedgersRows(id, structuredClone(rows));
+        const fx = relFx.ledgers[id];
+        const shown = (v) => (v === 0 ? '0.00' : Math.abs(v).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+        const bal = (name, date, v) => ({ date, name, debit: v < 0 ? shown(v) : '', credit: v < 0 ? '' : shown(v), account_credit_balance: v }); // credit-positive, like Zoho's own group lines (update-31)
+        const opening = options.relatedOpening ? options.relatedOpening(id, fx.opening) : fx.opening;
+        const closing = options.relatedClosing ? options.relatedClosing(id, fx.closing) : fx.closing;
         return {
           group_name: id,
+          ...(fx.opening !== undefined && !options.relatedNoBalances ? { opening_balance: bal('Opening Balance', `As On 01/04/2025`, opening), closing_balance: bal('Closing Balance', `As On 31/03/2026`, closing) } : {}),
           account_transactions: rows.map(([date, type, entry, debit, credit, details, cid, cname], i) => ({
             date, account_name: relFx.ledgers[id].name, transaction_details: details, transaction_id: `${id}-${i}`, transaction_type: type, entity_number: entry, debit: debit || '', credit: credit || '',
             contact_id: cid, contact_name: cname, account_id: options.relatedLedgersIgnoreRule && i === 0 ? '999' : id, currency_code: 'INR', account: { account_group: 'asset', account_type: relFx.ledgers[id].type },

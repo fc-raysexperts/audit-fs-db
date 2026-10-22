@@ -6,7 +6,7 @@ import { loadConfig } from '../lib/config.mjs';
 import { buildSnapshot } from '../lib/snapshot.mjs';
 import { buildWorkbook, readSheet, liveRelated } from '../lib/workbook.mjs';
 import {
-  buildLedgers, buildPurchases, buildRelatedChecks, buildRelatedSection, normalizeContactLedger, normalizeRelatedSales, parseExposure, parseRemuneration, readRef, relatedRequests,
+  buildImprest, buildLedgers, buildPurchases, buildRelatedChecks, buildRelatedSection, normalizeContactLedger, normalizeRelatedSales, parseExposure, parseRemuneration, readGroupBalances, readRef, relatedRequests,
 } from '../lib/related.mjs';
 import { fetchContactLedger, fetchRelatedSales } from '../lib/zohoData.mjs';
 import { replayZoho, haveFixtures } from '../testing/fakes.mjs';
@@ -50,7 +50,7 @@ test('config/related.fy26.json: every check names things that exist, once', () =
   const r = relatedRequests(spec);
   assert.equal(r.salesIds.length, 4);
   assert.equal(r.purchaseIds.length, 10);
-  assert.equal(r.accountIds.length, 6);
+  assert.equal(r.accountIds.length, 9, 'three loans + the remuneration + the foreign supplier + the exchange account, and (update-31) the three imprest cards');
   assert.ok(r.purchaseIds.length <= 50, 'Zoho takes at most 50 values in one filter');
 });
 
@@ -355,10 +355,11 @@ test('what Zoho gave is in the snapshot: sales, purchases, loans, the remunerati
 test('RPT Transaction: every figure checked agrees with Zoho, Cyrun by exactly the vendor credit notes Zoho nets', { skip }, async () => {
   const r = check(await world(), 'rpt-transaction');
   assert.deepEqual(r.problems, []);
-  assert.deepEqual(r.summary, { lines: 45, ok: 44, expl: 1, diff: 0, none: 0 });
+  assert.deepEqual(r.summary, { lines: 48, ok: 44, expl: 1, diff: 3, none: 0 }); // update-31: + the imprest paid in the year, three figures that Zoho's ledger does not give
   const s = statuses(r);
   assert.equal(s['purch-cyrun'], 'EXPL');
-  assert.ok(Object.entries(s).filter(([k]) => k !== 'purch-cyrun').every(([, v]) => v === 'OK'));
+  assert.ok(Object.entries(s).filter(([k]) => k !== 'purch-cyrun' && !k.startsWith('imprest-')).every(([, v]) => v === 'OK'));
+  assert.deepEqual(['imprest-rahul', 'imprest-nidhi', 'imprest-rajendra'].map((k) => s[k]), ['DIFF', 'DIFF', 'DIFF']);
   const cy = st(r, 'purch-cyrun');
   assert.equal(cy.signed, 95709876);
   assert.ok(Math.abs(cy.zoho - 80709870.05) < 0.01);
@@ -405,7 +406,7 @@ test('a figure changed on the sheet, or changed in Zoho, is a difference - and t
   assert.equal(statuses(more)['sales-soltown'], 'DIFF');
   assert.equal(st(more, 'sales-soltown').diff, -999.66);
   assert.equal(more.marks['14:28'].status, 'DIFF');
-  assert.equal(more.summary.diff, 1);
+  assert.equal(more.summary.diff, 4, 'the changed figure and the three imprest figures');
   const cy = check(s, 'rpt-transaction', (rows) => { rows[15][22] += 5000; }); // Cyrun: the explained amount no longer accounts for the whole difference
   assert.equal(statuses(cy)['purch-cyrun'], 'DIFF');
   const zohoChanged = await run({ relatedPurchasesRows: (id, rows) => (id === '2346113000000309893' ? rows.slice(1) : rows) }); // one bill of Mighty Avengers no longer there
@@ -497,8 +498,8 @@ test('the workbook counts them: the two sheets are checked figure by figure, wit
   const rpt = w.sheets.find((x) => x.id === 'rpt-transaction');
   const n28 = w.sheets.find((x) => x.id === 'note-28-a');
   assert.deepEqual([rpt.status, n28.status], ['semi', 'semi']);
-  assert.deepEqual([rpt.liveCheck.lines, rpt.liveCheck.ok, rpt.liveCheck.expl, rpt.liveCheck.diff, rpt.liveCheck.none], [45, 44, 1, 0, 0]);
-  assert.deepEqual(rpt.liveCheck.related, { lines: 45, ok: 44, expl: 1, diff: 0, none: 0 });
+  assert.deepEqual([rpt.liveCheck.lines, rpt.liveCheck.ok, rpt.liveCheck.expl, rpt.liveCheck.diff, rpt.liveCheck.none], [48, 44, 1, 3, 0]);
+  assert.deepEqual(rpt.liveCheck.related, { lines: 48, ok: 44, expl: 1, diff: 3, none: 0 });
   assert.deepEqual([n28.liveCheck.lines, n28.liveCheck.ok, n28.liveCheck.expl], [50, 49, 1]);
   assert.deepEqual([rpt.liveCheck.problems, n28.liveCheck.problems], [[], []]);
   assert.deepEqual([w.summary.live, w.summary.semi, w.summary.fixed], [11, 11, 12], 'update-28: FA Add, Dep.Calc. and AOC-1 are part live now');
@@ -507,4 +508,113 @@ test('the workbook counts them: the two sheets are checked figure by figure, wit
   assert.match(bare.sheets.find((x) => x.id === 'rpt-transaction').liveCheck.error, /related.*missing/);
   assert.equal(liveRelated(s, null, readSheet(config.workbook, 'rpt-transaction')), null);
   assert.equal(liveRelated(s, spec, readSheet(config.workbook, 'fa-add')), null, 'a sheet without a related entry has no such check');
+});
+
+// ---------- update-31: the imprest paid in the year ----------
+
+const IMP = (opening, closing, rows) => ({ data: { account_transactions: [{ group_name: 'IMP1', opening_balance: opening, closing_balance: closing, account_transactions: rows }], page_context: { page: 1, total: rows.length, has_more_page: false } } });
+const imp = (o = {}) => row({ accId: 'IMP1', acc: 'Test - Imprest', at: 'other_current_liability', type: 'expense', ...o });
+const IM_SPEC = { ledgers: { imprest: { people: { t: { name: 'Test Person', account: 'IMP1' } }, transfer: 'transfering ledger balance', refundTypes: ['expense_refund'] } } };
+
+test('the opening and closing balance of an account come from the lines Zoho puts above its ledger, credit-positive', () => {
+  const g = (opening, closing) => ({ data: { account_transactions: [{ group_name: 'A1', opening_balance: opening, closing_balance: closing, account_transactions: [] }, { group_name: 'A2', account_transactions: [] }] } });
+  assert.deepEqual(readGroupBalances(g({ credit: '72,084.54', debit: '', account_credit_balance: 72084.54 }, { credit: '0.00', debit: '' })), { A1: { opening: 72084.54, closing: 0 }, A2: { opening: null, closing: null } });
+  assert.equal(readGroupBalances(g({ credit: '', debit: '1,25,000.50' }, { credit: '', debit: '2.00' })).A1.opening, -125000.5, 'a debit balance is negative');
+  assert.equal(readGroupBalances(g({ account_credit_balance: 40 }, null)).A1.opening, 40, 'the number is used when the words are not there');
+  const two = readGroupBalances([g({ credit: '10.00' }, { credit: '3.00' }), g({ credit: '99.00' }, { credit: '1.00' })]);
+  assert.deepEqual([two.A1.opening, two.A1.closing], [10, 1], 'the first page gives the opening, the last the closing');
+});
+
+test('an imprest card: money handed over, refunds and expenses booked are told apart, and the transfer journal is left out of the flows', () => {
+  // owed to the person: 100 at the start, + 300.50 + 50 booked, + 400 refunded by him, - 1000 handed over = -149.50 (he owes the company); the transfer journal clears it with a credit of 149.50
+  const lines = [
+    imp({ debit: 1000, entry: 'P1', details: 'Bank Overdraft-ICICI' }),
+    imp({ credit: 400, type: 'expense_refund', entry: '', details: 'Bank Overdraft-ICICI' }),
+    imp({ credit: 300.5, entry: 'E1' }),
+    imp({ credit: 50, type: 'journal', entry: 'SJ-1' }),
+    imp({ credit: 149.5, type: 'journal', entry: 'JN-Clean-1', details: 'Transfering ledger balance from old to new ledger' }),
+  ];
+  const rows = normalizeContactLedger(IMP({ credit: '100.00' }, { credit: '0.00' }, lines));
+  const { people } = buildImprest(rows, readGroupBalances(IMP({ credit: '100.00' }, { credit: '0.00' }, lines)), IM_SPEC);
+  const t = people.t;
+  assert.deepEqual([t.opening, t.given, t.refunded, t.net, t.spent, t.spentLines, t.transferred, t.closing], [100, 1000, 400, 600, 350.5, 2, -149.5, 0]);
+  assert.deepEqual(t.transferEntries, ['JN-Clean-1']);
+  assert.deepEqual(t.payments.map((x) => [x.kind, x.amount, x.date, x.via]), [['paid', 1000, '2025-05-01', 'Bank Overdraft-ICICI'], ['refunded', 400, '2025-05-01', 'Bank Overdraft-ICICI']]);
+  // Zoho's own closing balance is the proof: if the lines and the opening do not reach it, nothing is relied on
+  assert.throws(() => buildImprest(rows, { IMP1: { opening: 100, closing: 7 } }, IM_SPEC), /does not add up/);
+  assert.throws(() => buildImprest(rows, { IMP1: { opening: 90, closing: 0 } }, IM_SPEC), /does not add up/);
+});
+
+test('an imprest card without Zoho\'s balances still gives the year\'s flows, and says it could not check them against the closing balance', () => {
+  const rows = normalizeContactLedger(IMP(null, null, [imp({ debit: 10 }), imp({ credit: 4 })]));
+  const t = buildImprest(rows, readGroupBalances(IMP(null, null, [])), IM_SPEC).people.t;
+  assert.deepEqual([t.opening, t.closing, t.given, t.spent], [null, null, 10, 4]);
+  assert.equal(buildImprest(rows, {}, { ledgers: {} }), null, 'a year without imprest cards in its configuration has nothing to read');
+});
+
+test('the imprest cards of the year: Rahul was handed ₹28,00,000 and gave ₹5,00,000 back; Nidhi and Rajendra were handed nothing and the company owes them', { skip }, async () => {
+  const s = await world();
+  assert.deepEqual(s.alerts.filter((a) => a.code === 'RELATED_UNAVAILABLE'), []);
+  const p = s.related.ledgers.imprest.people;
+  const view = (x) => [x.opening, x.given, x.refunded, x.net, x.spent, x.transferred, x.closing];
+  assert.deepEqual(view(p.rahul), [2987.71, 2800000, 500000, 2300000, 3593328.68, 1296316.39, 0]);
+  assert.deepEqual(view(p.nidhi), [72084.54, 0, 0, 0, 693475.23, 765559.77, 0]);
+  assert.deepEqual(view(p.rajendra), [26160.5, 0, 0, 0, 85732.62, 111893.12, 0]);
+  assert.deepEqual(p.rahul.transferEntries, ['JN-Clean-389']);
+  assert.deepEqual(p.rahul.payments.map((x) => [x.date, x.kind, x.amount]), [['2025-06-23', 'paid', 1000000], ['2025-06-25', 'refunded', 500000], ['2025-06-28', 'paid', 500000], ['2025-08-21', 'paid', 600000], ['2026-02-16', 'paid', 700000]]);
+  assert.match(p.rahul.payments[0].via, /Bank Overdraft-ICICI/);
+  assert.deepEqual([p.rahul.spentLines, p.nidhi.spentLines, p.rajendra.spentLines], [100, 28, 14].map((n, i) => [p.rahul, p.nidhi, p.rajendra][i].spentLines), 'counted from the lines');
+  // what the card ended with is what the dashboard's own payable check (column "Imprest" of the balances) agrees with: opening + expenses + refunds - handed over = the transfer
+  for (const x of Object.values(p)) assert.ok(Math.abs(x.opening + x.spent + x.refunded - x.given - x.transferred - x.closing) < 0.005, `${x.name}: the card adds up`);
+});
+
+test('RPT Transaction: the imprest paid in the year differs from what Zoho gives, for a reason that is written under the figure; nothing in Zoho is asked to change', { skip }, async () => {
+  const r = check(await world(), 'rpt-transaction');
+  const c = ['imprest-rahul', 'imprest-nidhi', 'imprest-rajendra'].map((id) => st(r, id));
+  assert.deepEqual(c.map((x) => [x.signed, x.zoho, x.diff, x.status]), [[462679, 2300000, 1837321, 'DIFF'], [454318, 0, -454318, 'DIFF'], [315904, 0, -315904, 'DIFF']]);
+  assert.deepEqual(c.map((x) => x.cells.map((y) => `${y.r}:${y.c}`)), [['1:7'], ['2:7'], ['3:7']]);
+  assert.equal(r.marks['1:7'].status, 'DIFF');
+  assert.match(c[0].text, /₹28,00,000 paid to Rahul, ₹5,00,000 refunded \(net ₹23,00,000\); ₹35,93,329 of expenses booked on the card/);
+  assert.match(c[0].text, /signed ₹4,62,679 is none of these totals/);
+  assert.match(c[1].text, /nothing paid to Nidhi; ₹6,93,475 of expenses booked/);
+  assert.match(c[2].text, /nothing paid to Rajendra; ₹85,733 of expenses booked/);
+  for (const x of c) {
+    assert.match(x.text, /imprest \/ advance - only closing balance to be reported, no transaction/);
+    assert.ok(!/(change|correct|rectif|amend|fix)\b/i.test(x.text.replace('A note beside', '')), 'the text explains; it never asks anyone to change the books');
+  }
+  assert.deepEqual(c[0].terms.map((t) => t.label), ['Rahul Gupta: imprest paid in the year, net of refunds']);
+  // the same words are on the sheet the configuration quotes
+  const note = readSheet(config.workbook, 'note-28-a').rows.flat().filter((v) => typeof v === 'string');
+  assert.ok(note.includes(spec.ledgers.imprest.instruction), 'the signed Note 28(A) still carries the note the explanation quotes');
+  // Note 28(A) has no imprest transaction line, as that note says; its stay says so
+  const n = check(await world(), 'note-28-a');
+  assert.ok(!n.checks.some((x) => x.id.startsWith('imprest-')));
+  assert.ok(n.stays.some((t) => /closing balance only, with no imprest transaction/.test(t)));
+  assert.ok(!r.stays.some((t) => /closing balance only/.test(t)));
+  assert.ok(r.stays.some((t) => /Imprest paid in the year/.test(t)));
+  assert.deepEqual(r.groups.map((g) => g.id).slice(0, 4), ['sales', 'purchases', 'pay', 'imprest']);
+});
+
+test('if the imprest cards do not add up, only the imprest checks are "not checked": the loans, the remuneration and the foreign-currency payable are not affected', { skip }, async () => {
+  const s = await run({ relatedClosing: (id, v) => (id === '2346113000000058517' ? 5000 : v) });
+  assert.match(s.related.ledgers.imprest.error, /imprest account of Rahul Gupta does not add up/);
+  assert.equal(s.related.ledgers.error, undefined);
+  assert.equal(s.related.ledgers.loans.om.given, 17100000);
+  assert.ok(s.alerts.some((a) => a.code === 'RELATED_UNAVAILABLE' && /imprest accounts of the directors/.test(a.message)));
+  const r = check(s, 'rpt-transaction');
+  assert.deepEqual(['imprest-rahul', 'imprest-nidhi', 'imprest-rajendra'].map((id) => statuses(r)[id]), ['NONE', 'NONE', 'NONE']);
+  assert.match(st(r, 'imprest-rahul').why, /imprest accounts could not be used/);
+  assert.equal(statuses(r)['loan-rper-net'], 'OK');
+  assert.equal(statuses(check(s, 'note-28-a'))['rem-rahul'], 'OK');
+});
+
+test('a snapshot without Zoho\'s balances still gives the year\'s flows; an older snapshot has no imprest and says so', { skip }, async () => {
+  const s = await run({ relatedNoBalances: true });
+  const p = s.related.ledgers.imprest.people;
+  assert.deepEqual([p.rahul.opening, p.rahul.closing, p.rahul.net], [null, null, 2300000]);
+  assert.equal(statuses(check(s, 'rpt-transaction'))['imprest-rahul'], 'DIFF');
+  const old = clone(await world());
+  delete old.related.ledgers.imprest;
+  assert.match(st(check(old, 'rpt-transaction'), 'imprest-nidhi').why, /imprest accounts could not be used/);
+  assert.throws(() => readRef(old, spec, 'imp.unknown:rahul'), /unknown reading/);
 });

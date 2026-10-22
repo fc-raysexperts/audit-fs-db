@@ -6,6 +6,7 @@ import StatementTable from '../components/StatementTable';
 import Amt, { UnitName } from '../components/Amt';
 import Tie from '../components/Tie';
 import AdvanceTaxPanel from '../components/AdvanceTaxPanel';
+import PriorYearPanel from '../components/PriorYearPanel';
 import { longDate, previousFy, gap } from '../../lib/format.mjs';
 import { noteRows } from '../../lib/rows.mjs';
 
@@ -59,6 +60,7 @@ export function BalanceSheetTab({ view }) {
         <StatementTable rows={s.bs.assets} {...opts} />
         <p className="tbl-note">Last year's figures are the audited ones. Lines under a heading that are indented (advance from customers, retention money and so on) are the notes behind the line above; last year's audited statements do not split them out.</p>
       </section>
+      <PriorYearPanel prior={view.prior} kind="bs" />
     </>
   );
 }
@@ -77,6 +79,7 @@ export function ProfitLossTab({ view }) {
         <StatementTable rows={s.pl} {...opts} />
         <p className="tbl-note">Brackets are negative figures. In expenses, a bracket is a reduction (stock built up during the year). Tax lines carry their sign: a bracket reduces profit.</p>
       </section>
+      <PriorYearPanel prior={view.prior} kind="pl" />
     </>
   );
 }

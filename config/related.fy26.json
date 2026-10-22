@@ -207,6 +207,28 @@
     "exposure": {
       "account": "2346113000026786401",
       "pattern": "on ([A-Z]{3}) ([\\d,.]+)\\s*@\\s*([\\d.]+)\\s*=\\s*([\\d,]+)"
+    },
+    "imprest": {
+      "_about": "update-31: the imprest card of each person (liability accounts): money handed over (debit), refunds, and the expenses booked on the card (credit). The transfer journal of 31-Mar-2026 moved each balance to Sundry Creditors - Employees and is shown on its own. `instruction` is the note beside the table on the signed Note 28(A) sheet (a test checks that the sheet still says it).",
+      "people": {
+        "rahul": {
+          "name": "Rahul Gupta",
+          "account": "2346113000000058517"
+        },
+        "nidhi": {
+          "name": "Nidhi Gupta",
+          "account": "2346113000000058253"
+        },
+        "rajendra": {
+          "name": "Rajendra Prasad Gupta",
+          "account": "2346113000000058547"
+        }
+      },
+      "transfer": "transfering ledger balance",
+      "refundTypes": [
+        "expense_refund"
+      ],
+      "instruction": "imprest / advance - only closing balance to be reported, no transaction"
     }
   },
   "colsets": {
@@ -233,6 +255,7 @@
   "headers": {
     "4": "Remuneration",
     "6": "Rent paid",
+    "7": "Imprest",
     "10": "Consultancy fee (Expense) Revenue",
     "11": "Consultancy fee (Expense) Capital",
     "12": "Civil & Other Work (Expense)",
@@ -269,6 +292,10 @@
     {
       "id": "pay",
       "title": "Directors' remuneration, fees, rent and CSR"
+    },
+    {
+      "id": "imprest",
+      "title": "Imprest paid to the directors and Rajendra Prasad Gupta in the year"
     },
     {
       "id": "loans",
@@ -726,6 +753,54 @@
           "col": 5,
           "sections": [
             "Rent Paid"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "imprest-rahul",
+      "group": "imprest",
+      "title": "Rahul Gupta: imprest paid in the year",
+      "zoho": [
+        "imp.net:rahul"
+      ],
+      "rpt": [
+        {
+          "party": "RAHUL GUPTA",
+          "cols": [
+            7
+          ]
+        }
+      ]
+    },
+    {
+      "id": "imprest-nidhi",
+      "group": "imprest",
+      "title": "Nidhi Gupta: imprest paid in the year",
+      "zoho": [
+        "imp.net:nidhi"
+      ],
+      "rpt": [
+        {
+          "party": "NIDHI GUPTA",
+          "cols": [
+            7
+          ]
+        }
+      ]
+    },
+    {
+      "id": "imprest-rajendra",
+      "group": "imprest",
+      "title": "Rajendra Prasad Gupta: imprest paid in the year",
+      "zoho": [
+        "imp.net:rajendra"
+      ],
+      "rpt": [
+        {
+          "party": "RAJENDRA PRASAD GUPTA",
+          "cols": [
+            7
           ]
         }
       ]
@@ -1584,7 +1659,16 @@
       "text": "Salary of Sharda Gupta (₹8,28,000) and Neha Gupta (₹12,42,000): payroll is not kept in Zoho Books, so these two stay as signed."
     },
     {
-      "text": "Imprest paid to the directors and Rajendra Prasad Gupta during the year: Zoho has the balance of each card (checked above), not the payments of the year; the payments stay as signed."
+      "text": "Imprest paid in the year (the Imprest column of the sheet): Zoho's imprest ledger of each person gives other amounts, shown above with the reason. The signed figures stay as signed.",
+      "sides": [
+        "rpt"
+      ]
+    },
+    {
+      "text": "Imprest: Note 28(A) reports the closing balance only, with no imprest transaction (as the note beside its table says). The balance of each card is checked above, under the payables.",
+      "sides": [
+        "n28"
+      ]
     },
     {
       "text": "The three working columns of Rajendra Prasad Gupta on the RPT sheet (−₹26,161, −₹1,62,000 and ₹96,990) are the auditors' workings and stay as signed.",
@@ -1608,7 +1692,7 @@
       ]
     },
     {
-      "text": "The figures of 31 March 2025 (last year's columns) are not checked: this dashboard reads the year to 31 March 2026."
+      "text": "The figures of 31 March 2025 (last year's columns) are not checked against Zoho: last year is read from Zoho only for the Balance Sheet and the Profit and Loss (their panels under those two tabs), not party by party."
     }
   ]
 }

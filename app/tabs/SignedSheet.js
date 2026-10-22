@@ -5,6 +5,7 @@ import { liveOverlay, liveRelated, liveVerify } from '../../lib/workbook.mjs';
 import PageHead from '../components/PageHead';
 import Badge from '../components/Badge';
 import Amt from '../components/Amt';
+import ImprestPanel from '../components/ImprestPanel';
 import SheetFilter from '../components/SheetFilter';
 import { cell, gap, longDate, plain } from '../../lib/format.mjs';
 
@@ -932,6 +933,7 @@ export default function SignedSheet({ view, id, withHead = true }) {
       {overlay && entry.live?.panel === 'stock' && <StockPanel stock={view.snapshot.stock} />}
       {overlay && entry.live?.panel === 'cwip' && <CwipPanel cwip={view.snapshot.cwip} />}
       {rel && <RelatedPanel rel={rel} side={entry.related ?? entry.verify} />}
+      {rel && entry.related === 'rpt' && <ImprestPanel imprest={view.snapshot.related?.ledgers?.imprest} checks={rel.checks.filter((c) => c.group === 'imprest')} />}
 
       {ties.length > 0 && (
         <section className="sheet" aria-label="Agreement with the live figures">

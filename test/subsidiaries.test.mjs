@@ -113,7 +113,7 @@ test('the refresh asks each subsidiary\'s organisation for its trial balance and
   assert.equal(zoho.subCalls.length, 10);
   assert.deepEqual([...new Set(zoho.subCalls.map((c) => c.org))].sort(), ['60039002178', '60040067911', '60045349059', '60052617054', '60073283002']);
   for (const [key, s] of Object.entries(spec.subs)) for (const c of zoho.subCalls.filter((x) => x.org === String(s.org))) assert.deepEqual([c.from, c.to], [s.from, '2026-03-31'], key);
-  assert.equal(zoho.calls.filter((c) => c.path === '/reports/trialbalance' && !c.query.organization_id).length, 1, "the company's own trial balance is still asked once, for its own organisation");
+  assert.equal(zoho.calls.filter((c) => c.path === '/reports/trialbalance' && !c.query.organization_id && c.query.from_date === '2025-04-01').length, 1, "the company's own trial balance is still asked once, for its own organisation");
   assert.deepEqual(Object.keys(snap.subsidiaries.subs), ['om', 'spv', 'rper', 'rpetech', 'foundation']);
   assert.match(snap.subsidiaries.subs.spv.balance.error, /disabled/);
   assert.deepEqual(snap.alerts.filter((a) => a.code === 'SUBSIDIARY_UNAVAILABLE').map((a) => [a.level, /Rooftop SPV/.test(a.message)]), [['info', true]]);

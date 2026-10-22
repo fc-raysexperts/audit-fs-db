@@ -33,6 +33,7 @@ const REGISTER_CALLS = 4; // update-28: Zoho's fixed asset register (502 assets 
 const HISTORY_CALLS = 483 * 2; // update-29/30: the entries and the settings (rate, residual value) of every asset that is not a draft (502 assets - 19 drafts), two calls each (no Redis: all of them at once)
 const HISTORY_FIRST = 2 * config.settings.register_history_budget; // update-29/30: with Redis a run reads 60 assets (register_history_budget), two calls each, the next run the next 60 ...
 const TAX_CALLS = 1; // update-30: the ledger of the two advance tax accounts (1 page)
+const PRIOR_CALLS = 1; // update-31: the Trial Balance of the year before (1 page)
 const SUBS_CALLS = 10; // update-28: the trial balance and the profit and loss of each of the 5 subsidiaries (the Rooftop SPV is refused, but the call is made)
 const CWIP_BUDGET = config.settings.cwip_journal_budget; // update-20: with Redis a refresh reads at most this many journals AND bills that are not cached yet (100; update-22: the 35 bills first, so 65 journals)
 const CWIP_FIRST = CWIP_BUDGET - cwipBillCount(); // update-22: the journals the first run gets to
@@ -56,7 +57,7 @@ test('live pipeline reproduces the audited FY26 statements (47 lines within Rs 5
   // + (update-22) one call per bill behind those two accounts (35): the ledger adds up the lines of a bill, 175 ledger lines instead of the 184 postings
   // + (update-25) 1 ledger page of the two OLD accounts of the clean-up journals that name no park (their original bills)
   // + (update-27) the related parties: Sales by Customer (1 page), the ledger of the vendor cards (1 page) and of the six loan / remuneration / foreign-supplier accounts (1 page)
-  assert.equal(snap.meta.apiCalls, 25 + 1 + 1 + STOCK_PAGES + STOCK_LEDGER_PAGES + ITEM_PAGES + 166 + journalCount() + splitJournalCount() + billCount() + cwipJournalCount() + cwipBillCount() + 1 + RELATED_CALLS + REGISTER_CALLS + HISTORY_CALLS + SUBS_CALLS + TAX_CALLS);
+  assert.equal(snap.meta.apiCalls, 25 + 1 + 1 + STOCK_PAGES + STOCK_LEDGER_PAGES + ITEM_PAGES + 166 + journalCount() + splitJournalCount() + billCount() + cwipJournalCount() + cwipBillCount() + 1 + RELATED_CALLS + REGISTER_CALLS + HISTORY_CALLS + SUBS_CALLS + TAX_CALLS + PRIOR_CALLS);
   assert.deepEqual(snap.meta.cwip, { rows: 175, oldLedgers: 2, oldOpened: 2, journals: cwipJournalCount(), journalsFromCache: 0, journalsFetched: cwipJournalCount(), journalsRefetched: 0, bills: cwipBillCount(), billsFromCache: 0, billsFetched: cwipBillCount(), billsRefetched: 0, billsFailed: 0, billsSplit: 12, pending: 0 });
   assert.equal(snap.cwip.complete, true);
   assert.deepEqual(snap.meta.bills, { read: billCount(), fromCache: 0, failed: 0 });
@@ -70,8 +71,13 @@ test('the right questions are put to Zoho (dates, account filter, page size, sta
   const zoho = replayZoho();
   await buildSnapshot({ zoho, config, fy: FY, now: () => NOW });
   const by = (p) => zoho.calls.filter((c) => c.path === p);
-  const own = by('/reports/trialbalance').filter((c) => !c.query.organization_id); // update-28: the subsidiaries' own books are asked of their own organisations
+  const company = by('/reports/trialbalance').filter((c) => !c.query.organization_id); // update-28: the subsidiaries' own books are asked of their own organisations
+  assert.equal(company.length, 2, 'this year and (update-31) last year');
+  const own = company.filter((c) => c.query.from_date === '2025-04-01');
   assert.equal(own.length, 1);
+  const last = company.filter((c) => c.query.from_date === '2024-04-01');
+  assert.deepEqual(last.map((c) => [c.query.from_date, c.query.to_date]), [['2024-04-01', '2025-03-31']], 'update-31: last year is asked once, for its own dates');
+  assert.deepEqual(last[0].query.select_columns.map((c) => c.field), company[0].query.select_columns.map((c) => c.field), 'with the same columns');
   assert.deepEqual([own[0].query.from_date, own[0].query.to_date], ['2025-04-01', '2026-03-31']);
   const ar = by('/reports/aragingsummary')[0].query;
   assert.deepEqual([ar.to_date, ar.report_date, ar.include_manual_journals, ar.include_credit_notes], ['2026-03-31', '2026-03-31', 'true', 'true']);
@@ -80,7 +86,7 @@ test('the right questions are put to Zoho (dates, account filter, page size, sta
   assert.deepEqual(tbq.select_columns.map((c) => c.field), ['account_id', 'name', 'account_code', 'opening_balance', 'debit', 'credit', 'closing_balance']);
   const all = by('/reports/generalledgerdetails');
   const gl = all.filter((c) => c.query.rule.columns[0].value.length === config.settings.party_account_ids.length); // the party accounts
-  assert.equal(all.length, 16 + STOCK_LEDGER_PAGES, '(update-30: + 1 of the two advance tax accounts) 8 pages of the party ledger, 1 of the advance account, 1 of the deposit / PF accounts, 1 of the CWIP and IAUD accounts (update-20), 1 of the two old accounts of JN-Clean-112 / 225 (update-25), 1 of the related vendors\' cards and 1 of the six related accounts (update-27), 1 of the Land and Development Rights accounts (update-28) and 4 of the account Inventory Asset (update-18)');
+  assert.equal(all.length, 16 + STOCK_LEDGER_PAGES, '(update-30: + 1 of the two advance tax accounts) 8 pages of the party ledger, 1 of the advance account, 1 of the deposit / PF accounts, 1 of the CWIP and IAUD accounts (update-20), 1 of the two old accounts of JN-Clean-112 / 225 (update-25), 1 of the related vendors\' cards and 1 of the nine related accounts (update-27, and update-31: the three imprest cards), 1 of the Land and Development Rights accounts (update-28) and 4 of the account Inventory Asset (update-18)');
   const inv = all.filter((c) => c.query.rule.columns[0].value[0] === '2346113000000000626');
   assert.deepEqual(inv.map((c) => c.query.page), [1, 2, 3, 4], 'the ledger of Inventory Asset, 2000 lines a page');
   assert.deepEqual([inv[0].query.rule.columns[0].value.length, inv[0].query.from_date, inv[0].query.to_date, inv[0].query.per_page], [1, '2025-03-01', '2026-03-31', 2000]);
@@ -119,7 +125,7 @@ test('the right questions are put to Zoho (dates, account filter, page size, sta
   const sbc = by('/reports/salesbycustomer').filter((c) => !c.query.rule);
   assert.equal(sbc.length, 2);
   assert.deepEqual(sbc.map((c) => `${c.query.from_date}..${c.query.to_date}`).sort(), ['2025-04-01..2025-09-30', '2025-10-01..2026-03-31']);
-  // update-27: the related parties - the sales of four customers, the bills and vendor credits of ten vendor cards, the ledgers of six accounts, all for the year
+  // update-27: the related parties - the sales of four customers, the bills and vendor credits of ten vendor cards, the ledgers of nine accounts (six, and the three imprest cards of update-31), all for the year
   const rsales = by('/reports/salesbycustomer').filter((c) => c.query.rule);
   assert.equal(rsales.length, 1);
   assert.deepEqual([rsales[0].query.rule.columns[0].field, [...rsales[0].query.rule.columns[0].value].sort(), rsales[0].query.from_date, rsales[0].query.to_date],
@@ -129,9 +135,9 @@ test('the right questions are put to Zoho (dates, account filter, page size, sta
   assert.equal(rcon[0].query.rule.columns[0].value.length, 10);
   assert.deepEqual([rcon[0].query.rule.columns[1].field, rcon[0].query.rule.columns[1].value, rcon[0].query.rule.criteria_string], ['transaction_type', ['bill', 'vendor_credit'], '(1 AND 2)']);
   assert.deepEqual([rcon[0].query.from_date, rcon[0].query.to_date], ['2025-04-01', '2026-03-31']);
-  const racc = all.filter((c) => c.query.rule.columns[0].value.length === 6);
+  const racc = all.filter((c) => c.query.rule.columns[0].value.length === 9); // update-31: + the three imprest cards of Rahul Gupta, Nidhi Gupta and Rajendra Prasad Gupta, in the same request
   assert.equal(racc.length, 1);
-  assert.deepEqual([...racc[0].query.rule.columns[0].value].sort(), ['2346113000002528303', '2346113000009499405', '2346113000011640653', '2346113000023307603', '2346113000026786401', '2346113000026786944']);
+  assert.deepEqual([...racc[0].query.rule.columns[0].value].sort(), ['2346113000000058253', '2346113000000058517', '2346113000000058547', '2346113000002528303', '2346113000009499405', '2346113000011640653', '2346113000023307603', '2346113000026786401', '2346113000026786944']);
   assert.deepEqual([racc[0].query.from_date, racc[0].query.to_date], ['2025-04-01', '2026-03-31']);
 });
 
@@ -142,7 +148,7 @@ test('second run the same day: journals come from Redis, the rest is read again'
   const zoho2 = replayZoho();
   const second = await buildSnapshot({ zoho: zoho2, cache, config, fy: FY, now: () => NOW });
   assert.equal(second.meta.ledger.journalsFromCache, journalCount());
-  assert.equal(second.meta.apiCalls, 27 + 1 + STOCK_PAGES + STOCK_LEDGER_PAGES + ITEM_PAGES + 40 + (cwipJournalCount() - CWIP_FIRST) + RELATED_CALLS + REGISTER_CALLS + HISTORY_FIRST + SUBS_CALLS + TAX_CALLS, '(update-29: + the entries of the next 100 assets, the first run read 100) (update-28: + the fixed asset register, the ledger of Land / Development Rights and the books of the five subsidiaries) (update-27: + the three reads of the related parties) (update-25: + the ledger of the two old accounts, once the journals are known) the 25 reports + the ledger of the deposit accounts + the ledger of the CWIP and IAUD accounts (update-20) + the stock summary (5 pages) + the ledger of Inventory Asset (4 pages) + the item list (5 pages, update-19), and the next 40 vendor cards (the first run read 40; the codes are kept in Redis), and the CWIP journals the first run did not get to (137 - 65; its 100 reads went to the 35 bills and 65 journals, update-22)');
+  assert.equal(second.meta.apiCalls, 27 + 1 + STOCK_PAGES + STOCK_LEDGER_PAGES + ITEM_PAGES + 40 + (cwipJournalCount() - CWIP_FIRST) + RELATED_CALLS + REGISTER_CALLS + HISTORY_FIRST + SUBS_CALLS + TAX_CALLS + PRIOR_CALLS, '(update-29: + the entries of the next 100 assets, the first run read 100) (update-28: + the fixed asset register, the ledger of Land / Development Rights and the books of the five subsidiaries) (update-27: + the three reads of the related parties) (update-25: + the ledger of the two old accounts, once the journals are known) the 25 reports + the ledger of the deposit accounts + the ledger of the CWIP and IAUD accounts (update-20) + the stock summary (5 pages) + the ledger of Inventory Asset (4 pages) + the item list (5 pages, update-19), and the next 40 vendor cards (the first run read 40; the codes are kept in Redis), and the CWIP journals the first run did not get to (137 - 65; its 100 reads went to the 35 bills and 65 journals, update-22)');
   // update-20: the first run reads the 35 bills and the first 65 journals behind CWIP / IAUD (100 in all) and says so (the tab keeps its signed park table); the second finishes
   assert.deepEqual([first.cwip.complete, first.cwip.pending, first.meta.cwip.journalsFetched, first.meta.cwip.billsFetched], [false, cwipJournalCount() - CWIP_FIRST, CWIP_FIRST, cwipBillCount()]);
   assert.ok(first.alerts.some((a) => a.code === 'CWIP_PARTIAL'));
@@ -203,7 +209,7 @@ test('update-15: if the ledger of the deposit accounts is refused the run goes o
   assert.equal(snap.splits.hdfc_ergo.error, undefined, 'the contacts come from the party ledger, not from the deposit ledger');
   assert.deepEqual(snap.alerts.filter((a) => /^SPLIT/.test(a.code)).map((a) => [a.level, a.code]), [['warn', 'SPLITS_UNAVAILABLE']]);
   assert.equal(snap.meta.splits, null);
-  assert.equal(snap.meta.apiCalls, 25 + 1 + 1 + STOCK_PAGES + STOCK_LEDGER_PAGES + ITEM_PAGES + 166 + journalCount() + billCount() + cwipJournalCount() + cwipBillCount() + 1 + RELATED_CALLS + REGISTER_CALLS + HISTORY_CALLS + SUBS_CALLS + TAX_CALLS, 'the failed call is counted; no clean-up journal of the deposit accounts is read; the four bills of HDFC ERGO still are; the CWIP journals and the ledger of the two old accounts (update-25) are');
+  assert.equal(snap.meta.apiCalls, 25 + 1 + 1 + STOCK_PAGES + STOCK_LEDGER_PAGES + ITEM_PAGES + 166 + journalCount() + billCount() + cwipJournalCount() + cwipBillCount() + 1 + RELATED_CALLS + REGISTER_CALLS + HISTORY_CALLS + SUBS_CALLS + TAX_CALLS + PRIOR_CALLS, 'the failed call is counted; no clean-up journal of the deposit accounts is read; the four bills of HDFC ERGO still are; the CWIP journals and the ledger of the two old accounts (update-25) are');
 });
 
 test('update-15: a ledger that does not add up to the Trial Balance is not used; a clean-up journal Zoho cannot open leaves its amount for the total', { skip }, async () => {
@@ -370,7 +376,7 @@ test('update-20: if Zoho refuses the ledger of the CWIP and IAUD accounts, or ig
   assert.match(refused.cwip.error, /not authorized/);
   assert.deepEqual(refused.alerts.filter((a) => /^CWIP/.test(a.code)).map((a) => [a.level, a.code]), [['warn', 'CWIP_UNAVAILABLE']]);
   assert.equal(refused.meta.cwip, null);
-  assert.equal(refused.meta.apiCalls, 25 + 1 + 1 + STOCK_PAGES + STOCK_LEDGER_PAGES + ITEM_PAGES + 166 + journalCount() + splitJournalCount() + billCount() + RELATED_CALLS + REGISTER_CALLS + HISTORY_CALLS + SUBS_CALLS + TAX_CALLS, 'the failed call is counted; no journal behind the two accounts is read');
+  assert.equal(refused.meta.apiCalls, 25 + 1 + 1 + STOCK_PAGES + STOCK_LEDGER_PAGES + ITEM_PAGES + 166 + journalCount() + splitJournalCount() + billCount() + RELATED_CALLS + REGISTER_CALLS + HISTORY_CALLS + SUBS_CALLS + TAX_CALLS + PRIOR_CALLS, 'the failed call is counted; no journal behind the two accounts is read');
   const o = liveOverlay(refused, readSheet(config.workbook, 'cwip'));
   assert.equal(o.problems.length, 1, 'the page says the park table stays as signed');
   assert.equal(o.summary.ok + o.summary.diff, 0);
