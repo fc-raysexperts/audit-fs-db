@@ -1031,7 +1031,13 @@
             "start": "Detail of Sales-Project",
             "source": "account",
             "group": "acc",
-            "title": "Profit and loss accounts"
+            "title": "Profit and loss accounts",
+            "explain": {
+              "Fines & Penalties": {
+                "diff": -192903,
+                "text": "The signed sheet shows this account after the auditors moved its debit side, ₹1,92,903, into Income tax of earlier year (the auditors' own reclassification, already entered with the other audit inputs). Zoho keeps it here. The same ₹1,92,903 is already allowed for in the Profit and Loss, which agrees."
+              }
+            }
           }
         ],
         "groups": {}

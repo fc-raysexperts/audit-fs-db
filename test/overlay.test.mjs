@@ -357,16 +357,46 @@ test('Creditors Ageing: the closing balance of every vendor agrees, also the thr
   assert.equal(o2.problems.length, 1);
 });
 
-test('P&L Grouping: every account agrees except the one the auditors reclassified, which is flagged', { skip }, async () => {
+test('P&L Grouping: every account agrees except the one the auditors reclassified, which is Explained (update-34), and so is the total above it', { skip }, async () => {
   const { snapshot } = await world();
   const sh = readSheet(config.workbook, 'p-l-grouping');
   const o = liveOverlay(snapshot, sh);
   assert.equal(o.summary.lines, 44);
   assert.equal(o.summary.ok, 43);
+  assert.deepEqual([o.summary.diff, o.summary.expl], [0, 1], 'nothing is left as a difference to look at');
   const bad = Object.entries(o.byRow).filter(([, v]) => v.kind === 'detail' && v.status !== 'OK');
   assert.equal(bad.length, 1);
   assert.match(sh.rows[bad[0][0]][1], /Fines/);
+  assert.equal(bad[0][1].status, 'EXPL');
   assert.equal(Math.round(bad[0][1].diff), -192903);
+  assert.match(bad[0][1].explain.text, /1,92,903/);
+  assert.deepEqual([o.summary.totalsBad, o.summary.totalsExpl], [0, 1], 'the total of the Miscellaneous Expenses differs by exactly that amount: Explained, not a difference');
+  assert.equal(o.summary.totalsOk, 11);
+});
+
+test('the explained amount of the P&L Grouping sheet is the one of the inputs (the auditors moved Fines & Penalties into earlier-year tax), so the two cannot drift apart', () => {
+  const block = config.workbook.index.sheets.find((s) => s.id === 'p-l-grouping').live.blocks[0];
+  assert.equal(-block.explain['Fines & Penalties'].diff, config.inputs.inputs.fines_debit_to_earlier_year_tax.value);
+});
+
+test('a line explained in the configuration is Explained only for exactly that amount, and the total above it is Explained with it', () => {
+  const cfg = (diff) => ({ label: 0, value: 1, blocks: [{ start: 'Detail', source: 'account', explain: { Fines: { diff, text: 'The auditors moved the debit side elsewhere.' } } }], groups: {} });
+  const rows = [['Detail of x'], ['Rent', 1000], ['Fines', -2005840], ['Total', -2004840]];
+  const s = snap({ accounts: [['Rent', 1000], ['Fines', 1812937]] });
+  const o = buildOverlay(s, sheet(...rows), cfg(-192903));
+  assert.equal(o.byRow[2].status, 'EXPL');
+  assert.equal(o.byRow[2].explain.text, 'The auditors moved the debit side elsewhere.');
+  assert.equal(o.byRow[3].kind, 'total');
+  assert.equal(o.byRow[3].status, 'EXPL');
+  assert.deepEqual([o.summary.expl, o.summary.diff, o.summary.totalsExpl, o.summary.totalsBad, o.summary.totalsOk], [1, 0, 1, 0, 0]);
+  // another amount (the books moved again) is a difference again, with the total
+  const moved = buildOverlay(snap({ accounts: [['Rent', 1000], ['Fines', 1700000]] }), sheet(...rows), cfg(-192903));
+  assert.equal(moved.byRow[2].status, 'DIFF');
+  assert.equal(moved.byRow[3].status, 'DIFF');
+  assert.deepEqual([moved.summary.expl, moved.summary.diff, moved.summary.totalsExpl, moved.summary.totalsBad], [0, 1, 0, 1]);
+  // no explanation in the configuration: as before
+  const plain = buildOverlay(s, sheet(...rows), { label: 0, value: 1, blocks: [{ start: 'Detail', source: 'account' }], groups: {} });
+  assert.deepEqual([plain.byRow[2].status, plain.byRow[3].status], ['DIFF', 'DIFF']);
 });
 
 test('BS Grouping: customers, vendors, imprest, retention and ledger accounts agree, the staff advances agree in total, nothing differs', { skip }, async () => {

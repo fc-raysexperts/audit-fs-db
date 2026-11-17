@@ -101,15 +101,17 @@ function LiveCells({ o, at }) {
   if (!o || o.kind === 'cols') return <><td className="lv" /><td className="lv chk" /><td className="lv num" /></>;
   if (o.kind === 'total') {
     const ok = o.status === 'OK';
+    const expl = o.status === 'EXPL'; // update-34: the total differs by exactly the amount of an Explained line above it
     return (
       <>
         <td className="lv num">{cell(round2(o.live))}</td>
-        <td className="lv chk"><span className={`chip ${ok ? 'ok' : 'warn'}`} title="The sheet's total, worked out again with the live figures of its lines">{ok ? 'Total agrees' : 'Total differs'}</span></td>
+        <td className="lv chk"><span className={`chip ${ok ? 'ok' : expl ? 'info' : 'warn'}`} title={expl ? "The sheet's total, worked out again with the live figures of its lines: it differs by exactly the amount of the explained line above it" : "The sheet's total, worked out again with the live figures of its lines"}>{ok ? 'Total agrees' : expl ? 'Total explained' : 'Total differs'}</span></td>
         <td className="lv num dim">{ok ? '' : cell(round2(o.diff))}</td>
       </>
     );
   }
-  const [cls0, text, title] = check(at)[o.status] ?? ['mute', o.status, ''];
+  const [cls0, text, title0] = check(at)[o.status] ?? ['mute', o.status, ''];
+  const title = o.status === 'EXPL' && o.explain?.text ? o.explain.text : title0; // update-34: a line explained in the configuration carries its own reason
   const cls = o.status === 'LUMP' && o.lumpOk === false ? 'warn' : cls0; // lines compared together that do not agree are shown as a difference
   const sign = o.signed < 0 ? -1 : 1;
   const has = o.live !== null && o.live !== undefined;
@@ -120,6 +122,7 @@ function LiveCells({ o, at }) {
       <td className="lv chk">
         <span className={`chip ${cls}`} title={title}>{text}</span>
         {o.zohoName && <div className="dim small">{o.zohoName}</div>}
+        {o.status === 'EXPL' && o.explain?.text && <div className="dim small">reason: see above the sheet</div>}
       </td>
       <td className="lv num dim">{has && Math.abs(shown - o.signed) >= 0.005 && o.status !== 'OK' ? cell(round2(shown - o.signed)) : ''}</td>
     </>
@@ -355,6 +358,8 @@ function LiveCheck({ overlay, keeps, at }) {
   const notFound = overlay.blocks.filter((b) => b.notFound.length);
   const lumps = overlay.blocks.filter((b) => b.lump);
   const agree = m.ok + m.name;
+  // update-34: the lines that the configuration explains in words (the others, like the CWIP parks, are explained in a table of their own)
+  const explainedLines = Object.values(overlay.byRow ?? {}).filter((v) => v.kind === 'detail' && v.status === 'EXPL' && v.explain?.text).map((v) => ({ label: v.label, text: v.explain.text }));
   return (
     <>
       <section className="sheet" aria-label="Line by line against Zoho">
@@ -367,9 +372,17 @@ function LiveCheck({ overlay, keeps, at }) {
           {m.expl > 0 && <>; {m.expl === 1 ? '1 gives' : `${m.expl} give`} another figure, by exactly an amount that is explained on this tab</>}
           {m.diff > 0 && <>; {m.diff === 1 ? '1 gives' : `${m.diff} give`} another figure</>}
           {m.none > 0 && <>; {m.none} are not in Zoho under that name and stay as signed</>}.
-          {m.totalsOk + m.totalsBad > 0 && <> {m.totalsOk} of {m.totalsOk + m.totalsBad} totals work out the same with the live figures.</>}
+          {m.totalsOk + m.totalsBad + (m.totalsExpl ?? 0) > 0 && <> {m.totalsOk} of {m.totalsOk + m.totalsBad + (m.totalsExpl ?? 0)} totals work out the same with the live figures{m.totalsExpl > 0 ? `; ${m.totalsExpl === 1 ? '1 differs' : `${m.totalsExpl} differ`} by exactly the amount of an explained line` : ''}.</>}
           {overlay.columns?.length > 0 && <> {overlay.columns.length} more {overlay.columns.length === 1 ? 'column is' : 'columns are'} worked out from Zoho too: a tick beside a signed figure means Zoho gives the same figure at {at}, and where it does not, Zoho's figure is shown under it.</>}
         </p>}
+        {explainedLines.length > 0 && (
+          <>
+            <h3 className="side-title">Differences that are explained</h3>
+            <ul className="proofs">
+              {explainedLines.map((e) => <li key={e.label} style={{ display: 'block' }}><strong>{e.label}</strong>: {e.text}</li>)}
+            </ul>
+          </>
+        )}
         {overlay.problems.length > 0 && <div className="notice bad live-problem"><b>Part of this check could not run.</b> {overlay.problems.join(' · ')}</div>}
         {(overlay.waiting ?? []).length > 0 && <div className="notice warn live-wait"><b>Still loading.</b> {overlay.waiting.join(' · ')}</div>}
         {(withSource.length > 1 || lumps.length > 0) && (
@@ -388,7 +401,7 @@ function LiveCheck({ overlay, keeps, at }) {
                         <>
                           <td className="num">{n}</td><td className="num">{b.ok || '–'}</td><td className="num">{b.name || '–'}</td><td className="num">{b.diff || '–'}</td>{m.expl > 0 && <td className="num">{b.expl || '–'}</td>}<td className="num">{b.none || '–'}</td>
                           <td>
-                            {b.totalsOk + b.totalsBad > 0 ? <span className={`chip ${b.totalsBad === 0 ? 'ok' : 'warn'}`}>{b.totalsBad === 0 ? 'Agrees' : 'Differs'}</span> : <span className="dim">–</span>}
+                            {b.totalsOk + b.totalsBad + (b.totalsExpl ?? 0) > 0 ? <span className={`chip ${b.totalsBad > 0 ? 'warn' : b.totalsExpl > 0 ? 'info' : 'ok'}`}>{b.totalsBad > 0 ? 'Differs' : b.totalsExpl > 0 ? 'Explained' : 'Agrees'}</span> : <span className="dim">–</span>}
                             {b.lump && <> <span className={`chip ${b.lump.ok ? 'ok' : 'warn'}`} title={`${b.lump.lines} lines that matched nothing add up to ${cell(round2(b.lump.signed))} as signed; Zoho's one combined balance "${b.lump.name}" is ${cell(round2(b.lump.live))}`}>{b.lump.lines} lines together {b.lump.ok ? 'agree' : 'differ'}</span></>}
                           </td>
                         </>
