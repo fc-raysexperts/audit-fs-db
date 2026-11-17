@@ -9,5 +9,5 @@ export default function Banner({ view }) {
   const regMore = Boolean(h && !h.error && h.complete === false && h.stalled !== true);
   const more = view.state === 'fresh' && (cwipMore || regMore);
   if (view.state === 'fresh' && !more) return null;
-  return <AutoLoad state={view.state} more={more} what={cwipMore ? 'CWIP' : 'Dep.Calc.'} canRefresh={view.canRefresh} generatedAt={view.generatedAt} savedLabel={`from ${longDate(view.snapshot?.meta.istDate)}`} />;
+  return <AutoLoad state={view.state} more={more} what={cwipMore ? 'CWIP' : 'Dep.Calc.'} canRefresh={view.canRefresh} generatedAt={view.generatedAt} savedLabel={`from ${longDate(view.snapshot?.meta.istDate)}`} closed={Boolean(view.closed)} lastAttempt={view.lastAttempt ?? null} />;
 }

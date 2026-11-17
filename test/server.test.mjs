@@ -93,7 +93,8 @@ test('first load of the day: empty -> refresh from Zoho -> fresh statements that
   assert.ok(Math.abs(v.statements.bs.gap) < 0.01);
   assert.equal(v.statements.tie.ok, 47);
   assert.equal(v.snapshot.meta.istDate, '2026-10-15');
-  assert.deepEqual(Object.keys(await ctx.status()).sort(), ['canRefresh', 'generatedAt', 'ok', 'state']);
+  assert.deepEqual(Object.keys(await ctx.status()).sort(), ['canRefresh', 'closed', 'fy', 'generatedAt', 'lastAttempt', 'more', 'ok', 'running', 'state'], 'update-33: the status also says what is running and what the last attempt did');
+  assert.equal((await ctx.status()).lastAttempt.status, 'refreshed');
 });
 
 test('Refresh pressed twice: the second is refused; after 10 minutes it runs again using the journal cache', { skip }, async () => {

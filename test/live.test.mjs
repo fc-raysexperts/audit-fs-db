@@ -428,21 +428,40 @@ test('update-20: a journal edited in Zoho after it was kept is noticed and read 
   assert.deepEqual((await cache.getJournal(id)).lines.find((l) => l.account_id === mine.account_id), { ...mine, debit: mine.debit - 500 }, 'the fresh copy replaced the stale one in Redis');
 });
 
-test('update-20: the journals behind CWIP / IAUD are kept a month, the others 12 hours', { skip }, async () => {
+test('update-20 / update-33: the journals behind CWIP / IAUD are kept over a year, the others a week (a closed year) or 12 hours (an open one)', { skip }, async () => {
   const { f, cache } = withCache();
   await buildSnapshot({ zoho: replayZoho(), cache, config, fy: FY, now: () => NOW });
   f.clock.t += 13 * 3600 * 1000;
   const zoho = replayZoho();
   const second = await buildSnapshot({ zoho, cache, config, fy: FY, now: () => NOW });
-  assert.equal(second.meta.ledger.journalsFromCache, 0, 'the journals of the ledger were kept 12 hours only');
+  assert.equal(second.meta.ledger.journalsFromCache, second.meta.ledger.journalsRead, 'FY26 is a closed year: the journals of its ledger are kept a week (update-33), so none is read again after 13 hours');
   assert.equal(second.meta.cwip.journalsFromCache, CWIP_FIRST, 'the 65 CWIP journals of the first run are still there');
   assert.equal(second.meta.cwip.billsFromCache, cwipBillCount(), 'and so are the 35 bills');
   assert.equal(second.meta.cwip.journalsFetched, cwipJournalCount() - CWIP_FIRST, 'only the rest is read, and the tab is complete');
   assert.equal(second.cwip.complete, true);
-  f.clock.t += 31 * 24 * 3600 * 1000;
+  f.clock.t += 8 * 24 * 3600 * 1000;
+  const week = await buildSnapshot({ zoho: replayZoho(), cache, config, fy: FY, now: () => NOW });
+  assert.equal(week.meta.ledger.journalsFromCache, 0, 'a week and more later the ledger journals are read again');
+  assert.equal(week.meta.cwip.journalsFromCache, cwipJournalCount(), 'but the CWIP journals (kept over a year) are not: a month is no longer a cliff');
+  assert.equal(week.meta.cwip.billsFromCache, cwipBillCount());
+  f.clock.t += 401 * 24 * 3600 * 1000;
   const third = await buildSnapshot({ zoho: replayZoho(), cache, config, fy: FY, now: () => NOW });
-  assert.equal(third.meta.cwip.journalsFromCache, 0, 'after a month they are read again');
+  assert.equal(third.meta.cwip.journalsFromCache, 0, 'after more than a year they are read again');
   assert.equal(third.meta.cwip.billsFromCache, 0, 'and so are the bills');
+});
+
+test('update-33: what a closed year saves in Redis carries the long lifetimes (ledger journals a week, CWIP journals / bills / asset entries over a year)', { skip }, async () => {
+  const { cache } = withCache();
+  const ttls = { journal: new Set(), cwipJournal: new Set(), bill: new Set() };
+  const putJournal = cache.putJournal;
+  cache.putJournal = (id, j, ttl) => { (J('fixtures/cwip_fy26.json').journals[id] ? ttls.cwipJournal : ttls.journal).add(ttl); return putJournal(id, j, ttl); };
+  const putBill = cache.putBill;
+  cache.putBill = (id, b, ttl) => { ttls.bill.add(ttl); return putBill(id, b, ttl); };
+  await buildSnapshot({ zoho: replayZoho(), cache, config, fy: FY, now: () => NOW });
+  const DAYS = 24 * 3600;
+  assert.deepEqual([...ttls.journal], [7 * DAYS], 'ledger and deposit journals: a week');
+  assert.deepEqual([...ttls.cwipJournal], [400 * DAYS], 'CWIP journals: over a year');
+  assert.deepEqual([...ttls.bill], [7 * DAYS], 'the bills of the split: a week');
 });
 
 test('update-24: a bill kept in the older shape (without the Project Name field and the customer of the line) is read again; the others stay', { skip }, async () => {

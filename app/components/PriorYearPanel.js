@@ -1,12 +1,13 @@
 import Amt from './Amt';
-import { gap, longDate } from '../../lib/format.mjs';
+import { gapInr, longDate, rupeesText } from '../../lib/format.mjs';
 
 // update-31: under the Balance Sheet and the Profit and Loss - last year (31 March 2025) as Zoho Books gives it, line by line, beside the figures the auditors signed for it.
 // Information only: a line that differs says why; the panel never asks for a change in the books (2024-25 is audited and closed).
+// update-32: under the Profit and Loss, the heads of Notes 20 to 27 as well (where the differences sit), and the differences in exact rupees with Indian digit grouping.
 
 const RESULT = { OK: ['ok', 'Agrees'], EXPL: ['info', 'Explained'], DIFF: ['warn', 'Differs'], NONE: ['mute', 'Not compared'] };
 
-function Rows({ rows }) {
+function Rows({ rows, signedTitle = 'As signed' }) {
   return (
     <div className="tablewrap">
       <table className="stmt recon">
@@ -14,7 +15,7 @@ function Rows({ rows }) {
           <tr>
             <th scope="col">Particulars</th>
             <th scope="col" className="num">From Zoho Books</th>
-            <th scope="col" className="num">As signed</th>
+            <th scope="col" className="num">{signedTitle}</th>
             <th scope="col" className="num">Difference in ₹</th>
             <th scope="col" className="res">Result</th>
           </tr>
@@ -28,7 +29,7 @@ function Rows({ rows }) {
                 <th scope="row">{r.label}</th>
                 <td className="num"><Amt v={r.zoho} /></td>
                 <td className="num dim"><Amt v={r.signed} /></td>
-                <td className="num dim">{gap(r.diff)}</td>
+                <td className="num dim">{gapInr(r.diff)}</td>
                 <td className="res"><span className={`chip ${cls}`}>{word}</span></td>
               </tr>
             );
@@ -60,6 +61,9 @@ export default function PriorYearPanel({ prior, kind }) {
   const here = { ok: count('OK'), expl: count('EXPL'), diff: count('DIFF'), none: count('NONE') };
   const explained = prior.explained.filter((e) => compared.some((r) => r.id === e.id));
   const failed = prior.checks.filter((c) => !c.ok);
+  const heads = kind === 'pl' && prior.heads?.length ? prior.heads : null;
+  const hs = prior.headsSummary;
+  const note = prior.explainNote && explained.length > 0 ? <p className="tbl-note">{prior.explainNote}</p> : null;
 
   return (
     <section className="sheet" aria-label="Last year in Zoho Books">
@@ -91,10 +95,35 @@ export default function PriorYearPanel({ prior, kind }) {
           <h3 className="side-title">Differences that are explained</h3>
           <ul className="proofs">
             {explained.map((e) => (
-              <li key={e.id} style={{ display: 'block' }}><strong>{e.label}</strong>: difference <Amt v={e.diff} words />. {e.text}</li>
+              <li key={e.id} style={{ display: 'block' }}><strong>{e.label}</strong>: difference {rupeesText(e.diff)}. {e.text}</li>
             ))}
           </ul>
-          {prior.explainNote && <p className="tbl-note">{prior.explainNote}</p>}
+          {!heads && note}
+        </>
+      )}
+      {heads && (
+        <>
+          <h3 className="side-title">Where the differences sit: the heads of Notes 20 to 27</h3>
+          {hs && (
+            <p className="proof">
+              <span className={hs.diff === 0 ? 'ok' : ''} style={hs.diff ? { color: 'var(--bad)' } : undefined}>
+                {hs.ok} of {hs.total} heads agree with the signed notes
+              </span>
+              {hs.expl > 0 && <>, {hs.expl} differ and are explained below</>}
+              {hs.diff > 0 && <>, {hs.diff} differ and nothing explains it</>}
+              .
+            </p>
+          )}
+          {prior.headsNote && <p className="tbl-note" style={{ borderTop: 0, paddingTop: 0 }}>{prior.headsNote}</p>}
+          <Rows rows={heads} signedTitle="As signed (notes)" />
+          {prior.headsExplained.length > 0 && (
+            <ul className="proofs">
+              {prior.headsExplained.map((e) => (
+                <li key={e.id} style={{ display: 'block' }}><strong>{e.label}</strong>: difference {rupeesText(e.diff)}. {e.text}</li>
+              ))}
+            </ul>
+          )}
+          {note}
         </>
       )}
       {failed.length > 0 && (

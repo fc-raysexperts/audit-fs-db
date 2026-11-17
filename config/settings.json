@@ -22,6 +22,12 @@
   "party_account_ids_meaning": "The 11 supplier / creditor / advance accounts known at FY26. The ledger is always asked for these PLUS any party account found in the live Trial Balance - so an account that nets to zero (and is hidden from a non-zero Trial Balance) can not hide offsetting party balances.",
   "register_history_budget": 60,
   "register_history_budget_meaning": "update-29/30: at most this many fixed assets are read from Zoho in one refresh when Redis is in use. Each asset costs up to two calls: its entries (acquisition and depreciation, update-29) and its settings (the rate and the residual value, update-30). FY26 has 483 assets that are not drafts, so eight runs on an empty cache; the first seven continue by themselves, a minute apart. They are kept 35 days, so later refreshes read none. An asset kept by update-29 (entries only) is completed with one call. Without Redis (local test) all are read each time.",
+  "run_soft_seconds": 35,
+  "run_soft_seconds_meaning": "update-33: after this many seconds one refresh starts no new OPTIONAL reads (CWIP journals and bills, asset entries, vendor cards); each optional reader may still start 6 reads per run, so a load always moves forward. The rest continues in the next run, which the page starts by itself. The hosting stops a run at 60 seconds.",
+  "run_hard_seconds": 50,
+  "run_hard_seconds_meaning": "update-33: after this many seconds one refresh asks Zoho for nothing more, saves what it has read and ends, so the hosting never has to kill it. Keep it below the 60 seconds of the hosting (vercel.json, maxDuration).",
+  "closed_year_detail_days": 7,
+  "closed_year_detail_days_meaning": "update-33: for a financial year that is over (audited, closed) the journals and bills behind the ledgers are kept this many days in Redis (they cannot change any more, apart from a late correction, which the page still finds by comparing the ledger with the journal). A year that is still open keeps them 12 hours.",
   "cwip_journal_budget": 100,
   "cwip_journal_budget_meaning": "update-20: at most this many journals and bills behind the CWIP and IAUD accounts are read from Zoho in one refresh when Redis is in use (FY26 needs 137 journals and, since update-22, 35 bills; the bills are read first, and the ones already cached are free); until all are known the CWIP tab keeps its signed park table. Without Redis (local test) all are read each time."
 }

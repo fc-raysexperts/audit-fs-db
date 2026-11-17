@@ -10,7 +10,7 @@ export default function gate(view) {
       <div className="empty">
         <h1>The figures cannot be read</h1>
         <p>{view.message}</p>
-        <p>Fix this in the <code>.env</code> file (on your computer) or in the Vercel project settings, then reload.</p>
+        <p>Fix this in the <code>.env</code> file (on your computer) or in the Vercel project settings, then reload. <a href="/status">Update status</a></p>
       </div>
     );
   }
@@ -18,8 +18,8 @@ export default function gate(view) {
     return (
       <div className="empty">
         <h1>Nothing is loaded for FY {view.fy} yet</h1>
-        <p>{view.canRefresh ? 'The first load reads the Trial Balance, receivables, supplier ledger and journals from Zoho Books. It takes about 30 seconds and then stays ready all day.' : 'Zoho Books loading is not set up here, so there is nothing to show.'}</p>
-        <AutoLoad state="empty" canRefresh={view.canRefresh} generatedAt={null} savedLabel="" />
+        <p>{view.canRefresh ? 'The first load reads the Trial Balance, receivables, supplier ledger and journals from Zoho Books. It usually takes about 30 seconds; when many things have to be read it is done in several short parts, a minute apart, and this page carries on by itself. It then stays ready all day.' : 'Zoho Books loading is not set up here, so there is nothing to show.'}</p>
+        <AutoLoad state="empty" canRefresh={view.canRefresh} generatedAt={null} savedLabel="" lastAttempt={view.lastAttempt ?? null} />
       </div>
     );
   }

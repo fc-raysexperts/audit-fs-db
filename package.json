@@ -15,7 +15,8 @@
     "test": "node --test",
     "zoho:token": "node scripts/zoho-token.mjs",
     "zoho:check": "node scripts/zoho-check.mjs",
-    "live": "node scripts/live.mjs"
+    "live": "node scripts/live.mjs",
+    "diagnose": "node scripts/diagnose.mjs"
   },
   "dependencies": {
     "@fontsource/ibm-plex-sans": "5.3.0",

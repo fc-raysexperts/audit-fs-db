@@ -13,13 +13,326 @@
  },
  "audited_from_notes": {"ocl_advance_customers": "n10_adv", "ocl_statutory": "n10_stat", "ocl_security_deposits": "n10_sec", "ocl_unearned": "n10_unr", "ocl_retention": "n10_ret", "ocl_outstanding_expenses": "n10_out", "sla_prepaid": "n18_pre", "sla_revenue_authorities": "n18_rev", "sla_advance_suppliers_others": "n18_adv"},
  "party_text": "Zoho's Trial Balance gives these accounts (advances to suppliers and others, trade payables, retention money and outstanding expenses) only as one net figure. The signed statements split it by supplier from the supplier ledgers, which are read for the current year only. The net is compared; the sections' totals leave the group out on both sides.",
- "explain_note": "The differences in revenue, purchases and other expenses cancel out in profit: profit before tax differs by only ₹3. The signed statements appear to set about ₹3.64 lakh of income against expenses and to show ₹34,517 of expenses under purchases, while Zoho keeps them as they were booked. The entries cannot be identified from the Trial Balance, so nothing is changed or asked for.",
+ "explain_note": "The differences in revenue, purchases and other expenses cancel out in profit: profit before tax differs by only ₹3. The table of the heads of the notes shows where they sit: all of the revenue difference is in sales of solar power projects (EPC), and all of the expense difference is in travelling and conveyance (₹3,98,517, which is the ₹3,64,000 that the signed statements also leave out of revenue plus the ₹34,517 that they show under purchases). Every other head of Notes 20 to 27 agrees, apart from ₹1,00,000 that the signed Note 27 moves from auditors' remuneration to legal and professional expenses, which does not change the total. The signed statements appear to set the ₹3,64,000 of income against that expense and to show ₹34,517 of it under purchases, while Zoho keeps them as they were booked. The entries themselves cannot be identified from the Trial Balance, so nothing is changed or asked for.",
  "explain": [
   {"key": "revenue", "diff": 363999, "tol": 5, "text": "Zoho shows ₹3,63,999 more revenue than the signed statement."},
   {"key": "total_income", "diff": 363999, "tol": 10, "text": "The same ₹3,63,999 as in revenue from operations."},
   {"key": "purchases", "diff": -34517, "tol": 5, "text": "Zoho shows ₹34,517 less under purchases than the signed statement."},
   {"key": "other_expenses", "diff": 398517, "tol": 5, "text": "Zoho shows ₹3,98,517 more under other expenses than the signed statement."},
-  {"key": "total_expenses", "diff": 364002, "tol": 10, "text": "The net of the differences in purchases and other expenses. It equals the difference in revenue, so profit agrees."}
+  {"key": "total_expenses", "diff": 364002, "tol": 10, "text": "The net of the differences in purchases and other expenses. It equals the difference in revenue, so profit agrees."},
+  {"key": "n20_epc", "diff": 364000, "tol": 5, "text": "Zoho shows ₹3,64,000 more under sales of solar power projects (EPC) than the signed Note 20. Every other head of Note 20 agrees to the rupee, so the whole difference in revenue sits here. The signed statements also show exactly ₹3,64,000 less under travelling and conveyance (Note 27), so they appear to set that amount of income against that expense."},
+  {"key": "n27_trav", "diff": 398515, "tol": 5, "text": "Zoho shows ₹3,98,517 more under travelling and conveyance than the signed Note 27: ₹3,64,000 of it is the amount that the signed statements also leave out of revenue (sales of solar power projects, Note 20) and ₹34,517 is the amount that the signed statements show under purchases of stock-in-trade (Note 22) and Zoho does not."},
+  {"key": "n27_aud", "diff": 100000, "tol": 5, "text": "Zoho has ₹8,00,000 of audit fees on two accounts; the signed Note 27 shows ₹7,00,000 as auditors' remuneration and the other ₹1,00,000 under legal and professional expenses. The two cancel each other, so other expenses are not affected."},
+  {"key": "n27_legal", "diff": -100000, "tol": 5, "text": "The signed Note 27 shows ₹1,00,000 more here than Zoho: it is the ₹1,00,000 that Zoho keeps under audit fees (see auditors' remuneration)."}
+ ],
+ "heads_note": "The heads of Notes 20 to 27 of last year (the 2024-25 column of the signed Note 20-27 sheet), rebuilt from the same Trial Balance: every account of the old chart that feeds one of these notes is named under its head. The heads of each note must add up to the line of the statement; a test checks it and a warning says so if a new account of last year is not under any head.",
+ "heads": [
+  {"note": "20", "title": "Revenue from operations", "line": "revenue", "sign": -1, "items": [
+   {"key": "n20_epc", "signed": ["n20_epc"], "accounts": [
+    {"id": "2346113000000066677", "name": "Cable Laying  Work (CGST&SGST18%)"},
+    {"id": "2346113000000066685", "name": "Civil & Allied Work Erection (GST@18%)"},
+    {"id": "2346113000000066693", "name": "Civil Work Gm ( Cgst/Sgst 18% ) Sales"},
+    {"id": "2346113000000066697", "name": "Commissioning - GM(GST-18%)"},
+    {"id": "2346113000002497009", "name": "Common Infra Installation(CGTS& SGST@18%)"},
+    {"id": "2346113000000066713", "name": "Development Services for Solar Projects"},
+    {"id": "2346113000002497005", "name": "Erection & Installation Work Export"},
+    {"id": "2346113000000066725", "name": "Erection & Installation Work."},
+    {"id": "2346113000000066721", "name": "Erection, Installation &Commissioning GM"},
+    {"id": "2346113000000066737", "name": "Foundation Work GST @18%"},
+    {"id": "2346113000000066753", "name": "Installation & Commissioning-GM (GST 18%)"},
+    {"id": "2346113000000066745", "name": "Installation Charges ( Income)"},
+    {"id": "2346113000000066761", "name": "Pile alligment and Casting Works ( GST@18%)"},
+    {"id": "2346113000000066597", "name": "Sales Export"},
+    {"id": "2346113000000066789", "name": "Sales Gm Cgst/Sgst 12%"},
+    {"id": "2346113000000066793", "name": "Sales GM-Supply of Goods"},
+    {"id": "2346113000000066633", "name": "Sales Haryana ( Igst 18 % )"},
+    {"id": "2346113000000066813", "name": "Sales IGST ( 18% )"},
+    {"id": "2346113000000066865", "name": "Technical Services ( Income )  GST 18%"}
+   ]},
+   {"key": "n20_roof", "signed": ["n20_roof"], "accounts": [
+    {"id": "2346113000000066909", "name": "Solar Power Generating System(30%Supply Service)"},
+    {"id": "2346113000000066913", "name": "Solar Power Generating System(70 % Supply of Goods)"}
+   ]},
+   {"key": "n20_gen", "signed": ["n20_gen"], "accounts": [
+    {"id": "2346113000000810011", "name": "Generation Income ( Inter State )"},
+    {"id": "2346113000010765812", "name": "Generation Income ( Intra state)"}
+   ]},
+   {"key": "n20_om", "signed": ["n20_om"], "accounts": [
+    {"id": "2346113000000066333", "name": "Operation & Maintenance Service ( Cgst/Sgst 18% )"},
+    {"id": "2346113000000066337", "name": "Operation & Maintenance Service ( Igst 18% )"}
+   ]},
+   {"key": "n20_cons", "signed": ["n20_cons"], "accounts": [
+    {"id": "2346113000000066401", "name": "Consultancy Fee ( Export )"},
+    {"id": "2346113000000066405", "name": "Consultancy Fees (Income)"},
+    {"id": "2346113000000066409", "name": "Consultancy Services  GST@18%"}
+   ]},
+   {"key": "n20_rent", "signed": ["n20_rent"], "accounts": [
+    {"id": "2346113000003180321", "name": "Lease Income"},
+    {"id": "2346113000003180325", "name": "Lease Income Hr"}
+   ]},
+   {"key": "n20_scrap", "signed": ["n20_scrap"], "accounts": [
+    {"id": "2346113000000066821", "name": "Scarp Sale"},
+    {"id": "2346113000000066825", "name": "SCRAP SALE ( Igst 18% )"}
+   ]},
+   {"key": "n20_oth", "signed": ["n20_oth"], "accounts": [
+    {"id": "2346113000000066437", "name": "Testing Fee"}
+   ]}
+  ]},
+  {"note": "21", "title": "Other income", "line": "other_income", "sign": -1, "items": [
+   {"key": "n21_fdr", "signed": ["n21_fdr"], "accounts": [
+    {"id": "2346113000000038785", "name": "Interest on FDR with AXIS Bank"},
+    {"id": "2346113000000038791", "name": "Interest on FDR with HDFC Bank Ltd."},
+    {"id": "2346113000000038797", "name": "Interest on FDR with Icici Bank"},
+    {"id": "2346113000000038803", "name": "Interest on Fdr with IDBI"},
+    {"id": "2346113000000038809", "name": "Interest on FDR with Kotak Mahindra Bank"},
+    {"id": "2346113000011330708", "name": "Interest on Fdr with SBI"}
+   ]},
+   {"key": "n21_oth", "signed": ["n21_oth"], "accounts": [
+    {"id": "2346113000003186637", "name": "Interest Income."}
+   ]},
+   {"key": "n21_mf", "signed": ["n21_mf"], "accounts": [
+    {"id": "2346113000011333768", "name": "Income From Dsp MF Redemption"}
+   ]}
+  ]},
+  {"note": "24", "title": "Operating expenses", "line": "operating_expenses", "sign": 1, "items": [
+   {"key": "n24_proj", "signed": ["n24_proj"], "accounts": [
+    {"id": "2346113000004682857", "name": "CEIG Charges."},
+    {"id": "2346113000000061193", "name": "Civil Work-LE."},
+    {"id": "2346113000004682863", "name": "Connectivity Charges No Gst."},
+    {"id": "2346113000004481915", "name": "Erection & Installation Work GST18%."},
+    {"id": "2346113000004481907", "name": "Erection, & Installation Exp-GM(GST 18%)."},
+    {"id": "2346113000004481947", "name": "Inspection Charges.."},
+    {"id": "2346113000004481843", "name": "Installation Charges."},
+    {"id": "2346113000004682899", "name": "Installation Work"},
+    {"id": "2346113000004481991", "name": "Installation Work (IGST@18%)."},
+    {"id": "2346113000004682893", "name": "Job Work Exp CGST/SGST 12%."},
+    {"id": "2346113000004682869", "name": "Job Work Exp."},
+    {"id": "2346113000004481851", "name": "Labour Charges-LE."},
+    {"id": "2346113000004482379", "name": "Management Cons. Service Exp Igst 18%."},
+    {"id": "2346113000004482385", "name": "Meter Testing."},
+    {"id": "2346113000004481923", "name": "Other Works-LE ( Cgst/Sgst 18% )."},
+    {"id": "2346113000005062837", "name": "Other Works-LE."},
+    {"id": "2346113000004481897", "name": "PILING WORK GST 18%."},
+    {"id": "2346113000004682875", "name": "Project Approval Fees."},
+    {"id": "2346113000004682881", "name": "PROJECT APPROVAL/GOVERNMENT FEES."},
+    {"id": "2346113000004682845", "name": "Project Consultancy and Technical Service(IGST@18%)."},
+    {"id": "2346113000004682851", "name": "Project Consultancy and Testing Fees(GST 18%)."},
+    {"id": "2346113000004483001", "name": "Project Expenses."},
+    {"id": "2346113000000063293", "name": "REGISTRATION FEES"},
+    {"id": "2346113000000063299", "name": "Registration Fees ( Cgst/Sgst 18%)"},
+    {"id": "2346113000000063305", "name": "Registration Fees ( IGST@18%)"},
+    {"id": "2346113000004482391", "name": "Service Charges (COGS)"},
+    {"id": "2346113000004682887", "name": "Site Commissioning Expenses."},
+    {"id": "2346113000004682833", "name": "Site Expenses."},
+    {"id": "2346113000004481971", "name": "Staff Welfare Projects."},
+    {"id": "2346113000004482397", "name": "Technical Services"},
+    {"id": "2346113000000062795", "name": "Tender Fee(Project) (CGST& SGST18%)"},
+    {"id": "2346113000004482433", "name": "Tender Fee."},
+    {"id": "2346113000004432563", "name": "Tender Fees."},
+    {"id": "2346113000004482415", "name": "TESTING FEES (IGST@18%)."},
+    {"id": "2346113000004482409", "name": "Testing Fees(COGS)."},
+    {"id": "2346113000004482403", "name": "Testing Fees."}
+   ]},
+   {"key": "n24_om", "signed": ["n24_om"], "accounts": [
+    {"id": "2346113000004685301", "name": "Module Servicing Expenses - ONM ( GST 18% )."},
+    {"id": "2346113000004685313", "name": "Module Washing Expense-Onm."},
+    {"id": "2346113000000065807", "name": "Purchase  O&M ( Igst 18% )"},
+    {"id": "2346113000000065783", "name": "Purchase  O&M(CGST/SGST 18%)"},
+    {"id": "2346113000000065777", "name": "Purchase O&M(CGST/SGST 12%)"},
+    {"id": "2346113000000065795", "name": "Purchase O&M(CGST/SGST 5%)"},
+    {"id": "2346113000000065801", "name": "Purchase O&M(IGST12%)"},
+    {"id": "2346113000004685319", "name": "Security-LE ( No Gst )."},
+    {"id": "2346113000004685331", "name": "Security-LE ( Reverse Charge  Local )."},
+    {"id": "2346113000004685325", "name": "Security-ONM ( No Gst )."}
+   ]},
+   {"key": "n24_lease", "signed": ["n24_lease"], "accounts": [
+    {"id": "2346113000004482075", "name": "Haryana Solar Park Land Lease Exp( Rcm )."},
+    {"id": "2346113000010757135", "name": "land lease bikaner."},
+    {"id": "2346113000004482081", "name": "Land Lease Rent GST @18%."},
+    {"id": "2346113000004482069", "name": "Lease Registration Charges."}
+   ]},
+   {"key": "n24_ppa", "signed": ["n24_ppa"], "accounts": [
+    {"id": "2346113000004482505", "name": "Power Purchase Commitment (PPC)."}
+   ]}
+  ]},
+  {"note": "25", "title": "Employee benefits expense", "line": "employee", "sign": 1, "items": [
+   {"key": "n25_sal", "signed": ["n25_sal"], "accounts": [
+    {"id": "2346113000000063203", "name": "Salary Arrears"},
+    {"id": "2346113000000063209", "name": "Salary Notice Period"},
+    {"id": "2346113000000063077", "name": "Salary-Jaipur"}
+   ]},
+   {"key": "n25_bon", "signed": ["n25_bon"], "accounts": [
+    {"id": "2346113000000063101", "name": "Bonus and Incentives"}
+   ]},
+   {"key": "n25_pf", "signed": ["n25_pf"], "accounts": [
+    {"id": "2346113000000063125", "name": "EPF Administration Charges"},
+    {"id": "2346113000000063131", "name": "EPF Employer Contribution Exp."},
+    {"id": "2346113000000063137", "name": "ESI Employer Contribution"}
+   ]},
+   {"key": "n25_wel", "signed": ["n25_wel"], "accounts": [
+    {"id": "2346113000000063221", "name": "Staff Welfare A/c ( No Gst )"},
+    {"id": "2346113000011217535", "name": "Staff Welfare CGST SGST 18 %"}
+   ]},
+   {"key": "n25_grat", "signed": ["n25_grat"], "accounts": [
+    {"id": "2346113000000063143", "name": "Gratuity  Expenses"}
+   ]},
+   {"key": "n25_leave", "signed": ["n25_leave"], "accounts": [
+    {"id": "2346113000000063155", "name": "Leave Encashment"}
+   ]}
+  ]},
+  {"note": "26", "title": "Finance cost", "line": "finance", "sign": 1, "items": [
+   {"key": "n26_bank", "signed": ["n26_bank"], "accounts": [
+    {"id": "2346113000000062969", "name": "Bank Charges"},
+    {"id": "2346113000000063335", "name": "Bank Charges ( Cgst/Sgst 18 % )"}
+   ]},
+   {"key": "n26_od", "signed": ["n26_od"], "accounts": [
+    {"id": "2346113000000063413", "name": "Interest On OD"}
+   ]},
+   {"key": "n26_car", "signed": ["n26_car"], "accounts": [
+    {"id": "2346113000000063389", "name": "Interest on Car Loan"}
+   ]},
+   {"key": "n26_unsec", "signed": ["n26_unsec"], "accounts": [
+    {"id": "2346113000000063425", "name": "Interest on Unsecured Loan"}
+   ]},
+   {"key": "n26_oth", "signed": ["n26_oth"], "accounts": [
+    {"id": "2346113000000063371", "name": "Interest Expense"}
+   ]}
+  ]},
+  {"note": "27", "title": "Other expenses", "line": "other_expenses", "sign": 1, "items": [
+   {"key": "n27_aud", "signed": ["n27_aud"], "accounts": [
+    {"id": "2346113000000062957", "name": "Audit Fees"},
+    {"id": "2346113000000062963", "name": "Audit Fees ( Cgst/Sgst 18% )"}
+   ]},
+   {"key": "n27_rates", "signed": ["n27_rates"], "accounts": [
+    {"id": "2346113000000064361", "name": "EPF Penalty"},
+    {"id": "2346113000000064367", "name": "GST FEES"},
+    {"id": "2346113000000064373", "name": "GST Interest"},
+    {"id": "2346113000000064379", "name": "GST Late Fees"},
+    {"id": "2346113000005296750", "name": "Income Tax Appeal Fees"},
+    {"id": "2346113000011177223", "name": "Income Tax Demand Fy- 19-20 exp"},
+    {"id": "2346113000000063641", "name": "Ineligible Input"},
+    {"id": "2346113000000064433", "name": "Interest on TDS"},
+    {"id": "2346113000000064445", "name": "R.O.C. Filing Fees ( MCA ) ( Rcm 18% )"},
+    {"id": "2346113000000064463", "name": "TDS on Interest 2020-21"},
+    {"id": "2346113000000064469", "name": "TDS on Interest 2021-22"},
+    {"id": "2346113000000064475", "name": "TDS on Interest 2022-23"},
+    {"id": "2346113000000064481", "name": "TDS Penalty"},
+    {"id": "2346113000003169911", "name": "Urban Development Tax"}
+   ]},
+   {"key": "n27_legal", "signed": ["n27_legal"], "accounts": [
+    {"id": "2346113000000063521", "name": "Consultancy Fee"},
+    {"id": "2346113000000063527", "name": "Consultancy Fee ( Cgst/Sgst 18% )"},
+    {"id": "2346113000000063533", "name": "Consultancy Fee ( Exp )  ( Igst 18% )"},
+    {"id": "2346113000000063539", "name": "Consultancy Fee ( Reverse Charge )"},
+    {"id": "2346113000000063569", "name": "Legal & Professional Charge"},
+    {"id": "2346113000000063557", "name": "Legal & Professional Charge ( Cgst/sgst 18% )"},
+    {"id": "2346113000000063563", "name": "Legal & Professional Charge ( IGST 18% )"},
+    {"id": "2346113000000063575", "name": "Legal & Professional Charge ( Rev. Charge Igst )"},
+    {"id": "2346113000000063545", "name": "Legal and Professional Chg Rcm 18%"},
+    {"id": "2346113000000063551", "name": "Legal Expenses"},
+    {"id": "2346113000000063581", "name": "Professional Charges ( Igst 18% )"},
+    {"id": "2346113000000063911", "name": "Stamp Paper Expenses"},
+    {"id": "2346113000000063599", "name": "Techincal Services (NO GST)"}
+   ]},
+   {"key": "n27_dir", "signed": ["n27_dir"], "accounts": [
+    {"id": "2346113000000063053", "name": "Director Remuneration"}
+   ]},
+   {"key": "n27_rent", "signed": ["n27_rent"], "accounts": [
+    {"id": "2346113000000064025", "name": "Rent (Delhi Guest House)(RCM)"}
+   ]},
+   {"key": "n27_ins", "signed": ["n27_ins"], "accounts": [
+    {"id": "2346113000000063491", "name": "Insurance Exp. ( Igst 18% )"},
+    {"id": "2346113000000063485", "name": "Insurance Expenses"},
+    {"id": "2346113000000063479", "name": "Insurance Expenses....."}
+   ]},
+   {"key": "n27_soft", "signed": ["n27_soft"], "accounts": [
+    {"id": "2346113000000063755", "name": "Software Expenses"},
+    {"id": "2346113000000063761", "name": "Software Expenses ( Cgst/Sgst 18% )"},
+    {"id": "2346113000000063767", "name": "Software Expenses ( Igst 18 )"}
+   ]},
+   {"key": "n27_elec", "signed": ["n27_elec"], "accounts": [
+    {"id": "2346113000000063617", "name": "Electricity Charges"},
+    {"id": "2346113000000063623", "name": "Electricity Charges Expenses"},
+    {"id": "2346113000000063629", "name": "Water Expenses"},
+    {"id": "2346113000000063635", "name": "Water Tank Expenses"}
+   ]},
+   {"key": "n27_tel", "signed": ["n27_tel"], "accounts": [
+    {"id": "2346113000000063779", "name": "Internet Expense ( No Gst)"},
+    {"id": "2346113000000063785", "name": "Internet Expenses ( Cgst/Sgst 18% )"},
+    {"id": "2346113000000063791", "name": "Internet Expenses ( IGST@18%)"},
+    {"id": "2346113000000063827", "name": "Telephone / M2M Sim Exp(Cgst/sgst18%)"},
+    {"id": "2346113000000000519", "name": "Telephone Expense"},
+    {"id": "2346113000000063815", "name": "Telephone Expenses ( Cgst/Sgst 18% )"}
+   ]},
+   {"key": "n27_promo", "signed": ["n27_promo"], "accounts": [
+    {"id": "2346113000000064247", "name": "Advertisment Exp."},
+    {"id": "2346113000000064265", "name": "Advertisment Exp. ( Igst 18% )"},
+    {"id": "2346113000000064277", "name": "Business Promotion Expenses"},
+    {"id": "2346113000000064283", "name": "Business Promotion Expenses ( Cgst/Sgst 12%)"},
+    {"id": "2346113000000064289", "name": "Business Promotion Expenses ( Cgst/Sgst 18% )"},
+    {"id": "2346113000000064295", "name": "Business Promotion Expenses ( Cgst/sgst 5% )"},
+    {"id": "2346113000000064301", "name": "Business Promotion Expenses ( Igst 18% )"},
+    {"id": "2346113000003172029", "name": "Business Promotion Expenses ( Igst @ 12%)"},
+    {"id": "2346113000003169893", "name": "Marketing Expenses ( Igst-18%)"}
+   ]},
+   {"key": "n27_rm", "signed": ["n27_rm"], "accounts": [
+    {"id": "2346113000000064133", "name": "Computer Repair and Maintenance"},
+    {"id": "2346113000000064145", "name": "Computer Repair and Maintenance ( Cgst/Sgst 18% )"},
+    {"id": "2346113000000064151", "name": "Office Repair and Maintenance"},
+    {"id": "2346113000000064163", "name": "Office Repair and Maintenance ( Cgst/Sgst 18% )"},
+    {"id": "2346113000000064175", "name": "Office Repair and Maintenance ( Cgst/Sgst 5%)"},
+    {"id": "2346113000000064181", "name": "Repair & Maintanance"},
+    {"id": "2346113000000064199", "name": "Repair & Maintanance ( Igst 18% )"},
+    {"id": "2346113000000064187", "name": "Repair & Maintanance(CGST&SGST@18%)"},
+    {"id": "2346113000000064205", "name": "Repairs and Maintenance Exp ( Cgst/sgst 18% )"}
+   ]},
+   {"key": "n27_trav", "signed": ["n27_trav"], "accounts": [
+    {"id": "2346113000000064607", "name": "Boarding Expenses"},
+    {"id": "2346113000000064613", "name": "Conveyance"},
+    {"id": "2346113000000064529", "name": "Conveyance_Project"},
+    {"id": "2346113000004482441", "name": "Freight and Cartage Expenses"},
+    {"id": "2346113000004482447", "name": "Freight and Cartage Expenses ( Igst 18% )."},
+    {"id": "2346113000000064577", "name": "Loading & Unloading"},
+    {"id": "2346113000000064631", "name": "Lodging Expenses"},
+    {"id": "2346113000000064637", "name": "Lodging Expenses ( Cgst/Sgst 12%)"},
+    {"id": "2346113000000064643", "name": "Lodging Expenses ( Cgst/Sgst 18% )"},
+    {"id": "2346113000000064649", "name": "Lodging Expenses ( Cgst/Sgst 5%)"},
+    {"id": "2346113000003169905", "name": "Taxi Hire Charges GST 18%"},
+    {"id": "2346113000000064655", "name": "Taxi Hire Charges- Indirect ( Reverse Chg. )"},
+    {"id": "2346113000000064661", "name": "Taxi Hire Charges- on Site ( No Gst )"},
+    {"id": "2346113000000064667", "name": "Taxi Hire Charges- on Site ( Reverse Chg. )"},
+    {"id": "2346113000004482453", "name": "Transportation Charges ( Cgst/Sgst 18% )."},
+    {"id": "2346113000004482471", "name": "Transportation Charges ( No Gst )."},
+    {"id": "2346113000004482483", "name": "Transportation Charges ( Reverse Charges Igst )."},
+    {"id": "2346113000000064679", "name": "Travelling Expenses ( Cgst/Sgst 18 % )"},
+    {"id": "2346113000000064685", "name": "Travelling Expenses ( Cgst/Sgst 5% )"},
+    {"id": "2346113000000064697", "name": "Travelling Expenses ( IGST 18%)"},
+    {"id": "2346113000000064703", "name": "Travelling Expenses ( IGST 28%)"},
+    {"id": "2346113000000064709", "name": "Travelling Expenses ( IGST@5%)"},
+    {"id": "2346113000000064715", "name": "Travelling Expenses ( No Gst )"},
+    {"id": "2346113000000064211", "name": "Vehicle Fuel and Maintenance"}
+   ]},
+   {"key": "n27_don", "signed": ["n27_don"], "accounts": [
+    {"id": "2346113000000063035", "name": "Donation U/s 80 G"}
+   ]},
+   {"key": "n27_bad_wo", "signed": ["n27_bad","n27_wo"], "label": "Bad debts and balances written off", "accounts": [
+    {"id": "2346113000000063671", "name": "Round off"},
+    {"id": "2346113000000063677", "name": "Written Off"}
+   ]},
+   {"key": "n27_misc", "signed": ["n27_misc"], "accounts": [
+    {"id": "2346113000000063683", "name": "Office Expenses"},
+    {"id": "2346113000000063887", "name": "Office Expenses ( Cgst/Sgst 18% )"},
+    {"id": "2346113000000063881", "name": "Office Expenses (Cgst/sgst 12 %)"},
+    {"id": "2346113000011215381", "name": "Office Expenses IGST 18 %"},
+    {"id": "2346113000000063899", "name": "Office Expness (CGST&SGST@5%)"},
+    {"id": "2346113000000063701", "name": "Postage & Courier Charges"},
+    {"id": "2346113000000063707", "name": "Postage & Courier Charges ( Cgst/Sgst 18% )"},
+    {"id": "2346113000000063719", "name": "Printing & Stationary A/c ( Cgst/Sgst 12% )"},
+    {"id": "2346113000000063725", "name": "Printing & Stationary A/c ( Cgst/Sgst 18% )"},
+    {"id": "2346113000000063749", "name": "Printing & Stationary A/c ( No Gst )"},
+    {"id": "2346113000000063905", "name": "Reimbursement of Expenses"}
+   ]}
+  ]}
  ],
  "rules": [
   {"match": {"accountId": "2346113000000053671"}, "bucket": "accrued_interest_fdr", "name": "Accured Interest On FDR With Icici"},

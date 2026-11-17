@@ -127,6 +127,12 @@ html[data-unit='crore'] .u-c { display: inline; }
 .notice.warn { border-left-color: var(--warn); background: var(--warn-soft); }
 .notice.bad { border-left-color: var(--bad); background: var(--bad-soft); }
 .notice b { font-weight: 600; }
+.notice .btn-link { background: none; border: 0; padding: 0; color: var(--teal); font: inherit; font-weight: 600; text-decoration: underline; cursor: pointer; }
+.notice .dim { display: block; margin-top: 4px; }
+.rail-link { color: inherit; text-decoration: underline; }
+.status-grid { display: grid; grid-template-columns: max-content 1fr; gap: 6px 24px; padding: 14px 20px; }
+.status-grid dt { color: var(--muted); }
+.status-grid dd { margin: 0; }
 .empty { max-width: 60ch; padding: 48px 0; }
 .empty h1 { font-size: 28px; margin-bottom: 10px; }
 .empty p { color: var(--muted); margin-bottom: 10px; }

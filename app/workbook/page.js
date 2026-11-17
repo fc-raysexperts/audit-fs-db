@@ -5,7 +5,7 @@ import Banner from '../components/Banner';
 import PageHead from '../components/PageHead';
 import Badge from '../components/Badge';
 import SheetTabs from '../components/SheetTabs';
-import { longDate } from '../../lib/format.mjs';
+import { longDate, shortDate } from '../../lib/format.mjs';
 import { INDEX_ID, sheetHref } from '../../lib/tabs.mjs';
 
 export const dynamic = 'force-dynamic';
@@ -49,7 +49,7 @@ export default async function Workbook() {
           ? <span className="ok">All {s.ties} totals in the signed workings agree with the live figures, the largest gap being ₹{s.maxDiff.toFixed(2)}.</span>
           : <span style={{ color: 'var(--bad)' }}>{s.tiesBad} of {s.ties} totals in the signed workings do not agree with the live figures.</span>}
         {s.liveSheets > 0 && (
-          <> On the {s.liveSheets} sheets checked line by line (the customer, vendor and account lists, stock, CWIP and the related parties), {(s.liveOk + s.liveName + s.liveLump).toLocaleString('en-IN')} of {s.liveLines.toLocaleString('en-IN')} lines or figures give the same amount in Zoho today
+          <> On the {s.liveSheets} sheets checked line by line (the customer, vendor and account lists, stock, CWIP and the related parties), {(s.liveOk + s.liveName + s.liveLump).toLocaleString('en-IN')} of {s.liveLines.toLocaleString('en-IN')} lines or figures give the same amount in Zoho at {shortDate(view.snapshot?.meta?.asOf ?? w.asAt)}
             {s.liveDiff + s.liveNone > 0 && <>; the other {(s.liveDiff + s.liveNone).toLocaleString('en-IN')} are listed on each sheet</>}.</>
         )}
       </p>

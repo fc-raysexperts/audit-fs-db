@@ -79,9 +79,47 @@ test('snapshots: today first, else the newest GOOD one marked stale; a flawed ru
   assert.deepEqual([w.kept, w.latestMoved], [true, false]);
   assert.equal((await cache.getSnapshot('2025-26', '2026-10-15')).snapshot.mark, 'today-good');
 
-  // seven-day life
+  // update-33: the daily copies live 7 days, but the page is never empty: the 400-day copy of the last good snapshot is shown (marked as an earlier day) until the new one is loaded
   f.clock.t += 8 * 24 * 3600 * 1000;
-  assert.equal(await cache.getSnapshot('2025-26', '2026-10-23'), null);
+  got = await cache.getSnapshot('2025-26', '2026-10-23');
+  assert.deepEqual([got.snapshot.mark, got.stale, got.flawed], ['today-good', true, false], 'a week and a day later: the last good statements, as an earlier day');
+  f.clock.t += 400 * 24 * 3600 * 1000;
+  assert.equal(await cache.getSnapshot('2025-26', '2027-11-26'), null, 'after more than a year nothing is left');
+});
+
+test('update-33: a damaged or expired layer is skipped for the next; only when nothing can be read the first problem is told', async () => {
+  const { cache, f, redis } = make();
+  const snap = (date, ok, mark) => ({ meta: { fy: '2025-26', istDate: date, generatedAt: date + 'T00:00:00Z', ok }, mark });
+  await cache.putSnapshot(snap('2026-10-14', true, 'yesterday'));
+  // the pointer's snapshot is damaged: the 400-day copy still answers
+  await redis.cmd(['SET', cache.key.snapshot('2025-26', '2026-10-14'), 'garbage', 'EX', 1000]);
+  const got = await cache.getSnapshot('2025-26', '2026-10-15');
+  assert.deepEqual([got.snapshot.mark, got.stale], ['yesterday', true]);
+  // Redis itself down: that is an error to tell, not an empty page
+  const down = createCache(createUpstash({ url: 'https://x.upstash.io', token: 't', fetchImpl: async () => { throw new TypeError('fetch failed'); } }), { org: '123', now: () => f.clock.t });
+  await assert.rejects(down.getSnapshot('2025-26', '2026-10-15'), /Cannot reach Redis/);
+});
+
+test('update-33: the record of the last attempt, and how long ago a lock was taken', async () => {
+  const { cache, f } = make();
+  assert.equal(await cache.getAttempt(), null);
+  await cache.putAttempt({ at: 1, status: 'quota', message: 'm' });
+  assert.deepEqual(await cache.getAttempt(), { at: 1, status: 'quota', message: 'm' });
+  assert.equal(await cache.lockAge('refresh'), null, 'nobody holds it');
+  assert.equal(await cache.acquireLock('refresh', 120), true);
+  f.clock.t += 45_000;
+  assert.equal(await cache.lockAge('refresh'), 45_000);
+  f.clock.t += 80_000;
+  assert.equal(await cache.lockAge('refresh'), null, 'it frees itself');
+});
+
+test('update-33: a Redis that does not answer ends in a plain message instead of waiting for ever', async () => {
+  const slow = (url, init) => new Promise((_, reject) => { // like a real socket, the pending request keeps the process alive until the time limit cuts it
+    const keep = setTimeout(() => {}, 2000);
+    init.signal.addEventListener('abort', () => { clearTimeout(keep); reject(init.signal.reason); });
+  });
+  const redis = createUpstash({ url: 'https://x.upstash.io', token: 't', fetchImpl: slow, timeoutMs: 20 });
+  await assert.rejects(redis.cmd(['GET', PREFIX + 'x']), /Redis did not answer within/);
 });
 
 test('lock: only one refresh at a time, and it frees itself', async () => {

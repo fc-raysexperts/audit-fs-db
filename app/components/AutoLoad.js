@@ -2,40 +2,43 @@
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { requestRefresh, waitForNewer } from './refreshClient';
+import { driveRefresh, mmss } from './refreshClient';
 
 /**
- * Shown on every page when the day's figures are not loaded yet. On the first visit of the day (and when nothing is saved) it loads
- * from Zoho Books by itself - normally the 05:30 morning job has done that already and this never appears.
+ * Shown on every page when the day's figures are not loaded yet (or only partly). It loads from Zoho Books by itself - normally the 05:30 morning job has done that already and this never appears.
+ *
+ * update-33: it no longer gives up with "Reload this page in a minute". It does the whole job (driveRefresh: several short runs if need be, waiting as long as the server says), shows what is REALLY going on,
+ * and when something cannot go on it says why in the server's own words, with a "Try again" button and a link to the status page. Figures from an earlier day stay on screen the whole time; for a
+ * closed year (FY over) they are not a warning at all: nothing in them changes.
  */
-export default function AutoLoad({ state, canRefresh, generatedAt, savedLabel, more = false, what = 'CWIP' }) {
+export default function AutoLoad({ state, canRefresh, generatedAt, savedLabel, more = false, what = 'CWIP', closed = false, lastAttempt = null }) {
   const router = useRouter();
-  const started = useRef(false);
-  const runs = useRef(0); // update-29: how many continuations this page has made (Dep.Calc. needs up to 5 runs of 100 assets on an empty cache)
+  const gen = useRef(generatedAt);
+  gen.current = generatedAt;
   const [note, setNote] = useState(null);
+  const [attempt, setAttempt] = useState(0); // "Try again" starts the job again
+  const [clock, setClock] = useState(Date.now());
   const auto = canRefresh && (state === 'empty' || state === 'stale' || (state === 'fresh' && more));
 
   useEffect(() => {
-    if (!auto || started.current) return;
-    started.current = true;
-    (async () => {
-      if (more && runs.current > 0) { // the next part: Zoho Books allows only so many reads a minute, so wait for a new minute (the server also keeps a 60 second gap)
-        setNote({ kind: 'working', text: 'Waiting a minute, then reading the next part from Zoho Books (it allows only so many reads a minute).' });
-        await new Promise((resolve) => setTimeout(resolve, 65000));
-      }
-      runs.current += 1;
-      setNote({ kind: 'working', text: more ? (what === 'CWIP' ? 'Finishing the CWIP tab: reading the rest of its journals and bills from Zoho Books. This takes about 30 seconds.' : 'Finishing the Dep.Calc. tab: reading the depreciation of the rest of the assets from Zoho Books. This takes about 30 seconds.') : 'Updating from Zoho Books. This takes about 30 seconds.' });
-      const r = await requestRefresh(false);
-      if (r.status === 'refreshed' || r.status === 'flawed') { router.refresh(); setNote(null); if (more && runs.current < 8) started.current = false; return; } // still more to read: the new figures bring the next run
-      if (r.status === 'busy' || r.status === 'recent') {
-        setNote({ kind: 'working', text: 'Another update is running. This page refreshes when it finishes.' });
-        const got = await waitForNewer(generatedAt ?? null);
-        if (got) { router.refresh(); setNote(null); } else setNote({ kind: 'problem', text: 'The update is taking longer than usual. Reload this page in a minute.' });
-        return;
-      }
-      setNote({ kind: 'problem', text: r.message || 'The update did not work.' });
-    })();
-  }, [auto, more, generatedAt, router]);
+    if (!auto) return undefined;
+    let cancelled = false;
+    setNote(null);
+    driveRefresh({
+      manual: false,
+      isCancelled: () => cancelled,
+      onNote: (n) => { if (!cancelled) setNote(n.kind === 'ok' ? null : n); },
+      onUpdated: () => { if (!cancelled) router.refresh(); },
+      getGeneratedAt: () => gen.current ?? null,
+    });
+    return () => { cancelled = true; };
+  }, [auto, attempt, router]);
+
+  useEffect(() => { // the countdown of a wait
+    if (!note?.until) return undefined;
+    const t = setInterval(() => setClock(Date.now()), 1000);
+    return () => clearInterval(t);
+  }, [note?.until]);
 
   if (state === 'fresh' && !more) return null;
   if (state === 'flawed') {
@@ -45,10 +48,36 @@ export default function AutoLoad({ state, canRefresh, generatedAt, savedLabel, m
       </div>
     );
   }
+
+  const left = note?.until ? Math.max(0, Math.round((note.until - clock) / 1000)) : null;
+  const problem = note?.kind === 'problem';
+  const cls = problem ? 'bad' : note?.kind === 'info' ? '' : state === 'stale' && closed ? '' : 'warn';
+  const earlier = state === 'stale'
+    ? (problem
+      ? <><b>Showing the statements saved {savedLabel}.</b>{closed ? ' This year is closed, so they do not change. ' : ' '}</>
+      : closed
+        ? <><b>Showing the statements saved {savedLabel}.</b> This year is closed, so they do not change; the page is checking Zoho Books for corrections.{' '}</>
+        : <><b>Showing figures {savedLabel}.</b>{' '}</>)
+    : null;
+  const idle = !canRefresh
+    ? 'Loading from Zoho Books is not set up, so these figures will not update.'
+    : state === 'empty'
+      ? 'Nothing is saved yet. Loading from Zoho Books.'
+      : more
+        ? (what === 'CWIP' ? 'The CWIP tab is only partly loaded: the rest of its journals and bills are read from Zoho Books.' : 'The Dep.Calc. tab is only partly checked: the depreciation of the rest of the assets is read from Zoho Books.')
+        : 'Updating from Zoho Books.';
+  const reason = !note && lastAttempt && ['failed', 'quota'].includes(lastAttempt.status) ? lastAttempt.message : null;
+
   return (
-    <div className={`notice ${note?.kind === 'problem' ? 'bad' : 'warn'}`} role="status" aria-live="polite">
-      {state === 'stale' && <><b>Showing figures {savedLabel}.</b>{' '}</>}
-      {note ? note.text : !canRefresh ? 'Loading from Zoho Books is not set up, so these figures will not update.' : more ? (what === 'CWIP' ? 'The CWIP tab is only partly loaded: the rest of its journals and bills are read from Zoho Books.' : 'The Dep.Calc. tab is only partly checked: the depreciation of the rest of the assets is read from Zoho Books.') : 'Updating from Zoho Books.'}
+    <div className={`notice ${cls}`} role="status" aria-live="polite">
+      {earlier}
+      {problem && state !== 'empty' && <b>The newest update did not finish: </b>}
+      {note ? <>{note.text}{left !== null && left > 0 ? <> <b>{mmss(left)}</b></> : null}</> : idle}
+      {reason && <span className="dim small"> Last attempt: {reason}</span>}
+      {problem && canRefresh && (
+        <> <button type="button" className="btn-link" onClick={() => setAttempt((n) => n + 1)}>Try again</button></>
+      )}
+      {(problem || reason) && <> <Link href="/status">Update status</Link></>}
     </div>
   );
 }
